@@ -1,9 +1,18 @@
-:root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+@import 'tailwindcss';
+@import 'uniwind';
+@import 'heroui-native/styles';
+
+/* Let Tailwind detect classNames used inside the HeroUI Native library */
+@source './node_modules/heroui-native/lib';
+
+/* Warna brand onboarding (menyamai mockup). Layar brand tetap, bukan tema light/dark. */
+@theme {
+  --color-brand-canvas: #2e3d33; /* kanvas hijau gelap */
+  --color-brand-canvas-tint: #35473a; /* lingkaran dekoratif */
+  --color-brand-sheet: #f6f4ec; /* sheet krem */
+  --color-brand-primary: #2f7d57; /* tombol hijau forest */
+  --color-brand-logo: #a7d9b0; /* badge logo hijau muda */
+  --color-brand-logo-fg: #1f3d2b; /* teks di dalam badge logo */
+  --color-brand-muted: #9fb0a4; /* teks sekunder di kanvas */
+  --color-brand-sheet-muted: #8a978c; /* teks sekunder di sheet */
 }

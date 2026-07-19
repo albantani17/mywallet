@@ -1,18 +1,33 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { HeroUINativeProvider } from "heroui-native";
+import { ActivityIndicator, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { db } from "@/db";
+import migrations from "../../drizzle/migrations";
+import "../global.css";
+import "@/i18n";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export default function RootLayout() {
+  const { success, error } = useMigrations(db, migrations);
 
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <HeroUINativeProvider>
+        {error ? (
+          <View className="flex-1 items-center justify-center p-6">
+            <Text className="text-red-500">
+              Migration error: {error.message}
+            </Text>
+          </View>
+        ) : !success ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <Stack />
+        )}
+      </HeroUINativeProvider>
+    </GestureHandlerRootView>
   );
 }
