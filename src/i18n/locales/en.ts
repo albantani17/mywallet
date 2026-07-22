@@ -19,6 +19,20 @@ export const en: Translation = {
     },
   },
   home: {
-    greeting: "Hi, {{name}} 👋",
+    greeting: "Hi, {{name}}",
+    totalAssets: "Total Assets",
+    allWallets: "All your wallets",
+    actions: {
+      add: "Add",
+      transfer: "Transfer",
+      debts: "Debts",
+      wallets: "Wallets",
+    },
+  },
+  tabs: {
+    home: "Home",
+    transactions: "Transactions",
+    debts: "Debts",
+    settings: "Settings",
   },
 };

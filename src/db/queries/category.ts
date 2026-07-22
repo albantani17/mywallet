@@ -1,7 +1,7 @@
 import { asc, count, eq, gt } from "drizzle-orm";
 import { db } from "../";
 import { categoriesTable } from "../schema";
-import { Category, CategoryInsert, CategoryUpdate } from "../validator";
+import { Category, CategoryInsert, CategoryUpdate } from "../validator/category";
 
 export const categoryQueries = {
   async getCategories(limit = 10, afterId?: number): Promise<Category[]> {

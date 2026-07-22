@@ -16,6 +16,20 @@ export type Translation = {
   };
   home: {
     greeting: string;
+    totalAssets: string;
+    allWallets: string;
+    actions: {
+      add: string;
+      transfer: string;
+      debts: string;
+      wallets: string;
+    };
+  };
+  tabs: {
+    home: string;
+    transactions: string;
+    debts: string;
+    settings: string;
   };
 };
 
@@ -37,6 +51,20 @@ export const id: Translation = {
     },
   },
   home: {
-    greeting: "Halo, {{name}} 👋",
+    greeting: "Halo, {{name}}",
+    totalAssets: "Total Aset",
+    allWallets: "Semua dompetmu",
+    actions: {
+      add: "Tambah",
+      transfer: "Transfer",
+      debts: "Hutang",
+      wallets: "Dompet",
+    },
+  },
+  tabs: {
+    home: "Beranda",
+    transactions: "Transaksi",
+    debts: "Hutang",
+    settings: "Pengaturan",
   },
 };

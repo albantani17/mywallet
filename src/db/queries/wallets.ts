@@ -1,7 +1,7 @@
 import { asc, count, eq, gt } from "drizzle-orm";
 import { db } from "../";
 import { walletsTable } from "../schema";
-import { Wallet, WalletInsert, WalletUpdate } from "../validator";
+import { Wallet, WalletInsert, WalletUpdate } from "../validator/wallet";
 
 export const walletQueries = {
   async getWallets(limit = 10, afterId?: number): Promise<Wallet[]> {

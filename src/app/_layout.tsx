@@ -25,7 +25,16 @@ export default function RootLayout() {
             <ActivityIndicator />
           </View>
         ) : (
-          <Stack />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="add-transaction"
+              options={{ presentation: "modal" }}
+            />
+            <Stack.Screen
+              name="settings"
+              options={{ presentation: "modal" }}
+            />
+          </Stack>
         )}
       </HeroUINativeProvider>
     </GestureHandlerRootView>

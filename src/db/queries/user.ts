@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../";
 import { usersTable } from "../schema";
-import { User, UserUpdate } from "../validator";
+import { User, UserUpdate } from "../validator/user";
 
 export type Locale = "en" | "id";
 

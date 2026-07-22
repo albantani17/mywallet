@@ -3,7 +3,7 @@
 @import 'heroui-native/styles';
 
 /* Let Tailwind detect classNames used inside the HeroUI Native library */
-@source './node_modules/heroui-native/lib';
+@source '../node_modules/heroui-native/lib';
 
 /* Warna brand onboarding (menyamai mockup). Layar brand tetap, bukan tema light/dark. */
 @theme {
