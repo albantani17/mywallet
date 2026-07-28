@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mywallet",
-    "slug": "mywallet",
+    "name": "expo-fresh",
+    "slug": "expo-fresh",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mywallet",
+    "scheme": "expofresh",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -17,8 +17,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.albanhaerulsteam.mywallet"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
@@ -29,41 +28,17 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#2E3D33",
+          "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
       ],
-      [
-        "expo-sqlite",
-        {
-          "enableFTS": true,
-          "useSQLCipher": true,
-          "android": {
-            // Override the shared configuration for Android
-            "enableFTS": false,
-            "useSQLCipher": false
-          },
-          "ios": {
-            // You can also override the shared configurations for iOS
-            "customBuildFlags": [
-              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
-            ]
-          }
-        }
-      ],
+      "expo-sqlite",
       "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "b51613b3-0bf9-4c57-8d0c-47317a362bdf"
-      }
-    },
-    "owner": "albanhaeruls-team"
+    }
   }
 }

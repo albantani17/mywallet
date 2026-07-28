@@ -1,12 +1,13 @@
 import type { Translation } from "./id";
 
-// EN mengikuti bentuk yang sama persis dengan ID agar type-safe.
+// EN mirrors the exact shape of ID so both stay type-checked against each other.
 export const en: Translation = {
   onboarding: {
-    title: "All your assets,\none summary.",
+    title: "Welcome,\nall your assets in one place.",
     subtitle:
       "Wallets, income, expenses, debts & receivables — calculated automatically.",
     continueGoogle: "Continue with Google",
+    comingSoon: "Coming soon",
     guest: "Continue as Guest",
     guestNote: "Guest data is stored on this device only.",
     nameModal: {
@@ -16,23 +17,107 @@ export const en: Translation = {
       submit: "Continue",
       cancel: "Cancel",
       required: "Name is required",
-    },
-  },
-  home: {
-    greeting: "Hi, {{name}}",
-    totalAssets: "Total Assets",
-    allWallets: "All your wallets",
-    actions: {
-      add: "Add",
-      transfer: "Transfer",
-      debts: "Debts",
-      wallets: "Wallets",
+      tooLong: "Name is too long",
+      failed: "Could not create the account. Please try again.",
     },
   },
   tabs: {
     home: "Home",
+    wallets: "Wallets",
     transactions: "Transactions",
-    debts: "Debts",
-    settings: "Settings",
+    budget: "Budget",
+    more: "More",
+  },
+  dashboard: {
+    greeting: "Hi, {{name}}",
+    yourWallets: "Your wallets",
+    seeAll: "See all",
+    actions: {
+      addTransaction: "Add Transaction",
+      debts: "Debts",
+    },
+  },
+  wallets: {
+    title: "Wallets",
+    add: "Add wallet",
+    balance: "Balance",
+    emptyTitle: "No wallets yet",
+    emptyDescription: "Create your first wallet to start tracking.",
+    searchPlaceholder: "Search wallets",
+    filterAll: "All",
+    totalBalance: "Total Balance",
+    toggleBalance: "Show or hide balance",
+    noResultsTitle: "No wallets found",
+    noResultsDescription: "Try a different keyword or switch the category.",
+    archived: "Archived",
+    types: {
+      cash: "Cash",
+      bank: "Bank",
+      ewallet: "E-Wallet",
+      investment: "Investment",
+    },
+    actions: {
+      menuLabel: "Wallet actions",
+      edit: "Edit",
+      delete: "Delete",
+      cancel: "Cancel",
+    },
+    edit: {
+      title: "Edit wallet",
+      lockedNote:
+        "This wallet already has {{count}} transactions, so only the name can be changed.",
+      save: "Save",
+      failed: "Could not save the changes. Please try again.",
+    },
+    delete: {
+      title: "Delete {{name}}?",
+      message: "This wallet has no transactions and will be deleted for good.",
+      confirm: "Delete",
+      usedTitle: "Hide {{name}}?",
+      // Honest about what actually happens: the row is archived, not erased.
+      usedMessage:
+        "This wallet has {{count}} transactions. It will be hidden from your lists, but every transaction is kept so the other wallets' balances stay correct.",
+      continue: "Continue",
+      typeNamePrompt: 'Type "{{name}}" to confirm.',
+      typeNamePlaceholder: "Wallet name",
+      archiveConfirm: "Hide wallet",
+      failed: "Could not remove the wallet. Please try again.",
+    },
+  },
+  createWallet: {
+    title: "Create your first wallet",
+    sheetTitle: "New wallet",
+    description: "A wallet is where your money sits — cash, a bank, or an e-wallet.",
+    nameLabel: "Wallet name",
+    namePlaceholder: "e.g. Cash Wallet",
+    typeLabel: "Type",
+    initialBalanceLabel: "Opening balance",
+    initialBalancePlaceholder: "0",
+    initialBalanceHint: "How much is in this wallet right now.",
+    submit: "Create wallet",
+    nameRequired: "Wallet name is required",
+    nameTooLong: "Wallet name is too long",
+    balanceTooLarge: "Opening balance is too large",
+    failed: "Could not create the wallet. Please try again.",
+  },
+  transactions: {
+    title: "Transactions",
+    emptyTitle: "No transactions yet",
+    emptyDescription: "Whatever you record will show up here.",
+  },
+  budget: {
+    title: "Budget",
+    comingSoonTitle: "Budgets are coming",
+    comingSoonDescription:
+      "Set a spending limit per category and watch what's left each month.",
+  },
+  more: {
+    title: "More",
+    language: "Language",
+    account: "Account",
+    guestAccount: "Guest account",
+  },
+  common: {
+    migrationFailed: "Database migration failed",
   },
 };

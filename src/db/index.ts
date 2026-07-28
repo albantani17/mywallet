@@ -1,11 +1,11 @@
-import * as SQLite from 'expo-sqlite';
-import { drizzle } from 'drizzle-orm/expo-sqlite';
+// Public entry point of the data layer. UI and services should import
+// repositories from here and leave `db` to the repositories themselves.
+export { db, sqliteDb, type Database } from "./client";
+export * from "./repositories";
+export * from "./validators";
 
-export const expo = SQLite.openDatabaseSync('app.db', {
-  enableChangeListener: true,
-});
-
-// Enforce foreign keys (schema relies on FK references + CHECK constraints)
-expo.execSync('PRAGMA foreign_keys = ON;');
-
-export const db = drizzle(expo);
+// Flat re-export for the enum tuples and row types (WALLET_TYPES, WalletType,
+// …) that UI code needs; the namespace form stays for `schema.users` style
+// access inside hooks that build queries.
+export * from "./schema";
+export * as schema from "./schema";

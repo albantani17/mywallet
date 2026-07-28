@@ -1,15 +1,14 @@
-import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
-import { currentLocale, setLocale, type AppLocale } from "@/i18n";
+import { useActiveLocale } from "@/hooks/use-active-locale";
+import type { AppLocale } from "@/i18n";
+import { cn } from "@/utils/cn";
 
 const LOCALES: AppLocale[] = ["id", "en"];
 
-/** Toggle pill untuk berpindah bahasa aplikasi (ID / EN). */
+/** Pill toggle for switching the app language (ID / EN). */
 export function LanguageToggle() {
-  // useTranslation() memicu re-render saat bahasa berubah.
-  useTranslation();
-  const active = currentLocale();
+  const { locale: active, setLocale } = useActiveLocale();
 
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-white/10 p-1">
@@ -18,14 +17,20 @@ export function LanguageToggle() {
         return (
           <Pressable
             key={locale}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
             onPress={() => setLocale(locale)}
             hitSlop={6}
-            className={`rounded-full px-3 py-1 ${isActive ? "bg-white/90" : ""}`}
+            className={cn(
+              "rounded-full px-3 py-1",
+              isActive ? "bg-white/90" : "bg-transparent",
+            )}
           >
             <Text
-              className={`text-xs font-semibold ${
-                isActive ? "text-brand-logo-fg" : "text-white/70"
-              }`}
+              className={cn(
+                "text-xs font-semibold",
+                isActive ? "text-brand-logo-fg" : "text-white/70",
+              )}
             >
               {locale.toUpperCase()}
             </Text>

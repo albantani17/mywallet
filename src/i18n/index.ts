@@ -9,7 +9,7 @@ export type AppLocale = "en" | "id";
 
 const SUPPORTED: AppLocale[] = ["en", "id"];
 
-/** Ambil bahasa dari device, fallback ke Indonesia. */
+/** Device language, falling back to Indonesian when it is not supported. */
 export function getDeviceLocale(): AppLocale {
   const code = Localization.getLocales()[0]?.languageCode;
   return SUPPORTED.includes(code as AppLocale) ? (code as AppLocale) : "id";
@@ -25,16 +25,17 @@ i18n.use(initReactI18next).init({
   lng: getDeviceLocale(),
   fallbackLng: "id",
   interpolation: {
+    // React already escapes interpolated values.
     escapeValue: false,
   },
 });
 
-/** Ganti bahasa aktif secara global. */
+/** Switches the app language globally. */
 export function setLocale(locale: AppLocale) {
   return i18n.changeLanguage(locale);
 }
 
-/** Bahasa yang sedang aktif (dinormalisasi ke locale yang didukung). */
+/** The active language, normalised to one we actually support. */
 export function currentLocale(): AppLocale {
   const lng = i18n.language as AppLocale;
   return SUPPORTED.includes(lng) ? lng : "id";

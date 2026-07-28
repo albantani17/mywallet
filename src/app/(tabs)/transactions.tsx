@@ -1,13 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
 
-export default function Transactions() {
+import { EmptyState } from "@/components/ui/empty-state";
+import { Screen } from "@/components/ui/screen";
+
+export default function TransactionsTab() {
   const { t } = useTranslation();
+
   return (
-    <View className="flex-1 items-center justify-center bg-brand-canvas">
-      <Text className="text-lg font-semibold text-white">
-        {t("tabs.transactions")}
-      </Text>
-    </View>
+    <Screen title={t("transactions.title")}>
+      <EmptyState
+        icon="receipt-outline"
+        title={t("transactions.emptyTitle")}
+        description={t("transactions.emptyDescription")}
+      />
+    </Screen>
   );
 }
