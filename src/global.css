@@ -1,18 +1,15 @@
 @import 'tailwindcss';
 @import 'uniwind';
-@import 'heroui-native/styles';
 
-/* Let Tailwind detect classNames used inside the HeroUI Native library */
-@source '../node_modules/heroui-native/lib';
-
-/* Warna brand onboarding (menyamai mockup). Layar brand tetap, bukan tema light/dark. */
+/* Brand palette for the onboarding surface. These are fixed brand colors, not
+   light/dark theme tokens — the onboarding screen looks the same either way. */
 @theme {
-  --color-brand-canvas: #2e3d33; /* kanvas hijau gelap */
-  --color-brand-canvas-tint: #35473a; /* lingkaran dekoratif */
-  --color-brand-sheet: #f6f4ec; /* sheet krem */
-  --color-brand-primary: #2f7d57; /* tombol hijau forest */
-  --color-brand-logo: #a7d9b0; /* badge logo hijau muda */
-  --color-brand-logo-fg: #1f3d2b; /* teks di dalam badge logo */
-  --color-brand-muted: #9fb0a4; /* teks sekunder di kanvas */
-  --color-brand-sheet-muted: #8a978c; /* teks sekunder di sheet */
+  --color-brand-canvas: #2e3d33; /* dark green canvas */
+  --color-brand-canvas-tint: #35473a; /* decorative circles */
+  --color-brand-sheet: #f6f4ec; /* cream bottom panel */
+  --color-brand-primary: #2f7d57; /* forest green primary button */
+  --color-brand-logo: #a7d9b0; /* light green logo badge */
+  --color-brand-logo-fg: #1f3d2b; /* text inside the logo badge */
+  --color-brand-muted: #9fb0a4; /* secondary text on the canvas */
+  --color-brand-sheet-muted: #8a978c; /* secondary text on the panel */
 }

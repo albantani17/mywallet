@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4846288e-6865-4c97-8df2-ab1507ecac22",
+  "id": "5a44d2c6-7179-4cc4-a17d-1f45e0c58814",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -50,7 +50,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "category_parent_idx": {
+          "name": "category_parent_idx",
+          "columns": [
+            "parent_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "categories_parent_id_categories_id_fk": {
           "name": "categories_parent_id_categories_id_fk",
@@ -138,7 +146,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "debt_status_idx": {
+          "name": "debt_status_idx",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "debts_wallet_id_wallets_id_fk": {
           "name": "debts_wallet_id_wallets_id_fk",
@@ -156,7 +172,12 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {
+        "positive_principal": {
+          "name": "positive_principal",
+          "value": "\"debts\".\"principal\" > 0"
+        }
+      }
     },
     "transactions": {
       "name": "transactions",
@@ -341,7 +362,88 @@
         },
         "transfer_shape": {
           "name": "transfer_shape",
-          "value": "\n    (\"transactions\".\"type\" = 'transfer' AND \"transactions\".\"to_wallet_id\" IS NOT NULL AND \"transactions\".\"category_id\" IS NULL)\n    OR\n    (\"transactions\".\"type\" != 'transfer' AND \"transactions\".\"to_wallet_id\" IS NULL)\n  "
+          "value": "(\"transactions\".\"type\" = 'transfer' AND \"transactions\".\"to_wallet_id\" IS NOT NULL AND \"transactions\".\"category_id\" IS NULL)\n        OR (\"transactions\".\"type\" != 'transfer' AND \"transactions\".\"to_wallet_id\" IS NULL)"
+        }
+      }
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auth_provider": {
+          "name": "auth_provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'guest'"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "locale": {
+          "name": "locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'id'"
+        },
+        "theme": {
+          "name": "theme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'system'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "single_user_row": {
+          "name": "single_user_row",
+          "value": "\"users\".\"id\" = 1"
         }
       }
     },

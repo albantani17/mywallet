@@ -16,8 +16,10 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "metro.config.js",
-    "uniwind-types.d.ts",
-    "src/uniwind-types.d.ts"
+    "drizzle-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "example"
   ]
 }

@@ -9,17 +9,17 @@ export default function Index() {
 
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center p-6">
-        <Text className="text-red-500">{error.message}</Text>
+      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas p-6">
+        <Text className="text-center text-red-400">{error.message}</Text>
       </View>
     );
   }
 
-  // Tahan render sampai query pertama selesai — cegah kedip onboarding untuk
-  // user yang sudah ada.
+  // Hold the render until the first query resolves, so an existing user never
+  // sees onboarding flash by.
   if (!isReady) {
     return (
-      <View className="flex-1 items-center justify-center bg-brand-canvas">
+      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
         <ActivityIndicator color="#ffffff" />
       </View>
     );
@@ -29,6 +29,7 @@ export default function Index() {
     return <Onboarding />;
   }
 
-  // User sudah ada → masuk ke tab navigator.
-  return <Redirect href="/(tabs)/home" />;
+  // The tabs layout gates again on wallets and redirects to create-wallet when
+  // there are none.
+  return <Redirect href="/home" />;
 }

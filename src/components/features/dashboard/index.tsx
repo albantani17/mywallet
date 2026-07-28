@@ -1,38 +1,48 @@
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ActivityIndicator, Text, View } from "react-native";
 
+import { Screen } from "@/components/ui/screen";
+import { useDashboardSummary } from "@/hooks/features/dashboard/use-dashboard-summary";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { QuickActions } from "./quick-actions";
-import { TotalAssetsCard } from "./total-assets-card";
+import { DashboardActions } from "./dashboard-actions";
+import { WalletCarousel } from "./wallet-carousel";
 
-/**
- * Bagian atas beranda (kartu hijau full-width): sapaan, Total Aset, dan aksi
- * cepat. Menangani safe-area atas sendiri agar bisa menempel di tepi layar.
- */
-export const Dashboard = () => {
+export function Dashboard() {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { user } = useCurrentUser();
+  const { topWallets, hasMore, isReady } = useDashboardSummary();
+
+  if (!isReady) {
+    return (
+      <Screen>
+        <View className="flex-1 flex-col items-center justify-center">
+          <ActivityIndicator color="#ffffff" />
+        </View>
+      </Screen>
+    );
+  }
 
   return (
-    <View
-      className="rounded-b-3xl bg-brand-canvas px-6 pb-6"
-      style={{ paddingTop: insets.top + 12 }}
-    >
-      {/* Sapaan + badge logo (menyamai onboarding) */}
-      <View className="mb-6 flex-row items-center gap-3">
-        <View className="size-10 items-center justify-center rounded-2xl bg-brand-logo">
-          <Text className="text-lg font-extrabold text-brand-logo-fg">S</Text>
-        </View>
-        <Text className="text-base font-semibold text-white">
-          {t("home.greeting", { name: user?.name ?? "" })}
-        </Text>
-      </View>
+    <Screen scrollable>
+      <View className="flex-col gap-8">
+        <View className="flex-col gap-4">
+          {/* No "see all" link here — the carousel's last slide is the way in
+              once there are more wallets than it can show. */}
+          <View className="flex-col px-6">
+            <Text className="text-xs text-brand-muted">
+              {t("dashboard.greeting", { name: user?.name ?? "" })}
+            </Text>
+            <Text className="mt-1 text-lg font-bold text-white">
+              {t("dashboard.yourWallets")}
+            </Text>
+          </View>
 
-      <TotalAssetsCard />
-      <QuickActions />
-    </View>
+          <WalletCarousel wallets={topWallets} showMore={hasMore} />
+        </View>
+
+        <DashboardActions />
+      </View>
+    </Screen>
   );
-};
+}

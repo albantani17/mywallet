@@ -1,89 +1,81 @@
-import {
-  Button,
-  Dialog,
-  FieldError,
-  Input,
-  Label,
-  TextField,
-} from "heroui-native";
-import { Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, View } from "react-native";
 
-import { useGuestOnboarding } from "@/hooks/use-guest-onboarding";
+import { Button } from "@/components/ui/button";
+import { TextField } from "@/components/ui/text-field";
+import { useGuestOnboarding } from "@/hooks/features/onboarding/use-guest-onboarding";
 
 type GuestNameDialogProps = {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
 };
 
-/** Dialog input nama untuk membuat akun tamu saat onboarding. */
-export function GuestNameDialog({ isOpen, onOpenChange }: GuestNameDialogProps) {
+/** Asks for a name, then creates the guest account. */
+export function GuestNameDialog({ isOpen, onClose }: GuestNameDialogProps) {
   const { t } = useTranslation();
-  const { control, errors, isSubmitting, submit } = useGuestOnboarding(() =>
-    onOpenChange(false),
-  );
+  const { name, error, isSubmitting, changeName, submit, reset } =
+    useGuestOnboarding(onClose);
+
+  const close = () => {
+    reset();
+    onClose();
+  };
 
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay />
+    <Modal
+      visible={isOpen}
+      transparent
+      animationType="fade"
+      // Android hardware back button.
+      onRequestClose={close}
+      statusBarTranslucent
+    >
+      <View className="flex-1 flex-col justify-center bg-black/50 px-6">
+        {/* Tapping the backdrop dismisses; the card below swallows the press. */}
+        <Pressable className="absolute inset-0" onPress={close} />
+
         <KeyboardAvoidingView
+          // Android relies on the default adjustResize behaviour.
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Dialog.Content>
-            <View className="mb-5 gap-1.5">
-              <Dialog.Title>{t("onboarding.nameModal.title")}</Dialog.Title>
-              <Dialog.Description>
-                {t("onboarding.nameModal.description")}
-              </Dialog.Description>
-            </View>
+          <View className="flex-col rounded-3xl bg-brand-sheet p-6">
+            <Text className="text-xl font-bold text-brand-logo-fg">
+              {t("onboarding.nameModal.title")}
+            </Text>
+            <Text className="mt-1.5 text-sm leading-5 text-brand-sheet-muted">
+              {t("onboarding.nameModal.description")}
+            </Text>
 
-            <Controller
-              control={control}
-              name="name"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextField isInvalid={!!errors.name} isRequired>
-                  <Label>{t("onboarding.nameModal.title")}</Label>
-                  <Input
-                    autoFocus
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    placeholder={t("onboarding.nameModal.placeholder")}
-                    returnKeyType="done"
-                    onSubmitEditing={submit}
-                  />
-                  {errors.name ? (
-                    <FieldError>{errors.name.message}</FieldError>
-                  ) : null}
-                </TextField>
-              )}
-            />
+            <View className="mt-5">
+              <TextField
+                autoFocus
+                value={name}
+                onChangeText={changeName}
+                error={error}
+                placeholder={t("onboarding.nameModal.placeholder")}
+                returnKeyType="done"
+                maxLength={50}
+                onSubmitEditing={submit}
+              />
+            </View>
 
             <View className="mt-5 flex-row justify-end gap-3">
               <Button
                 variant="ghost"
-                size="sm"
+                label={t("onboarding.nameModal.cancel")}
                 isDisabled={isSubmitting}
-                onPress={() => onOpenChange(false)}
-              >
-                {t("onboarding.nameModal.cancel")}
-              </Button>
+                onPress={close}
+              />
               <Button
-                size="sm"
-                className="bg-brand-primary"
-                isDisabled={isSubmitting}
+                label={t("onboarding.nameModal.submit")}
+                isLoading={isSubmitting}
                 onPress={submit}
-              >
-                <Button.Label className="text-white">
-                  {t("onboarding.nameModal.submit")}
-                </Button.Label>
-              </Button>
+                className="px-7"
+              />
             </View>
-          </Dialog.Content>
+          </View>
         </KeyboardAvoidingView>
-      </Dialog.Portal>
-    </Dialog>
+      </View>
+    </Modal>
   );
 }
