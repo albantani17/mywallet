@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { BUILT_IN_TRANSACTION_CATEGORY_SEEDS } from "@/components/features/transactions/transaction-category";
 import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-type";
 import { db } from "@/db";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { categoryService } from "@/services/category-service";
 import { walletCategoryService } from "@/services/wallet-category-service";
 import migrations from "../../drizzle/migrations";
 
@@ -22,17 +24,24 @@ export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations);
   const [isSeeded, setIsSeeded] = useState(false);
 
-  // Inserts the built-in wallet categories once the tables exist. Idempotent,
-  // so it is also what backfills a device that upgraded from before the
-  // wallet_categories table. A failure must not block the app — the category
-  // resolver falls back to a generic icon — so this settles either way.
+  // Inserts the built-in wallet and transaction categories once the tables
+  // exist. Idempotent, so it is also what backfills a device that upgraded
+  // from before those columns existed. A failure must not block the app — the
+  // category resolvers fall back to a generic icon — so this settles either
+  // way, and the two seeds are independent enough that one failing should not
+  // discard the other.
   useEffect(() => {
     if (!success) return;
 
     let isCurrent = true;
-    walletCategoryService
-      .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
-      .catch((e) => console.error("Failed to seed wallet categories", e))
+    Promise.all([
+      walletCategoryService
+        .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
+        .catch((e) => console.error("Failed to seed wallet categories", e)),
+      categoryService
+        .ensureBuiltIns(BUILT_IN_TRANSACTION_CATEGORY_SEEDS)
+        .catch((e) => console.error("Failed to seed transaction categories", e)),
+    ])
       .finally(() => {
         if (isCurrent) setIsSeeded(true);
       });

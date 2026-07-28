@@ -112,8 +112,79 @@ export type Translation = {
   };
   transactions: {
     title: string;
+    add: string;
     emptyTitle: string;
     emptyDescription: string;
+    /** Labels for the built-in categories; see transaction-category.ts. */
+    categories: {
+      foodDrink: string;
+      transport: string;
+      shopping: string;
+      groceries: string;
+      health: string;
+      entertainment: string;
+      education: string;
+      salary: string;
+      bonus: string;
+      investment: string;
+      gift: string;
+      electricity: string;
+      water: string;
+      internet: string;
+      phone: string;
+      rent: string;
+      insurance: string;
+      installment: string;
+      subscription: string;
+      other: string;
+    };
+  };
+  newTransaction: {
+    title: string;
+    close: string;
+    types: {
+      expense: string;
+      income: string;
+      transfer: string;
+      bill: string;
+    };
+    amountLabel: string;
+    amountPlaceholder: string;
+    walletLabel: string;
+    fromWalletLabel: string;
+    toWalletLabel: string;
+    noWallets: string;
+    noOtherWallets: string;
+    feeLabel: string;
+    feePlaceholder: string;
+    categoryLabel: string;
+    dateLabel: string;
+    dateConfirm: string;
+    dueDateLabel: string;
+    dueDatePlaceholder: string;
+    noteLabel: string;
+    notePlaceholder: string;
+    submit: string;
+    amountRequired: string;
+    amountTooLarge: string;
+    walletRequired: string;
+    toWalletRequired: string;
+    sameWallet: string;
+    categoryRequired: string;
+    noteTooLong: string;
+    failed: string;
+    categorySheet: {
+      add: string;
+      title: string;
+      nameLabel: string;
+      namePlaceholder: string;
+      iconLabel: string;
+      colorLabel: string;
+      save: string;
+      nameRequired: string;
+      nameTooLong: string;
+      failed: string;
+    };
   };
   budget: {
     title: string;
@@ -251,8 +322,78 @@ export const id: Translation = {
   },
   transactions: {
     title: "Transaksi",
+    add: "Tambah Transaksi",
     emptyTitle: "Belum ada transaksi",
     emptyDescription: "Transaksi yang kamu catat akan tampil di sini.",
+    categories: {
+      foodDrink: "Makanan & Minuman",
+      transport: "Transportasi",
+      shopping: "Belanja",
+      groceries: "Kebutuhan Harian",
+      health: "Kesehatan",
+      entertainment: "Hiburan",
+      education: "Pendidikan",
+      salary: "Gaji",
+      bonus: "Bonus",
+      investment: "Investasi",
+      gift: "Hadiah",
+      electricity: "Listrik",
+      water: "Air",
+      internet: "Internet",
+      phone: "Pulsa & Telepon",
+      rent: "Sewa",
+      insurance: "Asuransi",
+      installment: "Cicilan",
+      subscription: "Langganan",
+      other: "Lainnya",
+    },
+  },
+  newTransaction: {
+    title: "Tambah Transaksi",
+    close: "Tutup",
+    types: {
+      expense: "Pengeluaran",
+      income: "Pemasukan",
+      transfer: "Transfer",
+      bill: "Tagihan",
+    },
+    amountLabel: "Nominal",
+    amountPlaceholder: "0",
+    walletLabel: "Dompet",
+    fromWalletLabel: "Dari dompet",
+    toWalletLabel: "Ke dompet",
+    noWallets: "Belum ada dompet.",
+    noOtherWallets: "Butuh minimal dua dompet untuk transfer.",
+    feeLabel: "Biaya admin (opsional)",
+    feePlaceholder: "0",
+    categoryLabel: "Kategori",
+    dateLabel: "Tanggal transaksi",
+    dateConfirm: "Pilih",
+    dueDateLabel: "Jatuh tempo (opsional)",
+    dueDatePlaceholder: "Belum ditentukan",
+    noteLabel: "Catatan (opsional)",
+    notePlaceholder: "Misalnya: makan siang bareng tim",
+    submit: "Simpan",
+    amountRequired: "Nominal harus lebih dari nol",
+    amountTooLarge: "Nominal terlalu besar",
+    walletRequired: "Pilih dompet dulu",
+    toWalletRequired: "Pilih dompet tujuan",
+    sameWallet: "Dompet tujuan harus berbeda",
+    categoryRequired: "Pilih kategori dulu",
+    noteTooLong: "Catatan terlalu panjang",
+    failed: "Transaksi gagal disimpan. Coba lagi.",
+    categorySheet: {
+      add: "Kategori baru",
+      title: "Kategori baru",
+      nameLabel: "Nama kategori",
+      namePlaceholder: "Misalnya: Kopi",
+      iconLabel: "Ikon",
+      colorLabel: "Warna",
+      save: "Simpan kategori",
+      nameRequired: "Nama kategori wajib diisi",
+      nameTooLong: "Nama kategori terlalu panjang",
+      failed: "Kategori gagal dibuat. Coba lagi.",
+    },
   },
   budget: {
     title: "Budget",

@@ -37,6 +37,12 @@ export const transactionInsertSchema = createInsertSchema(transactions)
   .refine((t) => t.toWalletId == null || t.toWalletId !== t.walletId, {
     message: "Source and destination wallet must differ",
     path: ["toWalletId"],
+  })
+  // dueDate is what distinguishes a bill from a plain expense; no other type
+  // has anything to be due.
+  .refine((t) => t.type === "bill" || t.dueDate == null, {
+    message: "Only a bill may have a due date",
+    path: ["dueDate"],
   });
 
 export const transactionUpdateSchema = createUpdateSchema(transactions).extend({

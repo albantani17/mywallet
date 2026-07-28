@@ -15,6 +15,13 @@
       "when": 1785249673107,
       "tag": "0001_absent_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785253068468,
+      "tag": "0002_handy_rockslide",
+      "breakpoints": true
     }
   ]
 }

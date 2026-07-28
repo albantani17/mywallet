@@ -75,6 +75,7 @@ export const transactionQueries = {
         fee: transactions.fee,
         note: transactions.note,
         occurredAt: transactions.occurredAt,
+        dueDate: transactions.dueDate,
         createdAt: transactions.createdAt,
         walletName: wallets.name,
         toWalletName: targetWallets.name,
@@ -142,7 +143,9 @@ export const transactionRepository = {
     const rows = await db
       .select({
         income: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'income' THEN ${transactions.amount} ELSE 0 END), 0)`,
-        expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'expense' THEN ${transactions.amount} ELSE 0 END), 0)`,
+        // A bill is an expense that happens to carry a due date, so it belongs
+        // on the same side of the summary.
+        expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} IN ('expense', 'bill') THEN ${transactions.amount} ELSE 0 END), 0)`,
       })
       .from(transactions)
       .where(

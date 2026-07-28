@@ -5,13 +5,23 @@ import { categories } from "./categories";
 import { debts } from "./debts";
 import { wallets } from "./wallets";
 
-export const TRANSACTION_TYPES = ["income", "expense", "transfer"] as const;
+export const TRANSACTION_TYPES = [
+  "income",
+  "expense",
+  "transfer",
+  "bill",
+] as const;
 
 /**
  * Every movement of money. `amount` is always positive and stored in minor
  * units — direction is carried by `type`, never by the sign. A transfer moves
  * `amount` from `walletId` to `toWalletId` and additionally costs `fee` on the
  * source wallet.
+ *
+ * A `bill` is an expense that also carries a `dueDate`; it leaves the wallet
+ * the moment it is recorded, exactly like an `expense`. The column is stored
+ * as plain text with no CHECK, so the enum above is a TypeScript-only
+ * constraint — adding a member needs no data migration.
  */
 export const transactions = sqliteTable(
   "transactions",
@@ -28,6 +38,8 @@ export const transactions = sqliteTable(
     fee: integer("fee").notNull().default(0),
     note: text("note"),
     occurredAt: integer("occurred_at", { mode: "timestamp" }).notNull(),
+    /** Bills only — when the money was owed, as opposed to when it moved. */
+    dueDate: integer("due_date", { mode: "timestamp" }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

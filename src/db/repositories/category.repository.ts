@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 
 import { db } from "../client";
 import type { CategoryType } from "../schema/categories";
@@ -10,17 +10,46 @@ import type {
   CategoryUpdate,
 } from "../validators/category.validator";
 
-export const categoryRepository = {
-  async list(): Promise<Category[]> {
-    return db.select().from(categories).orderBy(asc(categories.name));
-  },
+/**
+ * Select builders for useLiveQuery, which needs the builder itself rather than
+ * the promise the repository methods return. Ordered by sortOrder so the seeded
+ * built-ins keep the sequence they were written in and user categories land at
+ * the end.
+ */
+export const categoryQueries = {
+  list: () =>
+    db
+      .select()
+      .from(categories)
+      .orderBy(asc(categories.sortOrder), asc(categories.id)),
 
-  async listByType(type: CategoryType): Promise<Category[]> {
-    return db
+  listByType: (type: CategoryType) =>
+    db
       .select()
       .from(categories)
       .where(eq(categories.type, type))
-      .orderBy(asc(categories.name));
+      .orderBy(asc(categories.sortOrder), asc(categories.id)),
+};
+
+export const categoryRepository = {
+  async list(): Promise<Category[]> {
+    return categoryQueries.list();
+  },
+
+  async listByType(type: CategoryType): Promise<Category[]> {
+    return categoryQueries.listByType(type);
+  },
+
+  /** Which of the given slugs already exist — used to make a slug unique. */
+  async findExistingSlugs(slugs: string[]): Promise<string[]> {
+    if (slugs.length === 0) return [];
+
+    const rows = await db
+      .select({ slug: categories.slug })
+      .from(categories)
+      .where(inArray(categories.slug, slugs));
+
+    return rows.map((row) => row.slug);
   },
 
   /** Top-level categories only — the usual first step of a category picker. */
@@ -70,6 +99,19 @@ export const categoryRepository = {
   async create(data: CategoryInsert): Promise<Category> {
     const [row] = await db.insert(categories).values(data).returning();
     return row;
+  },
+
+  /**
+   * Inserts the built-in rows, skipping any that already exist. The unique
+   * index on `slug` is what makes this safe to run on every launch.
+   */
+  async insertMissing(rows: CategoryInsert[]): Promise<void> {
+    if (rows.length === 0) return;
+
+    await db
+      .insert(categories)
+      .values(rows)
+      .onConflictDoNothing({ target: categories.slug });
   },
 
   async update(id: number, data: CategoryUpdate): Promise<Category | null> {
