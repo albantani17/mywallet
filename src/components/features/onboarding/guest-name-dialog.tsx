@@ -30,7 +30,7 @@ export function GuestNameDialog({ isOpen, onClose }: GuestNameDialogProps) {
       onRequestClose={close}
       statusBarTranslucent
     >
-      <View className="flex-1 flex-col justify-center bg-black/50 px-6">
+      <View className="flex-1 flex-col justify-center bg-scrim px-6">
         {/* Tapping the backdrop dismisses; the card below swallows the press. */}
         <Pressable className="absolute inset-0" onPress={close} />
 
@@ -38,11 +38,11 @@ export function GuestNameDialog({ isOpen, onClose }: GuestNameDialogProps) {
           // Android relies on the default adjustResize behaviour.
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <View className="flex-col rounded-3xl bg-brand-sheet p-6">
-            <Text className="text-xl font-bold text-brand-logo-fg">
+          <View className="flex-col rounded-3xl bg-surface p-6">
+            <Text className="text-xl font-bold text-fg">
               {t("onboarding.nameModal.title")}
             </Text>
-            <Text className="mt-1.5 text-sm leading-5 text-brand-sheet-muted">
+            <Text className="mt-1.5 text-sm leading-5 text-fg-muted">
               {t("onboarding.nameModal.description")}
             </Text>
 

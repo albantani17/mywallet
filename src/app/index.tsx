@@ -9,8 +9,8 @@ export default function Index() {
 
   if (error) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas p-6">
-        <Text className="text-center text-red-400">{error.message}</Text>
+      <View className="flex-1 flex-col items-center justify-center bg-base p-6">
+        <Text className="text-center text-danger">{error.message}</Text>
       </View>
     );
   }
@@ -19,8 +19,8 @@ export default function Index() {
   // sees onboarding flash by.
   if (!isReady) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
-        <ActivityIndicator color="#ffffff" />
+      <View className="flex-1 flex-col items-center justify-center bg-base">
+        <ActivityIndicator colorClassName="text-fg" />
       </View>
     );
   }

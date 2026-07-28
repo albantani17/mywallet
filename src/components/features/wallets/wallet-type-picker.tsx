@@ -4,6 +4,7 @@ import { Pressable, Text, View } from "react-native";
 import type { WalletType } from "@/db";
 import { useWalletCategories } from "@/hooks/features/wallets/use-wallet-categories";
 import { cn } from "@/utils/cn";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { toIconName } from "./wallet-type";
 
@@ -21,6 +22,7 @@ type WalletTypePickerProps = {
  * onto one clipped row.
  */
 export function WalletTypePicker({ value, onChange }: WalletTypePickerProps) {
+  const colors = useThemeColors();
   const { categories, labelOf } = useWalletCategories();
 
   return (
@@ -35,18 +37,18 @@ export function WalletTypePicker({ value, onChange }: WalletTypePickerProps) {
             onPress={() => onChange(category.slug)}
             className={cn(
               "flex-row items-center gap-1.5 self-start rounded-full border px-3 py-1.5",
-              isActive ? "bg-black/5" : "border-black/10 bg-white",
+              isActive ? "bg-elevated" : "border-line bg-elevated",
             )}
             style={isActive ? { borderColor: category.color } : undefined}
           >
             <Ionicons
               name={toIconName(category.icon)}
               size={14}
-              color={isActive ? category.color : "#8a978c"}
+              color={isActive ? category.color : colors.fgMuted}
             />
             <Text
               className="text-xs font-semibold"
-              style={{ color: isActive ? category.color : "#8a978c" }}
+              style={{ color: isActive ? category.color : colors.fgMuted }}
             >
               {labelOf(category)}
             </Text>

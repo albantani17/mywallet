@@ -39,7 +39,7 @@ export function CreateWalletForm({ onCreated }: CreateWalletFormProps) {
       />
 
       <View className="flex-col gap-2">
-        <Text className="text-sm font-medium text-brand-logo-fg">
+        <Text className="text-sm font-medium text-fg">
           {t("createWallet.typeLabel")}
         </Text>
         <WalletTypePicker value={type} onChange={changeType} />
@@ -57,14 +57,14 @@ export function CreateWalletForm({ onCreated }: CreateWalletFormProps) {
           onSubmitEditing={submit}
         />
         {!errors.initialBalance ? (
-          <Text className="text-xs text-brand-sheet-muted">
+          <Text className="text-xs text-fg-muted">
             {t("createWallet.initialBalanceHint")}
           </Text>
         ) : null}
       </View>
 
       {errors.form ? (
-        <Text className="text-sm text-red-500">{errors.form}</Text>
+        <Text className="text-sm text-danger">{errors.form}</Text>
       ) : null}
 
       <Button

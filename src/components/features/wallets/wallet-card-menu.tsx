@@ -7,6 +7,7 @@ import {
   type DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import type { WalletWithBalance } from "@/db";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type WalletCardMenuProps = {
   wallet: WalletWithBalance;
@@ -20,6 +21,7 @@ export function WalletCardMenu({
   onEdit,
   onDelete,
 }: WalletCardMenuProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
 
   const items: DropdownMenuItem[] = [
@@ -44,7 +46,7 @@ export function WalletCardMenu({
       accessibilityLabel={t("wallets.actions.menuLabel")}
       trigger={
         <View className="size-7 flex-col items-center justify-center rounded-full">
-          <Ionicons name="ellipsis-vertical" size={16} color="#8a978c" />
+          <Ionicons name="ellipsis-vertical" size={16} color={colors.fgMuted} />
         </View>
       }
     />

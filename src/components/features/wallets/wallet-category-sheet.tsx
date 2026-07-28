@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { useCreateWalletCategory } from "@/hooks/features/wallets/use-create-wallet-category";
 import { cn } from "@/utils/cn";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { COLOR_CHOICES, ICON_CHOICES, TINT_ALPHA, toIconName } from "./wallet-type";
 
@@ -19,6 +20,7 @@ export function WalletCategorySheet({
   isOpen,
   onClose,
 }: WalletCategorySheetProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
   const {
     name,
@@ -35,7 +37,7 @@ export function WalletCategorySheet({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <View className="flex-col gap-5">
-        <Text className="text-xl font-bold text-brand-logo-fg">
+        <Text className="text-xl font-bold text-fg">
           {t("wallets.categories.sheetTitle")}
         </Text>
 
@@ -51,7 +53,7 @@ export function WalletCategorySheet({
         />
 
         <View className="flex-col gap-2">
-          <Text className="text-sm font-medium text-brand-logo-fg">
+          <Text className="text-sm font-medium text-fg">
             {t("wallets.categories.iconLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -65,7 +67,7 @@ export function WalletCategorySheet({
                   onPress={() => changeIcon(choice)}
                   className={cn(
                     "size-11 flex-col items-center justify-center rounded-2xl border",
-                    isActive ? "border-transparent" : "border-black/10 bg-white",
+                    isActive ? "border-transparent" : "border-line bg-elevated",
                   )}
                   style={
                     isActive ? { backgroundColor: color + TINT_ALPHA } : undefined
@@ -74,7 +76,7 @@ export function WalletCategorySheet({
                   <Ionicons
                     name={toIconName(choice)}
                     size={20}
-                    color={isActive ? color : "#8a978c"}
+                    color={isActive ? color : colors.fgMuted}
                   />
                 </Pressable>
               );
@@ -83,7 +85,7 @@ export function WalletCategorySheet({
         </View>
 
         <View className="flex-col gap-2">
-          <Text className="text-sm font-medium text-brand-logo-fg">
+          <Text className="text-sm font-medium text-fg">
             {t("wallets.categories.colorLabel")}
           </Text>
           <View className="flex-row flex-wrap gap-2.5">

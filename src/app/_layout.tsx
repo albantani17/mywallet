@@ -7,6 +7,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 
 import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-type";
 import { db } from "@/db";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 import { walletCategoryService } from "@/services/wallet-category-service";
 import migrations from "../../drizzle/migrations";
 
@@ -15,6 +16,7 @@ import "@/i18n";
 
 export default function RootLayout() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   // Applies any pending migration before the app renders; the database is not
   // usable until `success` flips.
   const { success, error } = useMigrations(db, migrations);
@@ -42,8 +44,8 @@ export default function RootLayout() {
 
   if (error) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas p-6">
-        <Text className="text-center text-red-400">
+      <View className="flex-1 flex-col items-center justify-center bg-base p-6">
+        <Text className="text-center text-danger">
           {t("common.migrationFailed")}: {error.message}
         </Text>
       </View>
@@ -53,20 +55,22 @@ export default function RootLayout() {
   // Also waits on the seed, so the category tabs never render empty.
   if (!success || !isSeeded) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
-        <ActivityIndicator color="#ffffff" />
+      <View className="flex-1 flex-col items-center justify-center bg-base">
+        <ActivityIndicator colorClassName="text-fg" />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="light" />
+      {/* "auto" follows the OS colour scheme, and Uniwind.setTheme pushes the
+          chosen theme into Appearance — so an explicit theme drives this too. */}
+      <StatusBar style="auto" />
       <Stack
         screenOptions={{
           headerShown: false,
           animation: "slide_from_right",
-          contentStyle: { backgroundColor: "#2e3d33" },
+          contentStyle: { backgroundColor: colors.base },
         }}
       />
     </>

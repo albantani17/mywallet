@@ -2,25 +2,28 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { Pressable, TextInput, View } from "react-native";
 
+import { useThemeColors } from "@/hooks/use-theme-colors";
+
 type WalletSearchProps = {
   value: string;
   onChange: (value: string) => void;
 };
 
 export function WalletSearch({ value, onChange }: WalletSearchProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
 
   return (
-    <View className="flex-row items-center gap-2 rounded-2xl bg-white/10 px-4">
-      <Ionicons name="search" size={18} color="#9fb0a4" />
+    <View className="flex-row items-center gap-2 rounded-2xl bg-surface px-4">
+      <Ionicons name="search" size={18} color={colors.fgMuted} />
       <TextInput
         value={value}
         onChangeText={onChange}
         placeholder={t("wallets.searchPlaceholder")}
-        placeholderTextColor="#9fb0a4"
+        placeholderTextColorClassName="text-fg-muted"
         returnKeyType="search"
         autoCorrect={false}
-        className="h-12 flex-1 text-base text-white"
+        className="h-12 flex-1 text-base text-fg"
       />
       {value.length > 0 ? (
         <Pressable
@@ -28,7 +31,7 @@ export function WalletSearch({ value, onChange }: WalletSearchProps) {
           onPress={() => onChange("")}
           hitSlop={8}
         >
-          <Ionicons name="close-circle" size={18} color="#9fb0a4" />
+          <Ionicons name="close-circle" size={18} color={colors.fgMuted} />
         </Pressable>
       ) : null}
     </View>

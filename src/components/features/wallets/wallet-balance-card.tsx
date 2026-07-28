@@ -5,6 +5,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { formatCurrency } from "@/utils/format-currency";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type WalletBalanceCardProps = {
   /** Total across the currently visible wallets, not every wallet. */
@@ -12,6 +13,7 @@ type WalletBalanceCardProps = {
 };
 
 export function WalletBalanceCard({ total }: WalletBalanceCardProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
   // Tracked locale, not currentLocale() — otherwise the amount freezes when
   // the language changes.
@@ -20,14 +22,14 @@ export function WalletBalanceCard({ total }: WalletBalanceCardProps) {
   const [isHidden, setIsHidden] = useState(false);
 
   return (
-    <View className="flex-row items-center justify-between rounded-2xl bg-brand-sheet px-5 py-4">
-      <Text className="text-base font-semibold text-brand-logo-fg">
+    <View className="flex-row items-center justify-between rounded-2xl bg-surface px-5 py-4">
+      <Text className="text-base font-semibold text-fg">
         {t("wallets.totalBalance")}
       </Text>
 
       <View className="flex-row items-center gap-3">
         <Text
-          className="text-base font-extrabold text-brand-logo-fg"
+          className="text-base font-extrabold text-fg"
           numberOfLines={1}
         >
           {isHidden ? "••••••" : formatCurrency(total, locale)}
@@ -42,7 +44,7 @@ export function WalletBalanceCard({ total }: WalletBalanceCardProps) {
           <Ionicons
             name={isHidden ? "eye-off-outline" : "eye-outline"}
             size={18}
-            color="#8a978c"
+            color={colors.fgMuted}
           />
         </Pressable>
       </View>

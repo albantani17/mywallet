@@ -6,6 +6,7 @@ import { ActivityIndicator, View, type ColorValue } from "react-native";
 
 import { CreateWalletScreen } from "@/components/features/wallets/create-wallet-screen";
 import { useWallets } from "@/hooks/features/wallets/use-wallets";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -32,12 +33,13 @@ function tabIcon(name: keyof typeof ICONS) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const { wallets, isReady } = useWallets();
 
   if (!isReady) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
-        <ActivityIndicator color="#ffffff" />
+      <View className="flex-1 flex-col items-center justify-center bg-base">
+        <ActivityIndicator colorClassName="text-fg" />
       </View>
     );
   }
@@ -54,11 +56,11 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         animation: "shift",
-        tabBarActiveTintColor: "#a7d9b0",
-        tabBarInactiveTintColor: "#9fb0a4",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.fgMuted,
         tabBarStyle: {
-          backgroundColor: "#35473a",
-          borderTopColor: "rgba(255,255,255,0.08)",
+          backgroundColor: colors.surface,
+          borderTopColor: colors.line,
           borderTopWidth: 1,
           height: 72,
           paddingBottom: 10,

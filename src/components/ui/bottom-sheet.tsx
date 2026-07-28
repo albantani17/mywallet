@@ -103,14 +103,14 @@ export function BottomSheet({ isOpen, onClose, children }: BottomSheetProps) {
     >
       <View className="flex-1 flex-col justify-end">
         <Animated.View
-          className="absolute inset-0 bg-black/60"
+          className="absolute inset-0 bg-scrim"
           style={backdropStyle}
         >
           <Pressable className="flex-1" onPress={onClose} />
         </Animated.View>
 
         <Animated.View
-          className="flex-col rounded-t-3xl bg-brand-sheet px-6 pt-3"
+          className="flex-col rounded-t-3xl bg-surface px-6 pt-3"
           style={[
             {
               paddingBottom: insets.bottom + 24,
@@ -120,7 +120,7 @@ export function BottomSheet({ isOpen, onClose, children }: BottomSheetProps) {
             sheetStyle,
           ]}
         >
-          <View className="mb-4 h-1 w-10 self-center rounded-full bg-black/10" />
+          <View className="mb-4 h-1 w-10 self-center rounded-full bg-line" />
 
           {/* flexGrow 0 lets the ScrollView size to its content and only start
               scrolling once maxHeight is hit — otherwise it would collapse. */}

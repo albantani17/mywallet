@@ -5,7 +5,7 @@ import { db, schema } from "@/db";
 import { userService } from "@/services/user-service";
 
 /**
- * Source of truth for the active account. Wraps useLiveQuery plus locale
+ * Source of truth for the active account. Wraps useLiveQuery plus preference
  * syncing so components only read { user, isReady, error }.
  */
 export function useCurrentUser() {
@@ -16,7 +16,7 @@ export function useCurrentUser() {
   const user = data?.[0];
 
   useEffect(() => {
-    userService.applyUserLocale(user);
+    userService.applyUserPreferences(user);
   }, [user]);
 
   return {

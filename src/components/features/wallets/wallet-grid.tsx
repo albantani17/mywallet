@@ -77,7 +77,7 @@ export function WalletGrid() {
   if (!isReady) {
     return (
       <View className="flex-1 flex-col items-center justify-center">
-        <ActivityIndicator color="#ffffff" />
+        <ActivityIndicator colorClassName="text-fg" />
       </View>
     );
   }

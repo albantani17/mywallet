@@ -3,6 +3,7 @@ import { useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { Dimensions, Modal, Pressable, Text, View } from "react-native";
 
 import { cn } from "@/utils/cn";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export type DropdownMenuItem = {
   key: string;
@@ -39,6 +40,7 @@ export function DropdownMenu({
   trigger,
   accessibilityLabel,
 }: DropdownMenuProps) {
+  const colors = useThemeColors();
   const triggerRef = useRef<View>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -71,10 +73,10 @@ export function DropdownMenu({
         statusBarTranslucent
         onRequestClose={close}
       >
-        <Pressable className="flex-1 bg-black/20" onPress={close}>
+        <Pressable className="flex-1 bg-scrim" onPress={close}>
           {anchor ? (
             <View
-              className="absolute flex-col rounded-2xl bg-white py-1.5"
+              className="absolute flex-col rounded-2xl bg-elevated py-1.5"
               style={[
                 menuPosition(anchor, items.length),
                 {
@@ -96,19 +98,19 @@ export function DropdownMenu({
                     close();
                     item.onPress();
                   }}
-                  className="flex-row items-center gap-3 px-4 py-3 active:bg-black/5"
+                  className="flex-row items-center gap-3 px-4 py-3 active:bg-elevated"
                 >
                   {item.icon ? (
                     <Ionicons
                       name={item.icon}
                       size={18}
-                      color={item.destructive ? "#dc2626" : "#1f3d2b"}
+                      color={item.destructive ? colors.danger : colors.fg}
                     />
                   ) : null}
                   <Text
                     className={cn(
                       "text-sm font-semibold",
-                      item.destructive ? "text-red-600" : "text-brand-logo-fg",
+                      item.destructive ? "text-danger" : "text-fg",
                     )}
                   >
                     {item.label}

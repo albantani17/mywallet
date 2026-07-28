@@ -18,10 +18,10 @@ export default function Onboarding() {
   const isGoogleAvailable = authService.isGoogleSignInAvailable();
 
   return (
-    <View className="flex-1 flex-col bg-brand-canvas">
+    <View className="flex-1 flex-col bg-base">
       {/* Soft decorative circles behind the content. */}
-      <View className="absolute -right-16 -top-10 size-64 rounded-full bg-brand-canvas-tint opacity-60" />
-      <View className="absolute -bottom-24 -left-24 size-72 rounded-full bg-brand-canvas-tint opacity-40" />
+      <View className="absolute -right-16 -top-10 size-64 rounded-full bg-surface opacity-60" />
+      <View className="absolute -bottom-24 -left-24 size-72 rounded-full bg-surface opacity-40" />
 
       <View
         className="flex-1 flex-col px-6"
@@ -34,10 +34,10 @@ export default function Onboarding() {
         <View className="flex-1 flex-col justify-center pb-64">
           <WelcomeAnimation />
 
-          <Text className="mt-6 text-[32px] font-extrabold leading-[38px] text-white">
+          <Text className="mt-6 text-[32px] font-extrabold leading-[38px] text-fg">
             {t("onboarding.title")}
           </Text>
-          <Text className="mt-4 text-base leading-6 text-brand-muted">
+          <Text className="mt-4 text-base leading-6 text-fg-muted">
             {t("onboarding.subtitle")}
           </Text>
         </View>
@@ -46,10 +46,10 @@ export default function Onboarding() {
       {/* Static panel rather than a bottom sheet: an always-open sheet renders
           blank on Android under reanimated 4. */}
       <View
-        className="absolute inset-x-0 bottom-0 flex-col gap-3 rounded-t-[28px] bg-brand-sheet px-6 pt-6"
+        className="absolute inset-x-0 bottom-0 flex-col gap-3 rounded-t-[28px] bg-surface px-6 pt-6"
         style={{ paddingBottom: insets.bottom + 24 }}
       >
-        <View className="mb-2 h-1 w-10 self-center rounded-full bg-black/10" />
+        <View className="mb-2 h-1 w-10 self-center rounded-full bg-line" />
 
         <Button
           variant="secondary"
@@ -58,7 +58,7 @@ export default function Onboarding() {
           onPress={authService.signInWithGoogle}
         />
         {!isGoogleAvailable ? (
-          <Text className="-mt-1 text-center text-xs text-brand-sheet-muted">
+          <Text className="-mt-1 text-center text-xs text-fg-muted">
             {t("onboarding.comingSoon")}
           </Text>
         ) : null}
@@ -68,7 +68,7 @@ export default function Onboarding() {
           onPress={() => setIsNameOpen(true)}
         />
 
-        <Text className="pt-1 text-center text-xs text-brand-sheet-muted">
+        <Text className="pt-1 text-center text-xs text-fg-muted">
           {t("onboarding.guestNote")}
         </Text>
       </View>

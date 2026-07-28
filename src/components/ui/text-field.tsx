@@ -17,21 +17,21 @@ export function TextField({
   return (
     <View className="flex-col gap-1.5">
       {label ? (
-        <Text className="text-sm font-medium text-brand-logo-fg">{label}</Text>
+        <Text className="text-sm font-medium text-fg">{label}</Text>
       ) : null}
 
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColor="#8a978c"
+        placeholderTextColorClassName="text-fg-muted"
         className={cn(
-          "h-12 rounded-xl border bg-white px-4 text-base text-brand-logo-fg",
-          error ? "border-red-500" : "border-black/10",
+          "h-12 rounded-xl border bg-elevated px-4 text-base text-fg",
+          error ? "border-danger" : "border-line",
           className,
         )}
         {...inputProps}
       />
 
-      {error ? <Text className="text-xs text-red-500">{error}</Text> : null}
+      {error ? <Text className="text-xs text-danger">{error}</Text> : null}
     </View>
   );
 }

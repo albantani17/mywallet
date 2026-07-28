@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "../client";
-import type { Locale } from "../schema/users";
+import type { Locale, Theme } from "../schema/users";
 import { users } from "../schema/users";
 import type { User, UserUpdate } from "../validators/user.validator";
 
@@ -30,13 +30,18 @@ export const userRepository = {
    * Creates the guest account during onboarding. The existence of this row is
    * what marks onboarding as complete. Throws if an account already exists.
    */
-  async createGuest(data: { name: string; locale: Locale }): Promise<User> {
+  async createGuest(data: {
+    name: string;
+    locale: Locale;
+    theme: Theme;
+  }): Promise<User> {
     const [row] = await db
       .insert(users)
       .values({
         name: data.name.trim(),
         authProvider: "guest",
         locale: data.locale,
+        theme: data.theme,
       })
       .returning();
     return row;

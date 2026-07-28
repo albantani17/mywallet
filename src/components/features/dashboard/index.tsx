@@ -17,7 +17,7 @@ export function Dashboard() {
     return (
       <Screen>
         <View className="flex-1 flex-col items-center justify-center">
-          <ActivityIndicator color="#ffffff" />
+          <ActivityIndicator colorClassName="text-fg" />
         </View>
       </Screen>
     );
@@ -30,10 +30,10 @@ export function Dashboard() {
           {/* No "see all" link here — the carousel's last slide is the way in
               once there are more wallets than it can show. */}
           <View className="flex-col px-6">
-            <Text className="text-xs text-brand-muted">
+            <Text className="text-xs text-fg-muted">
               {t("dashboard.greeting", { name: user?.name ?? "" })}
             </Text>
-            <Text className="mt-1 text-lg font-bold text-white">
+            <Text className="mt-1 text-lg font-bold text-fg">
               {t("dashboard.yourWallets")}
             </Text>
           </View>

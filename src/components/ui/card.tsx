@@ -11,7 +11,7 @@ type CardProps = {
 /** Cream panel on the brand canvas. */
 export function Card({ children, className }: CardProps) {
   return (
-    <View className={cn("flex-col rounded-3xl bg-brand-sheet p-5", className)}>
+    <View className={cn("flex-col rounded-3xl bg-surface p-5", className)}>
       {children}
     </View>
   );
@@ -20,7 +20,7 @@ export function Card({ children, className }: CardProps) {
 /** Translucent panel for use directly on the canvas. */
 export function SubtleCard({ children, className }: CardProps) {
   return (
-    <View className={cn("flex-col rounded-3xl bg-white/10 p-5", className)}>
+    <View className={cn("flex-col rounded-3xl bg-surface p-5", className)}>
       {children}
     </View>
   );

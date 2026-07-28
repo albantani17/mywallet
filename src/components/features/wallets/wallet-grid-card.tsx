@@ -31,7 +31,7 @@ export function WalletGridCard({
   const accent = category.color;
 
   return (
-    <View className="flex-1 flex-col rounded-2xl bg-brand-sheet p-3.5">
+    <View className="flex-1 flex-col rounded-2xl bg-surface p-3.5">
       <View className="flex-row items-start justify-between">
         <View
           className="size-11 flex-col items-center justify-center rounded-2xl"
@@ -53,14 +53,14 @@ export function WalletGridCard({
 
       {/* Amount above the type label: the balance is what gets scanned for. */}
       <Text
-        className="mt-3 text-sm font-bold text-brand-logo-fg"
+        className="mt-3 text-sm font-bold text-fg"
         numberOfLines={1}
       >
         {wallet.name}
       </Text>
 
       <Text
-        className="mt-1 text-base font-extrabold text-brand-logo-fg"
+        className="mt-1 text-base font-extrabold text-fg"
         numberOfLines={1}
         adjustsFontSizeToFit
       >

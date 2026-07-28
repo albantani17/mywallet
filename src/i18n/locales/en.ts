@@ -126,6 +126,12 @@ export const en: Translation = {
   more: {
     title: "More",
     language: "Language",
+    theme: "Theme",
+    themes: {
+      light: "Light",
+      dark: "Dark",
+      system: "Follow system",
+    },
     account: "Account",
     guestAccount: "Guest account",
   },

@@ -123,6 +123,12 @@ export type Translation = {
   more: {
     title: string;
     language: string;
+    theme: string;
+    themes: {
+      light: string;
+      dark: string;
+      system: string;
+    };
     account: string;
     guestAccount: string;
   };
@@ -257,6 +263,12 @@ export const id: Translation = {
   more: {
     title: "Lainnya",
     language: "Bahasa",
+    theme: "Tema",
+    themes: {
+      light: "Terang",
+      dark: "Gelap",
+      system: "Ikuti sistem",
+    },
     account: "Akun",
     guestAccount: "Akun tamu",
   },
