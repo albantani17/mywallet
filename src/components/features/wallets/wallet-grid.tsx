@@ -8,6 +8,7 @@ import { useWalletActions } from "@/hooks/features/wallets/use-wallet-actions";
 import { useWalletFilters } from "@/hooks/features/wallets/use-wallet-filters";
 
 import { WalletBalanceCard } from "./wallet-balance-card";
+import { WalletCategorySheet } from "./wallet-category-sheet";
 import { WalletCreateSheet } from "./wallet-create-sheet";
 import { WalletCreateTile } from "./wallet-create-tile";
 import { WalletDeleteSheet } from "./wallet-delete-sheet";
@@ -71,6 +72,7 @@ export function WalletGrid() {
   const { activeWallet, isEditOpen, isDeleteOpen, edit, remove, close } =
     useWalletActions();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   if (!isReady) {
     return (
@@ -100,7 +102,11 @@ export function WalletGrid() {
         ListHeaderComponent={
           <View className="flex-col gap-3">
             <WalletSearch value={query} onChange={setQuery} />
-            <WalletTypeTabs value={filter} onChange={setFilter} />
+            <WalletTypeTabs
+              value={filter}
+              onChange={setFilter}
+              onAddCategory={() => setIsCategoryOpen(true)}
+            />
             <WalletBalanceCard total={total} />
           </View>
         }
@@ -140,6 +146,11 @@ export function WalletGrid() {
       <WalletCreateSheet
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
+      />
+
+      <WalletCategorySheet
+        isOpen={isCategoryOpen}
+        onClose={() => setIsCategoryOpen(false)}
       />
 
       {/* One sheet at grid level rather than one per card — and keyed by wallet

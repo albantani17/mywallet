@@ -1,41 +1,92 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
 
-import { WALLET_TYPES, type WalletType } from "@/db";
-import type { Translation } from "@/i18n/locales/id";
+import { BUILT_IN_WALLET_TYPES } from "@/db";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
-export const WALLET_TYPE_ICONS: Record<WalletType, IoniconName> = {
-  cash: "cash-outline",
-  bank: "business-outline",
-  ewallet: "phone-portrait-outline",
-  investment: "trending-up-outline",
-};
-
-/**
- * Accent per type, as a hex string rather than a Tailwind class: it feeds
- * `<Ionicons color>` directly, and the tint circle uses it via an inline
- * backgroundColor. Arbitrary-value classes (`bg-[#2f7d57]/15`) are the
- * construct that silently failed in the old type picker, so avoid them here.
- */
-export const WALLET_TYPE_COLORS: Record<WalletType, string> = {
-  cash: "#2f7d57",
-  bank: "#2563eb",
-  ewallet: "#7c3aed",
-  investment: "#d97706",
-};
-
-/** ~15% alpha suffix for the logo circle behind the icon. */
+/** ~15% alpha suffix for the logo circle behind an icon. */
 export const TINT_ALPHA = "26";
 
-/** Keys into `wallets.types.*`, kept in the schema's own order. */
-export const WALLET_TYPE_OPTIONS: {
-  value: WalletType;
+/** Shown for a slug with no matching row — a deleted category, say. */
+export const FALLBACK_ICON: IoniconName = "wallet-outline";
+export const FALLBACK_COLOR = "#8a978c";
+
+/**
+ * Seeds for the four built-in categories.
+ *
+ * These are inserted into `wallet_categories` on launch rather than read from
+ * here at render time — the table is the source of truth once seeded. Their
+ * `name` is only a fallback, since built-ins take their label from
+ * `wallets.types.<slug>` and stay translated.
+ */
+export const BUILT_IN_CATEGORY_SEEDS: {
+  slug: string;
+  name: string;
   icon: IoniconName;
-  labelKey: keyof Translation["wallets"]["types"];
-}[] = WALLET_TYPES.map((value) => ({
-  value,
-  icon: WALLET_TYPE_ICONS[value],
-  labelKey: value,
-}));
+  color: string;
+  sortOrder: number;
+}[] = [
+  { slug: "cash", name: "Cash", icon: "cash-outline", color: "#2f7d57", sortOrder: 0 },
+  { slug: "bank", name: "Bank", icon: "business-outline", color: "#2563eb", sortOrder: 1 },
+  {
+    slug: "ewallet",
+    name: "E-Wallet",
+    icon: "phone-portrait-outline",
+    color: "#7c3aed",
+    sortOrder: 2,
+  },
+  {
+    slug: "investment",
+    name: "Investment",
+    icon: "trending-up-outline",
+    color: "#d97706",
+    sortOrder: 3,
+  },
+];
+
+const BUILT_IN_SLUGS = new Set<string>(BUILT_IN_WALLET_TYPES);
+
+export function isBuiltInSlug(slug: string): boolean {
+  return BUILT_IN_SLUGS.has(slug);
+}
+
+/**
+ * The DB stores the glyph as free text; Ionicons types it as a union. Cast at
+ * this single boundary — an unknown name renders nothing rather than throwing,
+ * and the icon picker only ever writes names from ICON_CHOICES.
+ */
+export function toIconName(icon: string | null | undefined): IoniconName {
+  return (icon ?? FALLBACK_ICON) as IoniconName;
+}
+
+/** Offered when creating a category. */
+export const ICON_CHOICES: IoniconName[] = [
+  "wallet-outline",
+  "cash-outline",
+  "card-outline",
+  "business-outline",
+  "phone-portrait-outline",
+  "trending-up-outline",
+  "logo-bitcoin",
+  "gift-outline",
+  "home-outline",
+  "car-outline",
+  "airplane-outline",
+  "school-outline",
+  "heart-outline",
+  "briefcase-outline",
+  "shield-checkmark-outline",
+  "star-outline",
+];
+
+export const COLOR_CHOICES = [
+  "#2f7d57",
+  "#2563eb",
+  "#7c3aed",
+  "#d97706",
+  "#dc2626",
+  "#0891b2",
+  "#db2777",
+  "#65a30d",
+];

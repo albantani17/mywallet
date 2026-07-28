@@ -57,6 +57,18 @@ export type Translation = {
       ewallet: string;
       investment: string;
     };
+    categories: {
+      add: string;
+      sheetTitle: string;
+      nameLabel: string;
+      namePlaceholder: string;
+      iconLabel: string;
+      colorLabel: string;
+      save: string;
+      nameRequired: string;
+      nameTooLong: string;
+      failed: string;
+    };
     actions: {
       menuLabel: string;
       edit: string;
@@ -173,6 +185,18 @@ export const id: Translation = {
       bank: "Bank",
       ewallet: "E-Wallet",
       investment: "Investasi",
+    },
+    categories: {
+      add: "Tambah kategori",
+      sheetTitle: "Kategori baru",
+      nameLabel: "Nama kategori",
+      namePlaceholder: "Contoh: Crypto",
+      iconLabel: "Ikon",
+      colorLabel: "Warna",
+      save: "Simpan kategori",
+      nameRequired: "Nama kategori wajib diisi",
+      nameTooLong: "Nama kategori terlalu panjang",
+      failed: "Gagal membuat kategori. Coba lagi.",
     },
     actions: {
       menuLabel: "Aksi dompet",

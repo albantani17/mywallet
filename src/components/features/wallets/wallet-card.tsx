@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import type { WalletWithBalance } from "@/db";
+import { useWalletCategories } from "@/hooks/features/wallets/use-wallet-categories";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/format-currency";
 
-import { WALLET_TYPE_ICONS } from "./wallet-type";
+import { TINT_ALPHA } from "./wallet-type";
 
 type WalletCardProps = {
   wallet: WalletWithBalance;
@@ -19,23 +20,26 @@ export function WalletCard({ wallet, className }: WalletCardProps) {
   // The locale must come from tracked state, not currentLocale(), or the
   // formatted balance freezes on a language switch.
   const { locale } = useActiveLocale();
+  const { resolve } = useWalletCategories();
+
+  // Falls back to a generic glyph if the wallet points at a missing category.
+  const category = resolve(wallet.type);
 
   return (
     <View className={cn("flex-col rounded-3xl bg-brand-sheet p-5", className)}>
       <View className="flex-row items-center gap-3">
-        <View className="size-10 flex-col items-center justify-center rounded-full bg-brand-primary/15">
-          <Ionicons
-            name={WALLET_TYPE_ICONS[wallet.type]}
-            size={18}
-            color="#2f7d57"
-          />
+        <View
+          className="size-10 flex-col items-center justify-center rounded-full"
+          style={{ backgroundColor: category.color + TINT_ALPHA }}
+        >
+          <Ionicons name={category.icon} size={18} color={category.color} />
         </View>
         <View className="flex-1 flex-col">
           <Text className="text-base font-bold text-brand-logo-fg" numberOfLines={1}>
             {wallet.name}
           </Text>
           <Text className="text-xs text-brand-sheet-muted">
-            {t(`wallets.types.${wallet.type}`)}
+            {category.label}
           </Text>
         </View>
       </View>

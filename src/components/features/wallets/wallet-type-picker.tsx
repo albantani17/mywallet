@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
 import type { WalletType } from "@/db";
+import { useWalletCategories } from "@/hooks/features/wallets/use-wallet-categories";
 import { cn } from "@/utils/cn";
 
-import { WALLET_TYPE_OPTIONS } from "./wallet-type";
+import { toIconName } from "./wallet-type";
 
 type WalletTypePickerProps = {
   value: WalletType;
@@ -13,45 +13,42 @@ type WalletTypePickerProps = {
 };
 
 /**
- * Wallet type as a row of small badges.
+ * Wallet category as a row of small badges, driven by the categories table so
+ * user-created ones show up here too.
  *
  * Each badge sizes to its own content — no `flex-1` and no percentage
- * min-width. The previous grid gave every option `flex-1` plus
- * `min-w-[47%]`, and when the arbitrary percentage did not resolve the four
- * options collapsed onto a single row with their labels clipped.
+ * min-width, which is what made an earlier grid version collapse its options
+ * onto one clipped row.
  */
 export function WalletTypePicker({ value, onChange }: WalletTypePickerProps) {
-  const { t } = useTranslation();
+  const { categories, labelOf } = useWalletCategories();
 
   return (
     <View className="flex-row flex-wrap items-start gap-2">
-      {WALLET_TYPE_OPTIONS.map((option) => {
-        const isActive = option.value === value;
+      {categories.map((category) => {
+        const isActive = category.slug === value;
         return (
           <Pressable
-            key={option.value}
+            key={category.slug}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            onPress={() => onChange(option.value)}
+            onPress={() => onChange(category.slug)}
             className={cn(
               "flex-row items-center gap-1.5 self-start rounded-full border px-3 py-1.5",
-              isActive
-                ? "border-brand-primary bg-brand-primary/10"
-                : "border-black/10 bg-white",
+              isActive ? "bg-black/5" : "border-black/10 bg-white",
             )}
+            style={isActive ? { borderColor: category.color } : undefined}
           >
             <Ionicons
-              name={option.icon}
+              name={toIconName(category.icon)}
               size={14}
-              color={isActive ? "#2f7d57" : "#8a978c"}
+              color={isActive ? category.color : "#8a978c"}
             />
             <Text
-              className={cn(
-                "text-xs font-semibold",
-                isActive ? "text-brand-primary" : "text-brand-sheet-muted",
-              )}
+              className="text-xs font-semibold"
+              style={{ color: isActive ? category.color : "#8a978c" }}
             >
-              {t(`wallets.types.${option.labelKey}`)}
+              {labelOf(category)}
             </Text>
           </Pressable>
         );
