@@ -1,10 +1,13 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-type";
 import { db } from "@/db";
+import { walletCategoryService } from "@/services/wallet-category-service";
 import migrations from "../../drizzle/migrations";
 
 import "../global.css";
@@ -15,6 +18,27 @@ export default function RootLayout() {
   // Applies any pending migration before the app renders; the database is not
   // usable until `success` flips.
   const { success, error } = useMigrations(db, migrations);
+  const [isSeeded, setIsSeeded] = useState(false);
+
+  // Inserts the built-in wallet categories once the tables exist. Idempotent,
+  // so it is also what backfills a device that upgraded from before the
+  // wallet_categories table. A failure must not block the app — the category
+  // resolver falls back to a generic icon — so this settles either way.
+  useEffect(() => {
+    if (!success) return;
+
+    let isCurrent = true;
+    walletCategoryService
+      .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
+      .catch((e) => console.error("Failed to seed wallet categories", e))
+      .finally(() => {
+        if (isCurrent) setIsSeeded(true);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [success]);
 
   if (error) {
     return (
@@ -26,7 +50,8 @@ export default function RootLayout() {
     );
   }
 
-  if (!success) {
+  // Also waits on the seed, so the category tabs never render empty.
+  if (!success || !isSeeded) {
     return (
       <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
         <ActivityIndicator color="#ffffff" />

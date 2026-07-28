@@ -1,13 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import type { WalletWithBalance } from "@/db";
+import { useWalletCategories } from "@/hooks/features/wallets/use-wallet-categories";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { formatCurrency } from "@/utils/format-currency";
 
 import { WalletCardMenu } from "./wallet-card-menu";
-import { TINT_ALPHA, WALLET_TYPE_COLORS, WALLET_TYPE_ICONS } from "./wallet-type";
+import { TINT_ALPHA } from "./wallet-type";
 
 type WalletGridCardProps = {
   wallet: WalletWithBalance;
@@ -21,12 +21,14 @@ export function WalletGridCard({
   onEdit,
   onDelete,
 }: WalletGridCardProps) {
-  const { t } = useTranslation();
   // Tracked locale, not currentLocale() — otherwise the amount freezes when
   // the language changes.
   const { locale } = useActiveLocale();
+  const { resolve } = useWalletCategories();
 
-  const accent = WALLET_TYPE_COLORS[wallet.type];
+  // Falls back to a generic glyph if the wallet points at a missing category.
+  const category = resolve(wallet.type);
+  const accent = category.color;
 
   return (
     <View className="flex-1 flex-col rounded-2xl bg-brand-sheet p-3.5">
@@ -36,7 +38,7 @@ export function WalletGridCard({
           style={{ backgroundColor: accent + TINT_ALPHA }}
         >
           <Ionicons
-            name={WALLET_TYPE_ICONS[wallet.type]}
+            name={category.icon}
             size={22}
             color={accent}
           />
@@ -66,7 +68,7 @@ export function WalletGridCard({
       </Text>
 
       <Text className="mt-0.5 text-[11px]" style={{ color: accent }}>
-        {t(`wallets.types.${wallet.type}`)}
+        {category.label}
       </Text>
     </View>
   );

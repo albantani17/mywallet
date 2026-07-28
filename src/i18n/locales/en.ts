@@ -56,6 +56,18 @@ export const en: Translation = {
       ewallet: "E-Wallet",
       investment: "Investment",
     },
+    categories: {
+      add: "Add category",
+      sheetTitle: "New category",
+      nameLabel: "Category name",
+      namePlaceholder: "e.g. Crypto",
+      iconLabel: "Icon",
+      colorLabel: "Colour",
+      save: "Save category",
+      nameRequired: "Category name is required",
+      nameTooLong: "Category name is too long",
+      failed: "Could not create the category. Please try again.",
+    },
     actions: {
       menuLabel: "Wallet actions",
       edit: "Edit",

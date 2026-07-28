@@ -5,4 +5,5 @@ export * from "./debts";
 export * from "./relations";
 export * from "./transactions";
 export * from "./users";
+export * from "./wallet-categories";
 export * from "./wallets";
