@@ -26,7 +26,7 @@ export function Screen({
   const Container = scrollable ? ScrollView : View;
 
   return (
-    <View className="flex-1 flex-col bg-base">
+    <View className="flex-1 flex-col bg-canvas">
       <Container
         className={cn("flex-1", className)}
         contentContainerClassName={scrollable ? "pb-8" : undefined}

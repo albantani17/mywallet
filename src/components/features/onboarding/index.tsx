@@ -18,7 +18,7 @@ export default function Onboarding() {
   const isGoogleAvailable = authService.isGoogleSignInAvailable();
 
   return (
-    <View className="flex-1 flex-col bg-base">
+    <View className="flex-1 flex-col bg-canvas">
       {/* Soft decorative circles behind the content. */}
       <View className="absolute -right-16 -top-10 size-64 rounded-full bg-surface opacity-60" />
       <View className="absolute -bottom-24 -left-24 size-72 rounded-full bg-surface opacity-40" />

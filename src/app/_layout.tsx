@@ -53,7 +53,7 @@ export default function RootLayout() {
 
   if (error) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-base p-6">
+      <View className="flex-1 flex-col items-center justify-center bg-canvas p-6">
         <Text className="text-center text-danger">
           {t("common.migrationFailed")}: {error.message}
         </Text>
@@ -64,7 +64,7 @@ export default function RootLayout() {
   // Also waits on the seed, so the category tabs never render empty.
   if (!success || !isSeeded) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-base">
+      <View className="flex-1 flex-col items-center justify-center bg-canvas">
         <ActivityIndicator colorClassName="accent-fg" />
       </View>
     );
@@ -79,7 +79,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           animation: "slide_from_right",
-          contentStyle: { backgroundColor: colors.base },
+          contentStyle: { backgroundColor: colors.canvas },
         }}
       />
     </>

@@ -4,10 +4,17 @@
 /*
  * Surfaces, text and brand hues, per theme.
  *
- * Three surface layers, meaning the same thing in both themes: `base` is the
+ * Three surface layers, meaning the same thing in both themes: `canvas` is the
  * screen behind everything, `surface` is a panel on it (card, sheet, tab bar),
  * and `elevated` is a control inside a panel (input, chip, pressed state).
  * Because the tokens swap, components never need a `dark:` class.
+ *
+ * A colour token must never be named after a Tailwind size step — `base`, `xs`,
+ * `sm`, `lg`, `xl` and friends. Tailwind resolves `text-*` against the colour
+ * namespace first, so `--color-base` turned `text-base` from a font size into a
+ * colour: every `text-base` in the app silently lost its 16px, and in
+ * TextField it also overrode `text-fg` and painted the input white on white.
+ * That is why this layer is `canvas` and not `base`.
  *
  * `primary`, `primary-fg` and `danger` hold the same value in both blocks —
  * green is the accent, never a background, so it needs no dark counterpart.
@@ -20,7 +27,7 @@
  * otherwise.
  */
 @variant light {
-  --color-base: #ffffff;
+  --color-canvas: #ffffff;
   --color-surface: #f5f5f5;
   --color-elevated: #ebebeb;
   --color-fg: #171717;
@@ -34,7 +41,7 @@
 }
 
 @variant dark {
-  --color-base: #0f0f0f;
+  --color-canvas: #0f0f0f;
   --color-surface: #1c1c1c;
   --color-elevated: #282828;
   --color-fg: #fafafa;

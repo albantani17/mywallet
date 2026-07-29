@@ -16,7 +16,7 @@ import { useCSSVariable } from "uniwind";
  */
 export function useThemeColors() {
   const [
-    base,
+    canvas,
     surface,
     elevated,
     fg,
@@ -26,7 +26,7 @@ export function useThemeColors() {
     primaryFg,
     danger,
   ] = useCSSVariable([
-    "--color-base",
+    "--color-canvas",
     "--color-surface",
     "--color-elevated",
     "--color-fg",
@@ -38,7 +38,7 @@ export function useThemeColors() {
   ]);
 
   return {
-    base: base as string,
+    canvas: canvas as string,
     surface: surface as string,
     elevated: elevated as string,
     fg: fg as string,

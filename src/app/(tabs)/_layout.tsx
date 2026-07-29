@@ -38,7 +38,7 @@ export default function TabsLayout() {
 
   if (!isReady) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-base">
+      <View className="flex-1 flex-col items-center justify-center bg-canvas">
         <ActivityIndicator colorClassName="accent-fg" />
       </View>
     );

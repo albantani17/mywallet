@@ -38,7 +38,7 @@ export function NewTransactionScreen() {
   }, []);
 
   return (
-    <View className="flex-1 flex-col bg-base">
+    <View className="flex-1 flex-col bg-canvas">
       <View className="absolute -right-16 -top-10 size-64 rounded-full bg-surface opacity-60" />
 
       <View
@@ -62,8 +62,13 @@ export function NewTransactionScreen() {
 
       <KeyboardAvoidingView
         className="flex-1"
-        // Android relies on the default adjustResize behaviour.
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        // Android needs an explicit behavior too. Leaving it undefined makes
+        // KeyboardAvoidingView render a plain View that does nothing, and the
+        // adjustResize it used to lean on stopped working once SDK 57 made
+        // edge-to-edge mandatory: the window is no longer resized for the IME.
+        // Shrinking the container is what lets the ScrollView reach the last
+        // field — the note — instead of leaving it under the keyboard.
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
           className="flex-1"
