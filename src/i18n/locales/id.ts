@@ -113,6 +113,9 @@ export type Translation = {
   transactions: {
     title: string;
     add: string;
+    today: string;
+    yesterday: string;
+    uncategorized: string;
     emptyTitle: string;
     emptyDescription: string;
     /** Labels for the built-in categories; see transaction-category.ts. */
@@ -329,6 +332,9 @@ export const id: Translation = {
   transactions: {
     title: "Transaksi",
     add: "Tambah Transaksi",
+    today: "Hari ini",
+    yesterday: "Kemarin",
+    uncategorized: "Tanpa kategori",
     emptyTitle: "Belum ada transaksi",
     emptyDescription: "Transaksi yang kamu catat akan tampil di sini.",
     categories: {

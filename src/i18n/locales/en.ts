@@ -115,6 +115,9 @@ export const en: Translation = {
   transactions: {
     title: "Transactions",
     add: "Add Transaction",
+    today: "Today",
+    yesterday: "Yesterday",
+    uncategorized: "Uncategorised",
     emptyTitle: "No transactions yet",
     emptyDescription: "Whatever you record will show up here.",
     categories: {

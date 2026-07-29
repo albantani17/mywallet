@@ -78,8 +78,16 @@ export const transactionQueries = {
         dueDate: transactions.dueDate,
         createdAt: transactions.createdAt,
         walletName: wallets.name,
+        walletCurrency: wallets.currency,
         toWalletName: targetWallets.name,
         categoryName: categories.name,
+        // A list row draws the category the same way the pickers do — tinted
+        // glyph plus a label that stays translated for the built-ins, which is
+        // what the slug is for.
+        categorySlug: categories.slug,
+        categoryIcon: categories.icon,
+        categoryColor: categories.color,
+        categoryIsBuiltIn: categories.isBuiltIn,
       })
       .from(transactions)
       .leftJoin(wallets, eq(transactions.walletId, wallets.id))

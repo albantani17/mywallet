@@ -28,3 +28,22 @@ export function isSameDay(a: Date, b: Date): boolean {
     a.getDate() === b.getDate()
   );
 }
+
+/**
+ * Relative day checks for section headers.
+ *
+ * `now` is a parameter so a list computes it once and every header agrees, and
+ * so the caller decides when "today" is re-evaluated. The words themselves stay
+ * in the components: translations belong to `t()`, not to a util.
+ */
+export function isToday(date: Date, now: Date = new Date()): boolean {
+  return isSameDay(date, now);
+}
+
+export function isYesterday(date: Date, now: Date = new Date()): boolean {
+  const yesterday = new Date(now);
+  // setDate handles month and year rollover, which naive arithmetic on the
+  // timestamp does not across a DST change.
+  yesterday.setDate(yesterday.getDate() - 1);
+  return isSameDay(date, yesterday);
+}
