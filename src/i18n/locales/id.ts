@@ -157,7 +157,9 @@ export type Translation = {
     noOtherWallets: string;
     feeLabel: string;
     feePlaceholder: string;
+    typeLabel: string;
     categoryLabel: string;
+    categoryPlaceholder: string;
     dateLabel: string;
     dateConfirm: string;
     dueDateLabel: string;
@@ -176,6 +178,10 @@ export type Translation = {
     categorySheet: {
       add: string;
       title: string;
+      selectTitle: string;
+      searchPlaceholder: string;
+      noResults: string;
+      back: string;
       nameLabel: string;
       namePlaceholder: string;
       iconLabel: string;
@@ -366,7 +372,9 @@ export const id: Translation = {
     noOtherWallets: "Butuh minimal dua dompet untuk transfer.",
     feeLabel: "Biaya admin (opsional)",
     feePlaceholder: "0",
+    typeLabel: "Jenis transaksi",
     categoryLabel: "Kategori",
+    categoryPlaceholder: "Pilih kategori",
     dateLabel: "Tanggal transaksi",
     dateConfirm: "Pilih",
     dueDateLabel: "Jatuh tempo (opsional)",
@@ -385,6 +393,10 @@ export const id: Translation = {
     categorySheet: {
       add: "Kategori baru",
       title: "Kategori baru",
+      selectTitle: "Pilih kategori",
+      searchPlaceholder: "Cari kategori",
+      noResults: "Kategori tidak ditemukan.",
+      back: "Kembali ke daftar",
       nameLabel: "Nama kategori",
       namePlaceholder: "Misalnya: Kopi",
       iconLabel: "Ikon",

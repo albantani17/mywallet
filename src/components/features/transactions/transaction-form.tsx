@@ -8,9 +8,9 @@ import {
   useCreateTransaction,
 } from "@/hooks/features/transactions/use-create-transaction";
 
-import { CategoryPicker } from "./category-picker";
+import { CategorySelect } from "./category-select";
 import { DateField } from "./date-field";
-import { TransactionTypeTabs } from "./transaction-type-tabs";
+import { TransactionTypeSelect } from "./transaction-type-select";
 import { WalletSelect } from "./wallet-select";
 
 type TransactionFormProps = {
@@ -21,10 +21,6 @@ type TransactionFormProps = {
  * The form body, split from the screen that frames it — the same split as
  * create-wallet-form / create-wallet-screen, so the header and the fields can
  * change independently.
- *
- * The type chips live here rather than in the screen because everything below
- * them is driven by the same state; they run full-bleed with their own inset
- * so the row can scroll past the card's margin.
  *
  * Which fields appear is driven entirely by `type`; the hook clears whatever a
  * type cannot carry when it changes.
@@ -39,9 +35,9 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
 
   return (
     <View className="flex-col gap-5">
-      <TransactionTypeTabs value={form.type} onChange={form.changeType} />
-
       <View className="mx-6 flex-col gap-5 rounded-3xl bg-surface p-6">
+        <TransactionTypeSelect value={form.type} onChange={form.changeType} />
+
         <TextField
           label={t("newTransaction.amountLabel")}
           value={form.amount}
@@ -87,7 +83,7 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
         ) : null}
 
         {categoryType ? (
-          <CategoryPicker
+          <CategorySelect
             type={categoryType}
             value={form.categoryId}
             onChange={form.changeCategoryId}

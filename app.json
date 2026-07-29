@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "expo-fresh",
-    "slug": "expo-fresh",
+    "name": "mywallet",
+    "slug": "mywallet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expofresh",
+    "scheme": "mywallet",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"

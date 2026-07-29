@@ -1,15 +1,14 @@
-import { Ionicons } from "@expo/vector-icons";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
+import { SelectField } from "@/components/ui/select-field";
 import { useActiveLocale } from "@/hooks/use-active-locale";
-import { formatDate } from "@/utils/format-date";
-import { cn } from "@/utils/cn";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { formatDate } from "@/utils/format-date";
 
 type DateFieldProps = {
   label: string;
@@ -53,25 +52,19 @@ export function DateField({
   };
 
   return (
-    <View className="flex-col gap-1.5">
-      <Text className="text-sm font-medium text-fg">{label}</Text>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={label}
+    <>
+      <SelectField
+        label={label}
+        placeholder={placeholder}
         onPress={open}
-        className="h-12 flex-row items-center justify-between rounded-xl border border-line bg-elevated px-4 active:opacity-70"
+        icon="calendar-outline"
       >
-        <Text
-          className={cn(
-            "text-base",
-            value ? "text-fg" : "text-fg-muted",
-          )}
-        >
-          {value ? formatDate(value, locale) : (placeholder ?? "")}
-        </Text>
-        <Ionicons name="calendar-outline" size={18} color={colors.fgMuted} />
-      </Pressable>
+        {value ? (
+          <Text className="flex-1 text-base text-fg">
+            {formatDate(value, locale)}
+          </Text>
+        ) : undefined}
+      </SelectField>
 
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <View className="flex-col gap-4">
@@ -91,6 +84,6 @@ export function DateField({
           <Button label={t("newTransaction.dateConfirm")} onPress={confirm} />
         </View>
       </BottomSheet>
-    </View>
+    </>
   );
 }

@@ -35,7 +35,7 @@ export function TextField({
 
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColorClassName="text-fg-muted"
+        placeholderTextColorClassName="accent-fg-muted"
         className={cn(
           "rounded-xl border bg-elevated text-fg",
           SIZE_VARIANTS[size],

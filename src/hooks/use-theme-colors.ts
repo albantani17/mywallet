@@ -10,7 +10,9 @@ import { useCSSVariable } from "uniwind";
  *
  * Prefer Uniwind's own escape hatches where they exist (`colorClassName` on
  * ActivityIndicator, `placeholderTextColorClassName` on TextInput) — they stay
- * declarative and re-render on their own.
+ * declarative and re-render on their own. Those props resolve `accentColor`, so
+ * they need an `accent-*` class: a `text-*` one resolves to nothing and the
+ * prop silently falls back to the platform default.
  */
 export function useThemeColors() {
   const [

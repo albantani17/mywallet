@@ -34,6 +34,16 @@ const LABEL_VARIANTS: Record<ButtonVariant, string> = {
   destructive: "text-primary-fg",
 };
 
+// The spinner takes the same colour as the label, but Uniwind's *ColorClassName
+// props read `accentColor` off the resolved style — a `text-*` class resolves to
+// nothing there and the prop silently falls back to RN's default blue.
+const SPINNER_VARIANTS: Record<ButtonVariant, string> = {
+  primary: "accent-primary-fg",
+  secondary: "accent-fg",
+  ghost: "accent-fg-muted",
+  destructive: "accent-primary-fg",
+};
+
 export function Button({
   label,
   onPress,
@@ -61,7 +71,7 @@ export function Button({
       )}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" colorClassName={LABEL_VARIANTS[variant]} />
+        <ActivityIndicator size="small" colorClassName={SPINNER_VARIANTS[variant]} />
       ) : (
         <>
           {startContent ? <View>{startContent}</View> : null}
