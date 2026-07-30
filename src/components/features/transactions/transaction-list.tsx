@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, SectionList, Text, View } from "react-native";
 
 import { EmptyState } from "@/components/ui/empty-state";
+import { AppRefreshControl } from "@/components/ui/refresh-control";
 import type { TransactionWithRelations } from "@/db";
 import { useTransactions } from "@/hooks/features/transactions/use-transactions";
 import { useActiveLocale } from "@/hooks/use-active-locale";
@@ -58,7 +59,8 @@ function dayLabel(
 export function TransactionList() {
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
-  const { transactions, isReady, hasMore, loadMore } = useTransactions();
+  const { transactions, isReady, hasMore, loadMore, isRefreshing, refresh } =
+    useTransactions();
 
   if (!isReady) {
     return (
@@ -92,6 +94,9 @@ export function TransactionList() {
         flexGrow: 1,
       }}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
+      }
       onEndReached={hasMore ? loadMore : undefined}
       onEndReachedThreshold={0.4}
       ListFooterComponent={

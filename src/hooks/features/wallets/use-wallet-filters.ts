@@ -15,7 +15,7 @@ export type WalletFilter = WalletType | "all";
  * would complicate the tabs gate that shares the same hook.
  */
 export function useWalletFilters() {
-  const { wallets, isReady, error } = useWallets();
+  const { wallets, isReady, error, isRefreshing, refresh } = useWallets();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<WalletFilter>("all");
 
@@ -41,6 +41,8 @@ export function useWalletFilters() {
     setFilter,
     isReady,
     error,
+    isRefreshing,
+    refresh,
     // Unfiltered count, so the screen can tell "no wallets yet" apart from
     // "nothing matched this search".
     hasWallets: wallets.length > 0,

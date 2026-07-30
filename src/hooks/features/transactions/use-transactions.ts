@@ -1,7 +1,8 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { transactionQueries } from "@/db";
+import { useRefresh } from "@/hooks/use-refresh";
 
 /** How many rows to add each time the list reaches its end. */
 const PAGE_SIZE = 50;
@@ -16,10 +17,22 @@ const PAGE_SIZE = 50;
  */
 export function useTransactions() {
   const [limit, setLimit] = useState(PAGE_SIZE);
+  const { refreshKey, isRefreshing, refresh: bumpQuery, settle } = useRefresh();
+
   const { data, error, updatedAt } = useLiveQuery(
     transactionQueries.list({ limit }),
-    [limit],
+    [limit, refreshKey],
   );
+
+  useEffect(settle, [settle, updatedAt, error]);
+
+  // A pull also collapses the window back to one page. Re-running a list the
+  // user had scrolled to 400 rows would re-read all of them for no reason, and
+  // "refresh" reasonably means "back to the top, newest first".
+  const refresh = useCallback(() => {
+    setLimit(PAGE_SIZE);
+    bumpQuery();
+  }, [bumpQuery]);
 
   const transactions = data ?? [];
   // A full page means there is probably more behind it. Worst case the next
@@ -38,6 +51,8 @@ export function useTransactions() {
     transactions,
     hasMore,
     loadMore,
+    isRefreshing,
+    refresh,
     // Undefined until the first query resolves — callers use it to avoid
     // treating "not loaded yet" as "no transactions".
     isReady: updatedAt !== undefined,

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { AppRefreshControl } from "@/components/ui/refresh-control";
 import { Screen } from "@/components/ui/screen";
 import { useDashboardSummary } from "@/hooks/features/dashboard/use-dashboard-summary";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -11,7 +12,8 @@ import { WalletCarousel } from "./wallet-carousel";
 export function Dashboard() {
   const { t } = useTranslation();
   const { user } = useCurrentUser();
-  const { topWallets, hasMore, isReady } = useDashboardSummary();
+  const { topWallets, hasMore, isReady, isRefreshing, refresh } =
+    useDashboardSummary();
 
   if (!isReady) {
     return (
@@ -24,7 +26,12 @@ export function Dashboard() {
   }
 
   return (
-    <Screen scrollable>
+    <Screen
+      scrollable
+      refreshControl={
+        <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
+      }
+    >
       <View className="flex-col gap-8">
         <View className="flex-col gap-4">
           {/* No "see all" link here — the carousel's last slide is the way in
