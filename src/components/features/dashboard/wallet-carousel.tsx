@@ -16,7 +16,7 @@ import type { WalletWithBalance } from "@/db";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.78);
+const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.875);
 const GAP = 12;
 const SNAP_INTERVAL = CARD_WIDTH + GAP;
 // Centres the first and last card instead of leaving them flush to the edge.
@@ -103,7 +103,14 @@ function Slide({ index, scrollX, children }: SlideProps) {
 
     return {
       transform: [
-        { scale: interpolate(scrollX.value, inputRange, [0.93, 1, 0.93], "clamp") },
+        {
+          scale: interpolate(
+            scrollX.value,
+            inputRange,
+            [0.93, 1, 0.93],
+            "clamp",
+          ),
+        },
       ],
       opacity: interpolate(scrollX.value, inputRange, [0.6, 1, 0.6], "clamp"),
     };
@@ -147,5 +154,7 @@ function Dot({ index, scrollX }: Omit<SlideProps, "children">) {
     };
   });
 
-  return <Animated.View className="h-1.5 rounded-full bg-elevated" style={style} />;
+  return (
+    <Animated.View className="h-1.5 rounded-full bg-elevated" style={style} />
+  );
 }
