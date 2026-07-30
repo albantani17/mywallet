@@ -61,7 +61,10 @@ export function WalletTypeTabs({
               <Text
                 className={cn(
                   "text-xs font-semibold",
-                  isActive ? "text-fg" : "text-fg-muted",
+                  // The active chip sits on a solid green fill, so its label
+                  // follows the fill rather than the theme — text-fg is nearly
+                  // black in light mode and disappears into the green.
+                  isActive ? "text-primary-fg" : "text-fg-muted",
                 )}
               >
                 {tab.label}
