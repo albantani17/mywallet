@@ -4,6 +4,7 @@ import { ActivityIndicator, SectionList, Text, View } from "react-native";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AppRefreshControl } from "@/components/ui/refresh-control";
 import type { TransactionWithRelations } from "@/db";
+import type { TransactionFilterValues } from "@/hooks/features/transactions/use-transaction-filters";
 import { useTransactions } from "@/hooks/features/transactions/use-transactions";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import type { AppLocale } from "@/i18n";
@@ -55,12 +56,21 @@ function dayLabel(
   return formatDate(date, locale);
 }
 
+type TransactionListProps = {
+  filters?: TransactionFilterValues;
+  /** Switches the empty state between "none yet" and "nothing matched". */
+  isFiltered?: boolean;
+};
+
 /** Transactions grouped under a header per day, newest first. */
-export function TransactionList() {
+export function TransactionList({
+  filters,
+  isFiltered = false,
+}: TransactionListProps) {
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
   const { transactions, isReady, hasMore, loadMore, isRefreshing, refresh } =
-    useTransactions();
+    useTransactions(filters);
 
   if (!isReady) {
     return (
@@ -94,6 +104,8 @@ export function TransactionList() {
         flexGrow: 1,
       }}
       showsVerticalScrollIndicator={false}
+      // The search box stays focused while the list is tapped or scrolled.
+      keyboardShouldPersistTaps="handled"
       refreshControl={
         <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
       }
@@ -107,11 +119,20 @@ export function TransactionList() {
         ) : null
       }
       ListEmptyComponent={
-        <EmptyState
-          icon="receipt-outline"
-          title={t("transactions.emptyTitle")}
-          description={t("transactions.emptyDescription")}
-        />
+        isFiltered ? (
+          // Transactions exist, but the search or the filters excluded them.
+          <EmptyState
+            icon="search-outline"
+            title={t("transactions.filters.noResultsTitle")}
+            description={t("transactions.filters.noResultsDescription")}
+          />
+        ) : (
+          <EmptyState
+            icon="receipt-outline"
+            title={t("transactions.emptyTitle")}
+            description={t("transactions.emptyDescription")}
+          />
+        )
       }
     />
   );

@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lte, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, like, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 
 import { db } from "../client";
@@ -19,6 +19,8 @@ export type TransactionListOptions = {
   debtId?: number;
   from?: Date;
   to?: Date;
+  /** Free text matched against the note and the wallet name. */
+  search?: string;
   limit?: number;
   offset?: number;
 };
@@ -52,6 +54,20 @@ function buildFilters(options: TransactionListOptions): SQL | undefined {
   }
   if (options.from) filters.push(gte(transactions.occurredAt, options.from));
   if (options.to) filters.push(lte(transactions.occurredAt, options.to));
+
+  const needle = options.search?.trim();
+  if (needle) {
+    // Note and wallet name only. The category is deliberately left out: a
+    // built-in category renders a translated label (BUILT_IN_LABEL_KEYS in
+    // transaction-category.ts) rather than categories.name, so matching the
+    // stored name would miss exactly the words the user can see.
+    //
+    // LIKE is case-insensitive for ASCII in SQLite, so no lower() is needed.
+    const pattern = `%${needle}%`;
+    filters.push(
+      or(like(transactions.note, pattern), like(wallets.name, pattern))!,
+    );
+  }
 
   return filters.length ? and(...filters) : undefined;
 }

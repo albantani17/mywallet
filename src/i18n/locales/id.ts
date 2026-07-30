@@ -118,6 +118,24 @@ export type Translation = {
     uncategorized: string;
     emptyTitle: string;
     emptyDescription: string;
+    /** Nested so `today` here cannot collide with the day header above. */
+    filters: {
+      searchPlaceholder: string;
+      wallet: string;
+      allWallets: string;
+      time: string;
+      allTime: string;
+      today: string;
+      last7: string;
+      last30: string;
+      thisMonth: string;
+      custom: string;
+      from: string;
+      to: string;
+      anyDate: string;
+      noResultsTitle: string;
+      noResultsDescription: string;
+    };
     /** Labels for the built-in categories; see transaction-category.ts. */
     categories: {
       foodDrink: string;
@@ -407,6 +425,23 @@ export const id: Translation = {
     uncategorized: "Tanpa kategori",
     emptyTitle: "Belum ada transaksi",
     emptyDescription: "Transaksi yang kamu catat akan tampil di sini.",
+    filters: {
+      searchPlaceholder: "Cari catatan atau dompet",
+      wallet: "Dompet",
+      allWallets: "Semua dompet",
+      time: "Waktu",
+      allTime: "Semua waktu",
+      today: "Hari ini",
+      last7: "7 hari terakhir",
+      last30: "30 hari terakhir",
+      thisMonth: "Bulan ini",
+      custom: "Pilih tanggal",
+      from: "Dari",
+      to: "Sampai",
+      anyDate: "Kapan saja",
+      noResultsTitle: "Transaksi tidak ditemukan",
+      noResultsDescription: "Coba kata kunci lain atau ubah filternya.",
+    },
     categories: {
       foodDrink: "Makanan & Minuman",
       transport: "Transportasi",

@@ -20,6 +20,25 @@ export function formatDate(date: Date, locale: AppLocale): string {
   }).format(date);
 }
 
+/**
+ * Day boundaries in local time, on a copy — the caller's date is never moved.
+ *
+ * A date range filter has to span whole days: picking "to = 30 Jul" and
+ * comparing against the bare Date would cut the range at midnight and drop
+ * everything recorded during that day.
+ */
+export function startOfDay(date: Date): Date {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+export function endOfDay(date: Date): Date {
+  const copy = new Date(date);
+  copy.setHours(23, 59, 59, 999);
+  return copy;
+}
+
 /** True when both dates fall on the same calendar day in local time. */
 export function isSameDay(a: Date, b: Date): boolean {
   return (
