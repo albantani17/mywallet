@@ -56,6 +56,10 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         animation: "shift",
+        // The "shift" animation slides the scenes sideways, so the container
+        // behind them is briefly visible and has to be themed too — the same
+        // surface that made the stack transitions flash white in dark mode.
+        sceneStyle: { backgroundColor: colors.canvas },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.fgMuted,
         tabBarStyle: {
