@@ -195,6 +195,47 @@ export type Translation = {
       failed: string;
     };
   };
+  debts: {
+    title: string;
+    back: string;
+    tabs: {
+      receivable: string;
+      payable: string;
+    };
+    add: string;
+    outstanding: string;
+    dueOn: string;
+    overdue: string;
+    settled: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    payableComingSoonTitle: string;
+    payableComingSoonDescription: string;
+  };
+  newReceivable: {
+    title: string;
+    close: string;
+    amountLabel: string;
+    amountPlaceholder: string;
+    counterpartyLabel: string;
+    counterpartyPlaceholder: string;
+    walletLabel: string;
+    walletHint: string;
+    noWallets: string;
+    issuedAtLabel: string;
+    dueDateLabel: string;
+    dueDatePlaceholder: string;
+    noteLabel: string;
+    notePlaceholder: string;
+    submit: string;
+    amountRequired: string;
+    amountTooLarge: string;
+    counterpartyRequired: string;
+    counterpartyTooLong: string;
+    walletRequired: string;
+    noteTooLong: string;
+    failed: string;
+  };
   budget: {
     title: string;
     comingSoonTitle: string;
@@ -412,6 +453,49 @@ export const id: Translation = {
       nameTooLong: "Nama kategori terlalu panjang",
       failed: "Kategori gagal dibuat. Coba lagi.",
     },
+  },
+  debts: {
+    title: "Hutang & Piutang",
+    back: "Kembali",
+    tabs: {
+      receivable: "Piutang",
+      payable: "Hutang",
+    },
+    add: "Catat piutang",
+    outstanding: "Sisa",
+    dueOn: "Jatuh tempo {{date}}",
+    overdue: "Lewat jatuh tempo",
+    settled: "Lunas",
+    emptyTitle: "Belum ada piutang",
+    emptyDescription:
+      "Catat uang yang kamu pinjamkan supaya tidak lupa siapa yang belum bayar.",
+    payableComingSoonTitle: "Hutang segera hadir",
+    payableComingSoonDescription:
+      "Sebentar lagi kamu bisa mencatat uang yang kamu pinjam beserta jatuh temponya.",
+  },
+  newReceivable: {
+    title: "Catat piutang",
+    close: "Tutup",
+    amountLabel: "Nominal",
+    amountPlaceholder: "0",
+    counterpartyLabel: "Nama peminjam",
+    counterpartyPlaceholder: "Misalnya: Budi",
+    walletLabel: "Uang diambil dari",
+    walletHint: "Saldo dompet ini akan berkurang sebesar nominal di atas.",
+    noWallets: "Belum ada dompet",
+    issuedAtLabel: "Tanggal",
+    dueDateLabel: "Jatuh tempo (opsional)",
+    dueDatePlaceholder: "Tidak ada",
+    noteLabel: "Catatan",
+    notePlaceholder: "Untuk apa uang ini dipinjam?",
+    submit: "Simpan piutang",
+    amountRequired: "Nominal wajib diisi",
+    amountTooLarge: "Nominal terlalu besar",
+    counterpartyRequired: "Nama peminjam wajib diisi",
+    counterpartyTooLong: "Nama peminjam terlalu panjang",
+    walletRequired: "Pilih dompet dulu",
+    noteTooLong: "Catatan terlalu panjang",
+    failed: "Piutang gagal disimpan. Coba lagi.",
   },
   budget: {
     title: "Budget",

@@ -19,6 +19,12 @@ export const debts = sqliteTable(
     counterparty: text("counterparty").notNull(),
     principal: integer("principal").notNull(),
     walletId: integer("wallet_id").references(() => wallets.id),
+    // The date the money actually changed hands, which the user picks;
+    // created_at stays a pure audit stamp. The literal default exists only so
+    // SQLite accepted ADD COLUMN — every insert passes a real date.
+    issuedAt: integer("issued_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`0`),
     dueDate: integer("due_date", { mode: "timestamp" }),
     status: text("status", { enum: DEBT_STATUSES }).notNull().default("ongoing"),
     note: text("note"),
