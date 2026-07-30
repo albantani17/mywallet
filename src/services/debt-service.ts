@@ -3,6 +3,21 @@ import type { Debt } from "@/db";
 
 import { transactionService } from "./transaction-service";
 
+export type RecordPaymentInput = {
+  debtId: number;
+  amount: number;
+  walletId: number;
+  occurredAt: Date;
+  note?: string | null;
+};
+
+export type RecordPaymentResult = {
+  /** What is still owed after this payment; never negative. */
+  outstanding: number;
+  /** True when this payment closed the debt. */
+  isSettled: boolean;
+};
+
 export type CreateReceivableInput = {
   principal: number;
   counterparty: string;
@@ -63,5 +78,49 @@ export const debtService = {
     }
 
     return debt;
+  },
+
+  /**
+   * Records a repayment against a debt.
+   *
+   * The money moves the opposite way from the debt itself: a receivable being
+   * repaid is income into whichever wallet the user names, which is why the
+   * wallet is asked for again rather than reusing the one the loan came from —
+   * people are repaid in cash for a transfer they made, and vice versa.
+   *
+   * Unlike the disbursement, this transaction IS tagged with `debtId`: that tag
+   * is the definition of a repayment, and summing the tagged rows is how the
+   * outstanding balance is derived.
+   *
+   * The amount is deliberately not capped at what is owed. A partial payment is
+   * normal, and someone rounding up — paying 100.000 on a 95.000 debt — should
+   * not be blocked. Either way, once nothing is left the debt settles itself:
+   * the remainder is re-read from the database after the insert rather than
+   * computed here, so it counts every payment ever made, not just this one.
+   */
+  async recordPayment(input: RecordPaymentInput): Promise<RecordPaymentResult> {
+    const debt = await debtRepository.getById(input.debtId);
+    if (!debt) throw new Error(`Debt ${input.debtId} not found`);
+
+    await transactionService.createTransaction({
+      // Being repaid a receivable brings money in; repaying a debt of your own
+      // sends it out.
+      type: debt.direction === "receivable" ? "income" : "expense",
+      amount: input.amount,
+      walletId: input.walletId,
+      categoryId: null,
+      occurredAt: input.occurredAt,
+      note: input.note,
+      debtId: debt.id,
+    });
+
+    const remaining = await debtRepository.getOutstanding(debt.id);
+    const isSettled = remaining <= 0;
+
+    if (isSettled && debt.status !== "settled") {
+      await debtRepository.settle(debt.id);
+    }
+
+    return { outstanding: Math.max(remaining, 0), isSettled };
   },
 };

@@ -11,6 +11,11 @@ export type CreateTransactionInput = {
   note?: string | null;
   occurredAt: Date;
   dueDate?: Date | null;
+  /**
+   * Marks this transaction as a repayment of a debt. Only repayments carry it —
+   * the outstanding balance is derived by summing every transaction that does.
+   */
+  debtId?: number | null;
 };
 
 export const transactionService = {
@@ -42,6 +47,7 @@ export const transactionService = {
       note: input.note?.trim() ? input.note.trim() : null,
       occurredAt: input.occurredAt,
       dueDate: input.type === "bill" ? (input.dueDate ?? null) : null,
+      debtId: input.debtId ?? null,
     });
 
     return transactionRepository.create(payload);

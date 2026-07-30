@@ -204,6 +204,12 @@ export type Translation = {
     };
     add: string;
     outstanding: string;
+    total: string;
+    paidOf: string;
+    recordPayment: string;
+    statusOngoing: string;
+    statusPartial: string;
+    statusSettled: string;
     dueOn: string;
     overdue: string;
     settled: string;
@@ -232,6 +238,29 @@ export type Translation = {
     amountTooLarge: string;
     counterpartyRequired: string;
     counterpartyTooLong: string;
+    walletRequired: string;
+    noteTooLong: string;
+    failed: string;
+  };
+  payReceivable: {
+    title: string;
+    close: string;
+    notFound: string;
+    outstandingLabel: string;
+    ofPrincipal: string;
+    amountLabel: string;
+    amountPlaceholder: string;
+    willSettle: string;
+    willRemain: string;
+    walletLabel: string;
+    walletHint: string;
+    noWallets: string;
+    dateLabel: string;
+    noteLabel: string;
+    notePlaceholder: string;
+    submit: string;
+    amountRequired: string;
+    amountTooLarge: string;
     walletRequired: string;
     noteTooLong: string;
     failed: string;
@@ -463,6 +492,12 @@ export const id: Translation = {
     },
     add: "Catat piutang",
     outstanding: "Sisa",
+    total: "Total",
+    paidOf: "Dibayar {{paid}} dari {{principal}}",
+    recordPayment: "Catat pembayaran",
+    statusOngoing: "Belum dibayar",
+    statusPartial: "Dibayar sebagian",
+    statusSettled: "Lunas",
     dueOn: "Jatuh tempo {{date}}",
     overdue: "Lewat jatuh tempo",
     settled: "Lunas",
@@ -496,6 +531,29 @@ export const id: Translation = {
     walletRequired: "Pilih dompet dulu",
     noteTooLong: "Catatan terlalu panjang",
     failed: "Piutang gagal disimpan. Coba lagi.",
+  },
+  payReceivable: {
+    title: "Catat pembayaran",
+    close: "Tutup",
+    notFound: "Piutang ini sudah tidak ada.",
+    outstandingLabel: "Sisa piutang {{name}}",
+    ofPrincipal: "Sudah dibayar {{paid}} dari {{principal}}",
+    amountLabel: "Nominal dibayar",
+    amountPlaceholder: "0",
+    willSettle: "Piutang ini akan langsung ditandai lunas.",
+    willRemain: "Kurang dari sisa {{amount}}, piutang tetap berjalan.",
+    walletLabel: "Uang masuk ke",
+    walletHint: "Saldo dompet ini akan bertambah sebesar nominal di atas.",
+    noWallets: "Belum ada dompet",
+    dateLabel: "Tanggal bayar",
+    noteLabel: "Catatan",
+    notePlaceholder: "Misalnya: dibayar tunai",
+    submit: "Simpan pembayaran",
+    amountRequired: "Nominal wajib diisi",
+    amountTooLarge: "Nominal terlalu besar",
+    walletRequired: "Pilih dompet dulu",
+    noteTooLong: "Catatan terlalu panjang",
+    failed: "Pembayaran gagal disimpan. Coba lagi.",
   },
   budget: {
     title: "Budget",

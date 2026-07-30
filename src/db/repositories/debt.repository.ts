@@ -48,22 +48,29 @@ const debtWithOutstandingColumns = {
 export const debtQueries = {
   /**
    * Debts annotated with how much has been repaid and how much is left.
+   * Omitting `status` returns both open and settled ones.
    *
-   * Newest first: ordering by dueDate would float every debt without one to
+   * Still-owed debts sort above settled ones, then newest first within each
+   * group. Ordering by dueDate would instead float every debt without one to
    * the top, since NULL sorts first in SQLite.
    */
   listWithOutstanding: ({
-    status = "ongoing",
+    status,
     direction,
   }: { status?: DebtStatus; direction?: DebtDirection } = {}) => {
-    const filters: SQL[] = [eq(debts.status, status)];
+    const filters: SQL[] = [];
+    if (status) filters.push(eq(debts.status, status));
     if (direction) filters.push(eq(debts.direction, direction));
 
     return db
       .select(debtWithOutstandingColumns)
       .from(debts)
-      .where(and(...filters))
-      .orderBy(desc(debts.issuedAt), desc(debts.id));
+      .where(filters.length ? and(...filters) : undefined)
+      .orderBy(
+        sql`CASE WHEN "debts"."status" = 'settled' THEN 1 ELSE 0 END`,
+        desc(debts.issuedAt),
+        desc(debts.id),
+      );
   },
 };
 
