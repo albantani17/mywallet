@@ -4,18 +4,21 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
 import { Screen } from "@/components/ui/screen";
 import type { DebtDirection } from "@/db";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 import { DebtDirectionTabs } from "./debt-direction-tabs";
-import { ReceivableList } from "./receivable-list";
+import { DebtList } from "./debt-list";
+import { DebtTotalsHeader } from "./debt-totals-header";
 
 /**
- * Debts in both directions. Only "receivable" is built; the payable tab is a
- * placeholder so the split is visible from the start rather than appearing
- * later and moving everything around.
+ * Debts in both directions: what the user owes, and what is owed to them.
+ *
+ * The tab is the only filter — settled debts stay in the list rather than
+ * disappearing the moment they are paid off, since "did I ever pay that back?"
+ * is exactly the question this screen answers.
  *
  * Back falls through to /home because this route can be the first entry (a
  * deep link, say), where there is no history to pop.
@@ -32,6 +35,12 @@ export function DebtsScreen() {
     }
     router.replace("/home");
   }, []);
+
+  // The tab decides what the wizard starts as, so the user does not have to
+  // say twice which side of the ledger they are on.
+  const openNewDebt = useCallback(() => {
+    router.push({ pathname: "/debts/new", params: { direction } });
+  }, [direction]);
 
   return (
     // No `scrollable`: the FlatList does its own scrolling.
@@ -56,15 +65,18 @@ export function DebtsScreen() {
         <DebtDirectionTabs value={direction} onChange={setDirection} />
       </View>
 
-      {direction === "receivable" ? (
-        <ReceivableList />
-      ) : (
-        <EmptyState
-          icon="time-outline"
-          title={t("debts.payableComingSoonTitle")}
-          description={t("debts.payableComingSoonDescription")}
+      <DebtTotalsHeader direction={direction} />
+
+      <DebtList direction={direction} />
+
+      <View className="flex-col px-6 pb-6">
+        <Button
+          label={t(
+            direction === "payable" ? "debts.addPayable" : "debts.addReceivable",
+          )}
+          onPress={openNewDebt}
         />
-      )}
+      </View>
     </Screen>
   );
 }

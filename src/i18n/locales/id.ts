@@ -224,7 +224,11 @@ export type Translation = {
       receivable: string;
       payable: string;
     };
-    add: string;
+    addReceivable: string;
+    addPayable: string;
+    totalOutstanding: string;
+    debtCount: string;
+    overdueCount: string;
     outstanding: string;
     total: string;
     paidOf: string;
@@ -232,59 +236,241 @@ export type Translation = {
     statusOngoing: string;
     statusPartial: string;
     statusSettled: string;
+    statusCancelled: string;
+    statusWrittenOff: string;
     dueOn: string;
     overdue: string;
+    pastDue: string;
     settled: string;
-    emptyTitle: string;
-    emptyDescription: string;
-    payableComingSoonTitle: string;
-    payableComingSoonDescription: string;
+    /** Per-installment chips, keyed by the tone `installmentTone` resolves to. */
+    installmentStatus: {
+      paid: string;
+      partial: string;
+      overdue: string;
+      late: string;
+      upcoming: string;
+      open: string;
+    };
+    actions: {
+      menuLabel: string;
+      edit: string;
+      cancel: string;
+      writeOff: string;
+      delete: string;
+      deletePayment: string;
+    };
+    emptyReceivableTitle: string;
+    emptyReceivableDescription: string;
+    emptyPayableTitle: string;
+    emptyPayableDescription: string;
+    /**
+     * Labels for the built-in presets, keyed by slug. Only the seeded rows are
+     * translated; a preset the user made keeps the name they typed.
+     */
+    presets: {
+      paylater: string;
+      "credit-card": string;
+      "bank-loan": string;
+      "asset-financing": string;
+      "personal-loan": string;
+      "personal-lending": string;
+    };
   };
-  newReceivable: {
+  newDebt: {
     title: string;
     close: string;
-    amountLabel: string;
-    amountPlaceholder: string;
+    submit: string;
+    failed: string;
+
+    directionLabel: string;
+    presetLabel: string;
+    presetPlaceholder: string;
+    presetSheetTitle: string;
+    presetNone: string;
     counterpartyLabel: string;
     counterpartyPlaceholder: string;
+    counterpartyKindPerson: string;
+    counterpartyKindInstitution: string;
+    counterpartyRecent: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    principalLabel: string;
+    principalPlaceholder: string;
+    originDateLabel: string;
     walletLabel: string;
     walletHint: string;
     noWallets: string;
-    issuedAtLabel: string;
-    dueDateLabel: string;
-    dueDatePlaceholder: string;
+    recordCashFlowLabel: string;
+    recordCashFlowHint: string;
     noteLabel: string;
     notePlaceholder: string;
-    submit: string;
-    amountRequired: string;
-    amountTooLarge: string;
+
+    planLabel: string;
+    installmentAmountLabel: string;
+    installmentAmountPlaceholder: string;
+    installmentAmountHint: string;
+    singleAmountLabel: string;
+    singleAmountHint: string;
+    customEnter: string;
+    customExit: string;
+    interestRateAdvancedHint: string;
+    previewRateEquivalent: string;
+    installmentAmountRequired: string;
+    installmentAmountTooSmall: string;
+    scheduleTypeOpen: string;
+    scheduleTypeSingle: string;
+    scheduleTypeRecurring: string;
+    scheduleTypeCustom: string;
+    scheduleTypeOpenHint: string;
+    dueDateLabel: string;
+    firstDueLabel: string;
+    intervalUnitLabel: string;
+    intervalDay: string;
+    intervalWeek: string;
+    intervalMonth: string;
+    intervalCountLabel: string;
+    periodCountLabel: string;
+    dueDayLabel: string;
+    dueDayPlaceholder: string;
+    dueDayHint: string;
+    advancedShow: string;
+    advancedHide: string;
+    interestRateLabel: string;
+    interestMethodLabel: string;
+    interestMethodNone: string;
+    interestMethodFlat: string;
+    interestMethodEffective: string;
+    interestMethodManual: string;
+    graceDaysLabel: string;
+    reminderDaysLabel: string;
+    roundingUnitLabel: string;
+
+    customRowsLabel: string;
+    customRowDate: string;
+    customRowAmount: string;
+    customAddRow: string;
+    customRemoveRow: string;
+    customTotal: string;
+    customDifference: string;
+
+    previewTitle: string;
+    previewTotal: string;
+    previewInterest: string;
+    previewMore: string;
+    previewNoDate: string;
+    previewEmpty: string;
+
+    principalRequired: string;
+    principalTooLarge: string;
     counterpartyRequired: string;
     counterpartyTooLong: string;
-    walletRequired: string;
+    titleRequired: string;
+    titleTooLong: string;
     noteTooLong: string;
-    failed: string;
+    anchorDateRequired: string;
+    intervalCountInvalid: string;
+    periodCountInvalid: string;
+    dueDayInvalid: string;
+    interestRateInvalid: string;
+    customRowsRequired: string;
+    customRowDateRequired: string;
+    customRowAmountRequired: string;
   };
-  payReceivable: {
+  debtDetail: {
+    title: string;
+    back: string;
+    notFound: string;
+    billed: string;
+    paid: string;
+    outstanding: string;
+    progress: string;
+    nextDue: string;
+    noDueDate: string;
+    overdueInstallments: string;
+    installmentsTitle: string;
+    installmentsEmpty: string;
+    paymentsTitle: string;
+    installmentOf: string;
+    installmentModified: string;
+    paymentUnallocated: string;
+    paymentMethod: {
+      transfer: string;
+      cash: string;
+      autodebit: string;
+      other: string;
+      unspecified: string;
+    };
+    recordPayment: string;
+    confirm: {
+      cancelTitle: string;
+      cancelMessage: string;
+      cancelConfirm: string;
+      writeOffTitle: string;
+      writeOffMessage: string;
+      writeOffConfirm: string;
+      deleteTitle: string;
+      deleteMessage: string;
+      deleteConfirm: string;
+      deleteBlocked: string;
+      deletePaymentTitle: string;
+      deletePaymentMessage: string;
+      deletePaymentConfirm: string;
+      cancelAction: string;
+      failed: string;
+    };
+    editInstallment: {
+      title: string;
+      dateLabel: string;
+      amountLabel: string;
+      noteLabel: string;
+      notePlaceholder: string;
+      save: string;
+      amountRequired: string;
+      belowPaid: string;
+      noteTooLong: string;
+      failed: string;
+    };
+  };
+  newPayment: {
     title: string;
     close: string;
     notFound: string;
-    outstandingLabel: string;
-    ofPrincipal: string;
+    outstandingPayable: string;
+    outstandingReceivable: string;
     amountLabel: string;
     amountPlaceholder: string;
-    willSettle: string;
-    willRemain: string;
-    walletLabel: string;
-    walletHint: string;
-    noWallets: string;
-    dateLabel: string;
-    noteLabel: string;
-    notePlaceholder: string;
-    submit: string;
     amountRequired: string;
     amountTooLarge: string;
-    walletRequired: string;
+    dateLabel: string;
+    walletLabelPayable: string;
+    walletLabelReceivable: string;
+    walletHint: string;
+    noWallets: string;
+    methodLabel: string;
+    methodUnspecified: string;
+    cashFlowLabel: string;
+    cashFlowHint: string;
+    noteLabel: string;
+    notePlaceholder: string;
     noteTooLong: string;
+    allocationTitle: string;
+    covers: string;
+    coversNone: string;
+    allocated: string;
+    unallocated: string;
+    manualToggle: string;
+    manualHint: string;
+    manualReset: string;
+    manualRemaining: string;
+    errorNonPositive: string;
+    errorExceedsPayment: string;
+    errorUnknownInstallment: string;
+    errorOverpaid: string;
+    errorDuplicate: string;
+    errorNoAllocation: string;
+    willSettle: string;
+    willRemain: string;
+    submit: string;
     failed: string;
   };
   budget: {
@@ -533,7 +719,11 @@ export const id: Translation = {
       receivable: "Piutang",
       payable: "Hutang",
     },
-    add: "Catat piutang",
+    addReceivable: "Catat piutang",
+    addPayable: "Catat hutang",
+    totalOutstanding: "Total sisa",
+    debtCount: "{{count}} catatan",
+    overdueCount: "{{count}} lewat tempo",
     outstanding: "Sisa",
     total: "Total",
     paidOf: "Dibayar {{paid}} dari {{principal}}",
@@ -541,61 +731,248 @@ export const id: Translation = {
     statusOngoing: "Belum dibayar",
     statusPartial: "Dibayar sebagian",
     statusSettled: "Lunas",
+    statusCancelled: "Dibatalkan",
+    statusWrittenOff: "Dihapus buku",
     dueOn: "Jatuh tempo {{date}}",
     overdue: "Lewat jatuh tempo",
+    pastDue: "Sudah lewat tanggalnya",
     settled: "Lunas",
-    emptyTitle: "Belum ada piutang",
-    emptyDescription:
+    installmentStatus: {
+      paid: "Lunas",
+      partial: "Sebagian",
+      overdue: "Telat",
+      late: "Lewat tanggal",
+      upcoming: "Akan datang",
+      open: "Tanpa tempo",
+    },
+    actions: {
+      menuLabel: "Aksi lain",
+      edit: "Ubah cicilan",
+      cancel: "Batalkan hutang",
+      writeOff: "Hapus buku",
+      delete: "Hapus hutang",
+      deletePayment: "Hapus pembayaran",
+    },
+    emptyReceivableTitle: "Belum ada piutang",
+    emptyReceivableDescription:
       "Catat uang yang kamu pinjamkan supaya tidak lupa siapa yang belum bayar.",
-    payableComingSoonTitle: "Hutang segera hadir",
-    payableComingSoonDescription:
-      "Sebentar lagi kamu bisa mencatat uang yang kamu pinjam beserta jatuh temponya.",
+    emptyPayableTitle: "Belum ada hutang",
+    emptyPayableDescription:
+      "Catat cicilan dan pinjamanmu supaya jatuh temponya tidak pernah terlewat.",
+    presets: {
+      paylater: "Paylater / cicilan",
+      "credit-card": "Kartu kredit",
+      "bank-loan": "Pinjaman bank (KTA)",
+      "asset-financing": "Kendaraan / properti",
+      "personal-loan": "Pinjam dari orang",
+      "personal-lending": "Pinjamkan ke orang",
+    },
   },
-  newReceivable: {
-    title: "Catat piutang",
+  newDebt: {
+    title: "Catat hutang",
     close: "Tutup",
-    amountLabel: "Nominal",
-    amountPlaceholder: "0",
-    counterpartyLabel: "Nama peminjam",
-    counterpartyPlaceholder: "Misalnya: Budi",
-    walletLabel: "Uang diambil dari",
-    walletHint: "Saldo dompet ini akan berkurang sebesar nominal di atas.",
+    submit: "Simpan",
+    failed: "Catatan gagal disimpan. Coba lagi.",
+
+    directionLabel: "Jenis catatan",
+    presetLabel: "Produk",
+    presetPlaceholder: "Pilih produk (opsional)",
+    presetSheetTitle: "Pilih produk",
+    presetNone: "Tanpa produk",
+    counterpartyLabel: "Pihak lawan",
+    counterpartyPlaceholder: "Misalnya: Budi atau Bank ABC",
+    counterpartyKindPerson: "Perorangan",
+    counterpartyKindInstitution: "Lembaga",
+    counterpartyRecent: "Pernah dipakai",
+    titleLabel: "Judul",
+    titlePlaceholder: "Misalnya: Cicilan laptop",
+    principalLabel: "Nominal pokok",
+    principalPlaceholder: "0",
+    originDateLabel: "Tanggal transaksi",
+    walletLabel: "Dompet (opsional)",
+    walletHint: "Dipakai kalau uangnya benar-benar masuk atau keluar dompet.",
     noWallets: "Belum ada dompet",
-    issuedAtLabel: "Tanggal",
-    dueDateLabel: "Jatuh tempo (opsional)",
-    dueDatePlaceholder: "Tidak ada",
+    recordCashFlowLabel: "Catat sekalian ke arus kas",
+    recordCashFlowHint:
+      "Saldo dompet ikut berubah sebesar nominal pokok. Matikan kalau uangnya sudah tercatat.",
     noteLabel: "Catatan",
-    notePlaceholder: "Untuk apa uang ini dipinjam?",
-    submit: "Simpan piutang",
-    amountRequired: "Nominal wajib diisi",
-    amountTooLarge: "Nominal terlalu besar",
-    counterpartyRequired: "Nama peminjam wajib diisi",
-    counterpartyTooLong: "Nama peminjam terlalu panjang",
-    walletRequired: "Pilih dompet dulu",
+    notePlaceholder: "Untuk apa hutang ini?",
+
+    planLabel: "Bayarnya bagaimana?",
+    installmentAmountLabel: "Cicilan per bulan",
+    installmentAmountPlaceholder: "0",
+    installmentAmountHint:
+      "Salin saja angka yang ditampilkan pemberi pinjaman. Bunganya kami hitung dari situ.",
+    singleAmountLabel: "Nominal yang dibayar (opsional)",
+    singleAmountHint: "Kosongkan kalau nominalnya sama dengan pokok.",
+    customEnter: "Isi jadwal dari pemberi pinjaman",
+    customExit: "Kembali ke jadwal biasa",
+    interestRateAdvancedHint:
+      "Isi hanya kalau utangnya memang dinyatakan dalam persen. Mengisi ini akan mengosongkan nominal cicilan di atas.",
+    previewRateEquivalent: "≈ {{rate}}%/periode",
+    installmentAmountRequired: "Nominal cicilan harus lebih dari nol",
+    installmentAmountTooSmall: "Total cicilan ini belum menutup pokoknya",
+
+    scheduleTypeOpen: "Tanpa jatuh tempo",
+    scheduleTypeSingle: "Sekali bayar",
+    scheduleTypeRecurring: "Cicilan",
+    scheduleTypeCustom: "Atur manual",
+    scheduleTypeOpenHint: "Dibayar kapan saja, tanpa tenggat. Tidak pernah ditandai telat.",
+    dueDateLabel: "Jatuh tempo",
+    firstDueLabel: "Cicilan pertama",
+    intervalUnitLabel: "Satuan periode",
+    intervalDay: "Hari",
+    intervalWeek: "Minggu",
+    intervalMonth: "Bulan",
+    intervalCountLabel: "Setiap berapa periode",
+    periodCountLabel: "Jumlah cicilan",
+    dueDayLabel: "Tanggal jatuh tempo tiap bulan",
+    dueDayPlaceholder: "Ikut tanggal cicilan pertama",
+    dueDayHint:
+      "Isi 31 dan tanggal 31 tetap dipakai: Februari menyesuaikan, Maret kembali ke 31.",
+    advancedShow: "Pengaturan lanjutan",
+    advancedHide: "Sembunyikan pengaturan lanjutan",
+    interestRateLabel: "Bunga per periode (%)",
+    interestMethodLabel: "Metode bunga",
+    interestMethodNone: "Tanpa bunga",
+    interestMethodFlat: "Flat (dari pokok awal)",
+    interestMethodEffective: "Efektif (dari sisa pokok)",
+    interestMethodManual: "Manual",
+    graceDaysLabel: "Toleransi telat (hari)",
+    reminderDaysLabel: "Ingatkan H- (hari)",
+    roundingUnitLabel: "Pembulatan cicilan",
+
+    customRowsLabel: "Daftar cicilan",
+    customRowDate: "Tanggal",
+    customRowAmount: "Nominal",
+    customAddRow: "Tambah baris",
+    customRemoveRow: "Hapus baris",
+    customTotal: "Total {{amount}}",
+    customDifference: "Selisih {{amount}} dari pokok",
+
+    previewTitle: "Rincian cicilan",
+    previewTotal: "Total tagihan",
+    previewInterest: "Total bunga",
+    previewMore: "+{{count}} cicilan lagi",
+    previewNoDate: "Tanpa tanggal",
+    previewEmpty: "Belum ada cicilan yang bisa ditampilkan.",
+
+    principalRequired: "Nominal pokok wajib diisi",
+    principalTooLarge: "Nominal terlalu besar",
+    counterpartyRequired: "Pihak lawan wajib diisi",
+    counterpartyTooLong: "Nama pihak lawan terlalu panjang",
+    titleRequired: "Judul wajib diisi",
+    titleTooLong: "Judul terlalu panjang",
     noteTooLong: "Catatan terlalu panjang",
-    failed: "Piutang gagal disimpan. Coba lagi.",
+    anchorDateRequired: "Tanggal wajib diisi",
+    intervalCountInvalid: "Isi antara 1 sampai 99",
+    periodCountInvalid: "Isi antara 1 sampai 600",
+    dueDayInvalid: "Isi antara 1 sampai 31",
+    interestRateInvalid: "Bunga tidak wajar",
+    customRowsRequired: "Tambahkan minimal satu cicilan",
+    customRowDateRequired: "Tanggal wajib diisi",
+    customRowAmountRequired: "Nominal wajib diisi",
   },
-  payReceivable: {
+  debtDetail: {
+    title: "Rincian",
+    back: "Kembali",
+    notFound: "Catatan ini sudah tidak ada.",
+    billed: "Total tagihan",
+    paid: "Sudah dibayar",
+    outstanding: "Sisa",
+    progress: "{{paid}} dari {{billed}}",
+    nextDue: "Jatuh tempo berikutnya {{date}}",
+    noDueDate: "Tanpa jatuh tempo",
+    overdueInstallments: "{{count}} cicilan lewat tempo",
+    installmentsTitle: "Cicilan",
+    installmentsEmpty: "Belum ada cicilan untuk catatan ini.",
+    paymentsTitle: "Riwayat pembayaran",
+    installmentOf: "Dibayar {{paid}} dari {{total}}",
+    installmentModified: "Diubah dari {{date}}",
+    paymentUnallocated: "{{amount}} belum dialokasikan",
+    paymentMethod: {
+      transfer: "Transfer",
+      cash: "Tunai",
+      autodebit: "Autodebit",
+      other: "Lainnya",
+      unspecified: "Tanpa metode",
+    },
+    recordPayment: "Catat pembayaran",
+    confirm: {
+      cancelTitle: "Batalkan catatan ini?",
+      cancelMessage:
+        "Statusnya jadi dibatalkan. Cicilan dan pembayarannya tetap tersimpan, dan kamu bisa mengaktifkannya lagi nanti.",
+      cancelConfirm: "Batalkan",
+      writeOffTitle: "Hapus buku catatan ini?",
+      writeOffMessage:
+        "Dipakai kalau uangnya dianggap tidak akan kembali. Riwayatnya tetap utuh, hanya tidak lagi dihitung sebagai sisa.",
+      writeOffConfirm: "Hapus buku",
+      deleteTitle: "Hapus {{title}}?",
+      deleteMessage:
+        "Catatan ini beserta jadwal dan cicilannya dihapus permanen. Belum ada pembayaran yang tercatat, jadi tidak ada riwayat yang hilang.",
+      deleteConfirm: "Hapus",
+      deleteBlocked:
+        "Sudah ada pembayaran di catatan ini. Batalkan saja supaya riwayatnya tetap tersimpan.",
+      deletePaymentTitle: "Hapus pembayaran ini?",
+      deletePaymentMessage:
+        "Alokasinya ikut terhapus dan transaksi arus kas yang menyertainya juga. Catatan yang tadinya lunas akan aktif kembali.",
+      deletePaymentConfirm: "Hapus pembayaran",
+      cancelAction: "Batal",
+      failed: "Gagal diproses. Coba lagi.",
+    },
+    editInstallment: {
+      title: "Ubah cicilan #{{sequence}}",
+      dateLabel: "Jatuh tempo",
+      amountLabel: "Total tagihan",
+      noteLabel: "Catatan",
+      notePlaceholder: "Misalnya: kena denda telat",
+      save: "Simpan perubahan",
+      amountRequired: "Nominal wajib diisi",
+      belowPaid: "Tidak boleh di bawah {{amount}} yang sudah dibayar",
+      noteTooLong: "Catatan terlalu panjang",
+      failed: "Perubahan gagal disimpan. Coba lagi.",
+    },
+  },
+  newPayment: {
     title: "Catat pembayaran",
     close: "Tutup",
-    notFound: "Piutang ini sudah tidak ada.",
-    outstandingLabel: "Sisa piutang {{name}}",
-    ofPrincipal: "Sudah dibayar {{paid}} dari {{principal}}",
+    notFound: "Catatan ini sudah tidak ada.",
+    outstandingPayable: "Sisa hutangmu",
+    outstandingReceivable: "Sisa piutang dari {{name}}",
     amountLabel: "Nominal dibayar",
     amountPlaceholder: "0",
-    willSettle: "Piutang ini akan langsung ditandai lunas.",
-    willRemain: "Kurang dari sisa {{amount}}, piutang tetap berjalan.",
-    walletLabel: "Uang masuk ke",
-    walletHint: "Saldo dompet ini akan bertambah sebesar nominal di atas.",
-    noWallets: "Belum ada dompet",
-    dateLabel: "Tanggal bayar",
-    noteLabel: "Catatan",
-    notePlaceholder: "Misalnya: dibayar tunai",
-    submit: "Simpan pembayaran",
     amountRequired: "Nominal wajib diisi",
     amountTooLarge: "Nominal terlalu besar",
-    walletRequired: "Pilih dompet dulu",
+    dateLabel: "Tanggal bayar",
+    walletLabelPayable: "Uang keluar dari (opsional)",
+    walletLabelReceivable: "Uang masuk ke (opsional)",
+    walletHint: "Kosongkan kalau uangnya tidak lewat dompet yang tercatat.",
+    noWallets: "Belum ada dompet",
+    methodLabel: "Metode",
+    methodUnspecified: "Tidak disebut",
+    cashFlowLabel: "Catat sekalian ke arus kas",
+    cashFlowHint: "Saldo dompet ikut berubah sebesar nominal di atas.",
+    noteLabel: "Catatan",
+    notePlaceholder: "Misalnya: dibayar tunai",
     noteTooLong: "Catatan terlalu panjang",
+    allocationTitle: "Alokasi",
+    covers: "Menutup cicilan {{sequences}}",
+    coversNone: "Belum menutup cicilan mana pun.",
+    allocated: "Teralokasi {{amount}}",
+    unallocated: "{{amount}} tidak masuk ke cicilan mana pun",
+    manualToggle: "Atur alokasi sendiri",
+    manualHint: "Isi nominal per cicilan. Kosongkan untuk melewatinya.",
+    manualReset: "Kembali ke otomatis",
+    manualRemaining: "Sisa {{amount}}",
+    errorNonPositive: "Nominal alokasi harus lebih dari nol",
+    errorExceedsPayment: "Total alokasi melebihi nominal pembayaran",
+    errorUnknownInstallment: "Ada alokasi ke cicilan yang tidak dikenal",
+    errorOverpaid: "Cicilan #{{sequence}} jadi kelebihan bayar",
+    errorDuplicate: "Satu cicilan dialokasikan dua kali",
+    errorNoAllocation: "Isi minimal satu alokasi",
+    willSettle: "Pembayaran ini melunasi catatan.",
+    willRemain: "Sisa {{amount}} setelah pembayaran ini.",
+    submit: "Simpan pembayaran",
     failed: "Pembayaran gagal disimpan. Coba lagi.",
   },
   budget: {

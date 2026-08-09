@@ -1,12 +1,12 @@
 import { useLocalSearchParams } from "expo-router";
 
-import { PayReceivableScreen } from "@/components/features/debts/pay-receivable-screen";
+import { RecordPaymentScreen } from "@/components/features/debts/record-payment-screen";
 
-export default function PayReceivableRoute() {
+export default function RecordPaymentRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const debtId = Number(id);
 
   return (
-    <PayReceivableScreen debtId={Number.isFinite(debtId) ? debtId : null} />
+    <RecordPaymentScreen debtId={Number.isFinite(debtId) ? debtId : null} />
   );
 }

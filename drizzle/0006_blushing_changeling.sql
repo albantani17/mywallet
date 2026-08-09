@@ -1,0 +1,1 @@
+ALTER TABLE `debt_schedules` ADD `installment_amount` integer;

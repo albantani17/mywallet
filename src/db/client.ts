@@ -15,3 +15,17 @@ sqliteDb.execSync("PRAGMA foreign_keys = ON;");
 export const db = drizzle(sqliteDb, { schema });
 
 export type Database = typeof db;
+
+/**
+ * Either `db` itself or the handle passed to a `db.transaction` callback, so a
+ * repository method can run standalone or as part of a larger transaction.
+ *
+ * Anything taking an Executor must be SYNCHRONOUS. drizzle's expo-sqlite
+ * session runs `begin`, calls the callback, then `commit` — an async callback
+ * returns a promise and the commit fires immediately, so only the statements
+ * before the first `await` would be inside the transaction. Inside one, call
+ * `.all()` / `.get()` / `.run()` on the builder and never await.
+ */
+export type Executor =
+  | Database
+  | Parameters<Parameters<Database["transaction"]>[0]>[0];

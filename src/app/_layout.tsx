@@ -17,6 +17,7 @@ import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-ty
 import { db } from "@/db";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { categoryService } from "@/services/category-service";
+import { debtPresetService } from "@/services/debt-preset-service";
 import { walletCategoryService } from "@/services/wallet-category-service";
 import migrations from "../../drizzle/migrations";
 
@@ -80,6 +81,9 @@ export default function RootLayout() {
       categoryService
         .ensureBuiltIns(BUILT_IN_TRANSACTION_CATEGORY_SEEDS)
         .catch((e) => console.error("Failed to seed transaction categories", e)),
+      debtPresetService
+        .ensureBuiltIns()
+        .catch((e) => console.error("Failed to seed debt presets", e)),
     ])
       .finally(() => {
         if (isCurrent) setIsSeeded(true);

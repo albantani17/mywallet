@@ -34,6 +34,12 @@ export const transactions = sqliteTable(
       .references(() => wallets.id),
     toWalletId: integer("to_wallet_id").references(() => wallets.id),
     categoryId: integer("category_id").references(() => categories.id),
+    /**
+     * Which debt this cash flow belongs to — disbursements and repayments
+     * alike. A convenience tag only: what a debt still owes is derived from
+     * its installments and their payment allocations, and the authoritative
+     * link back to here is `payments.transactionId`.
+     */
     debtId: integer("debt_id").references(() => debts.id),
     fee: integer("fee").notNull().default(0),
     note: text("note"),

@@ -1,7 +1,7 @@
 import { and, desc, eq, gte, like, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 
-import { db } from "../client";
+import { db, type Executor } from "../client";
 import { categories } from "../schema/categories";
 import { transactions } from "../schema/transactions";
 import { wallets } from "../schema/wallets";
@@ -182,5 +182,17 @@ export const transactionRepository = {
     const income = Number(rows[0]?.income ?? 0);
     const expense = Number(rows[0]?.expense ?? 0);
     return { income, expense, net: income - expense };
+  },
+
+  /** Synchronous variants for use inside a db.transaction callback. */
+  sync: {
+    insert: (data: TransactionInsert, exec: Executor = db): Transaction => {
+      const [row] = exec.insert(transactions).values(data).returning().all();
+      return row;
+    },
+
+    remove: (id: number, exec: Executor = db): void => {
+      exec.delete(transactions).where(eq(transactions.id, id)).run();
+    },
   },
 };

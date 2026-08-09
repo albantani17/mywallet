@@ -22,13 +22,21 @@ const ICONS: Record<string, { active: IoniconName; inactive: IoniconName }> = {
 };
 
 function tabIcon(name: keyof typeof ICONS) {
-  return ({ color, focused }: { color: ColorValue; focused: boolean }) => (
+  const TabIcon = ({
+    color,
+    focused,
+  }: {
+    color: ColorValue;
+    focused: boolean;
+  }) => (
     <Ionicons
       name={focused ? ICONS[name].active : ICONS[name].inactive}
       size={22}
       color={color as string}
     />
   );
+  TabIcon.displayName = `TabIcon(${name})`;
+  return TabIcon;
 }
 
 export default function TabsLayout() {

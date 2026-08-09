@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,20 +13,35 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useDebt, useDebtSchedule } from "@/hooks/features/debts/use-debt";
+import { useInstallments } from "@/hooks/features/debts/use-installments";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { summarise } from "@/services/debt-status";
 
-import { ReceivableForm } from "./receivable-form";
+import { RecordPaymentForm } from "./record-payment-form";
+
+type RecordPaymentScreenProps = { debtId: number | null };
 
 /**
- * Full-screen form for lending money out.
+ * Full-screen form for recording a repayment.
  *
- * Framed exactly like the new-transaction screen: an X in the top-left rather
- * than a back chevron, because this is a task the user finishes or abandons.
+ * Dismissal is an X rather than a back chevron: this is a task the user
+ * finishes or abandons. It falls back to the debt's own screen, which is where
+ * they came from and where the new payment will appear.
  */
-export function NewReceivableScreen() {
+export function RecordPaymentScreen({ debtId }: RecordPaymentScreenProps) {
   const colors = useThemeColors();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const { debt, now, isReady, refreshKey } = useDebt(debtId);
+  const { graceDays } = useDebtSchedule(debtId, refreshKey);
+  const { installments } = useInstallments(debtId, refreshKey);
+
+  const progress = useMemo(
+    () => summarise(installments, { graceDays, now }),
+    [graceDays, installments, now],
+  );
 
   const close = useCallback(() => {
     if (router.canGoBack()) {
@@ -45,7 +61,7 @@ export function NewReceivableScreen() {
       >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={t("newReceivable.close")}
+          accessibilityLabel={t("newPayment.close")}
           onPress={close}
           hitSlop={8}
           className="size-10 flex-col items-center justify-center rounded-full bg-surface active:opacity-70"
@@ -54,7 +70,7 @@ export function NewReceivableScreen() {
         </Pressable>
 
         <Text className="text-xl font-extrabold text-fg">
-          {t("newReceivable.title")}
+          {t("newPayment.title")}
         </Text>
       </View>
 
@@ -70,7 +86,22 @@ export function NewReceivableScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ReceivableForm onSaved={close} />
+          {!isReady ? (
+            <View className="flex-col items-center py-16">
+              <ActivityIndicator colorClassName="accent-fg" />
+            </View>
+          ) : !debt ? (
+            <Text className="px-6 text-sm text-fg-muted">
+              {t("newPayment.notFound")}
+            </Text>
+          ) : (
+            <RecordPaymentForm
+              debt={debt}
+              installments={installments}
+              outstanding={progress.outstanding}
+              onSaved={close}
+            />
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
