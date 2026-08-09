@@ -46,6 +46,11 @@ export const BUILT_IN_TRANSACTION_CATEGORY_SEEDS: TransactionCategorySeed[] = [
   { slug: "health", name: "Health", type: "expense", icon: "medkit-outline", color: "#dc2626" },
   { slug: "entertainment", name: "Entertainment", type: "expense", icon: "game-controller-outline", color: "#7c3aed" },
   { slug: "education", name: "Education", type: "expense", icon: "school-outline", color: "#0891b2" },
+  // The two expense sides of a debt. Written automatically by debtService, and
+  // kept apart because "I paid an instalment" and "I handed someone a loan"
+  // are opposite events that would otherwise share one line in every report.
+  { slug: "debt-repayment", name: "Debt repayment", type: "expense", icon: "card-outline", color: "#dc2626" },
+  { slug: "money-lent", name: "Money lent out", type: "expense", icon: "hand-left-outline", color: "#2563eb" },
   { slug: "other-expense", name: "Other", type: "expense", icon: "ellipsis-horizontal-outline", color: "#8a978c" },
 
   // Income
@@ -53,6 +58,9 @@ export const BUILT_IN_TRANSACTION_CATEGORY_SEEDS: TransactionCategorySeed[] = [
   { slug: "bonus", name: "Bonus", type: "income", icon: "sparkles-outline", color: "#d97706" },
   { slug: "investment-income", name: "Investment", type: "income", icon: "trending-up-outline", color: "#2563eb" },
   { slug: "gift", name: "Gift", type: "income", icon: "gift-outline", color: "#db2777" },
+  // The two income sides of a debt — see the expense pair above.
+  { slug: "loan-received", name: "Loan received", type: "income", icon: "download-outline", color: "#7c3aed" },
+  { slug: "loan-collected", name: "Loan repaid to me", type: "income", icon: "checkmark-done-outline", color: "#2f7d57" },
   { slug: "other-income", name: "Other", type: "income", icon: "ellipsis-horizontal-outline", color: "#8a978c" },
 
   // Bill
@@ -81,11 +89,15 @@ export const BUILT_IN_LABEL_KEYS = {
   health: "transactions.categories.health",
   entertainment: "transactions.categories.entertainment",
   education: "transactions.categories.education",
+  "debt-repayment": "transactions.categories.debtRepayment",
+  "money-lent": "transactions.categories.moneyLent",
   "other-expense": "transactions.categories.other",
   salary: "transactions.categories.salary",
   bonus: "transactions.categories.bonus",
   "investment-income": "transactions.categories.investment",
   gift: "transactions.categories.gift",
+  "loan-received": "transactions.categories.loanReceived",
+  "loan-collected": "transactions.categories.loanCollected",
   "other-income": "transactions.categories.other",
   electricity: "transactions.categories.electricity",
   water: "transactions.categories.water",

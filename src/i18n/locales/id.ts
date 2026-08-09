@@ -145,6 +145,10 @@ export type Translation = {
       health: string;
       entertainment: string;
       education: string;
+      debtRepayment: string;
+      moneyLent: string;
+      loanReceived: string;
+      loanCollected: string;
       salary: string;
       bonus: string;
       investment: string;
@@ -450,6 +454,10 @@ export const id: Translation = {
       health: "Kesehatan",
       entertainment: "Hiburan",
       education: "Pendidikan",
+      debtRepayment: "Bayar Utang",
+      moneyLent: "Uang Dipinjamkan",
+      loanReceived: "Pinjaman Diterima",
+      loanCollected: "Piutang Diterima",
       salary: "Gaji",
       bonus: "Bonus",
       investment: "Investasi",

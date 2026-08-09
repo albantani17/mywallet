@@ -96,6 +96,21 @@ export const categoryRepository = {
     return rows[0] ?? null;
   },
 
+  /**
+   * The built-in row a slug names, or null before the seeder has run.
+   *
+   * Callers that tag a transaction automatically use this — a missing row must
+   * degrade to an uncategorised transaction, never to a failed write.
+   */
+  async getBySlug(slug: string): Promise<Category | null> {
+    const rows = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.slug, slug))
+      .limit(1);
+    return rows[0] ?? null;
+  },
+
   async create(data: CategoryInsert): Promise<Category> {
     const [row] = await db.insert(categories).values(data).returning();
     return row;
