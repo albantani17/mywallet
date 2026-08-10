@@ -3,6 +3,7 @@ export * from "./counterparty.repository";
 export * from "./debt-preset.repository";
 export * from "./debt-schedule.repository";
 export * from "./debt.repository";
+export * from "./insight.repository";
 export * from "./installment.repository";
 export * from "./payment-allocation.repository";
 export * from "./payment.repository";

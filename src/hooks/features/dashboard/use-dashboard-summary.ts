@@ -11,8 +11,11 @@ export const CAROUSEL_LIMIT = 3;
 /**
  * Dashboard data: the richest few wallets for the carousel, plus whether the
  * user has more than the carousel shows (which is what reveals "see all").
+ *
+ * `refreshOthers` lets a sibling section (the insights) join the same pull —
+ * one gesture, one spinner, everything on the screen re-read.
  */
-export function useDashboardSummary() {
+export function useDashboardSummary(refreshOthers?: () => void) {
   const {
     wallets,
     isReady: isListReady,
@@ -31,12 +34,13 @@ export function useDashboardSummary() {
 
   useEffect(settle, [settle, updatedAt]);
 
-  // Two queries back this screen, so a pull has to re-run both. The spinner
-  // follows the wallet list; both are local reads that land together.
+  // Several queries back this screen, so a pull has to re-run all of them. The
+  // spinner follows the wallet list; they are local reads that land together.
   const refresh = useCallback(() => {
     refreshWallets();
     refreshCarousel();
-  }, [refreshCarousel, refreshWallets]);
+    refreshOthers?.();
+  }, [refreshCarousel, refreshOthers, refreshWallets]);
 
   return {
     topWallets: topWallets ?? [],

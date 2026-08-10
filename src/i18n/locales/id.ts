@@ -26,7 +26,7 @@ export type Translation = {
     home: string;
     wallets: string;
     transactions: string;
-    budget: string;
+    debts: string;
     more: string;
   };
   dashboard: {
@@ -35,8 +35,26 @@ export type Translation = {
     seeAll: string;
     actions: {
       addTransaction: string;
-      debts: string;
     };
+  };
+  insights: {
+    title: string;
+    monthTitle: string;
+    asOf: string;
+    vsMonth: string;
+    noComparison: string;
+    dailyAverage: string;
+    projected: string;
+    breakdownTitle: string;
+    otherCategories: string;
+    uncategorised: string;
+    noSpending: string;
+    largest: string;
+    cashFlowTitle: string;
+    income: string;
+    expense: string;
+    net: string;
+    debtCashFlow: string;
   };
   wallets: {
     title: string;
@@ -123,6 +141,7 @@ export type Translation = {
       searchPlaceholder: string;
       wallet: string;
       allWallets: string;
+      clearCategory: string;
       time: string;
       allTime: string;
       today: string;
@@ -219,7 +238,6 @@ export type Translation = {
   };
   debts: {
     title: string;
-    back: string;
     tabs: {
       receivable: string;
       payable: string;
@@ -483,11 +501,6 @@ export type Translation = {
     submit: string;
     failed: string;
   };
-  budget: {
-    title: string;
-    comingSoonTitle: string;
-    comingSoonDescription: string;
-  };
   more: {
     title: string;
     language: string;
@@ -529,7 +542,7 @@ export const id: Translation = {
     home: "Beranda",
     wallets: "Dompet",
     transactions: "Transaksi",
-    budget: "Budget",
+    debts: "Hutang",
     more: "Lainnya",
   },
   dashboard: {
@@ -538,8 +551,26 @@ export const id: Translation = {
     seeAll: "Lihat semua",
     actions: {
       addTransaction: "Tambah Transaksi",
-      debts: "Hutang",
     },
+  },
+  insights: {
+    title: "Insight",
+    monthTitle: "Bulan ini",
+    asOf: "s/d {{date}}",
+    vsMonth: "vs {{month}}",
+    noComparison: "Belum ada pembanding",
+    dailyAverage: "{{amount}}/hari",
+    projected: "proyeksi {{amount}}",
+    breakdownTitle: "Ke mana perginya",
+    otherCategories: "Lainnya",
+    uncategorised: "Tanpa kategori",
+    noSpending: "Belum ada pengeluaran bulan ini.",
+    largest: "Terbesar",
+    cashFlowTitle: "Arus kas 6 bulan",
+    income: "Masuk",
+    expense: "Keluar",
+    net: "Net {{amount}}",
+    debtCashFlow: "Arus kas hutang {{amount}}",
   },
   wallets: {
     title: "Dompet",
@@ -629,6 +660,7 @@ export const id: Translation = {
       searchPlaceholder: "Cari catatan atau dompet",
       wallet: "Dompet",
       allWallets: "Semua dompet",
+      clearCategory: "Hapus filter kategori",
       time: "Waktu",
       allTime: "Semua waktu",
       today: "Hari ini",
@@ -724,7 +756,6 @@ export const id: Translation = {
   },
   debts: {
     title: "Hutang & Piutang",
-    back: "Kembali",
     tabs: {
       receivable: "Piutang",
       payable: "Hutang",
@@ -994,12 +1025,6 @@ export const id: Translation = {
     willRemain: "Sisa {{amount}} setelah pembayaran ini.",
     submit: "Simpan pembayaran",
     failed: "Pembayaran gagal disimpan. Coba lagi.",
-  },
-  budget: {
-    title: "Budget",
-    comingSoonTitle: "Budget segera hadir",
-    comingSoonDescription:
-      "Atur batas pengeluaran per kategori dan pantau sisanya tiap bulan.",
   },
   more: {
     title: "Lainnya",

@@ -43,7 +43,7 @@ Migrations are applied automatically at launch — `src/app/_layout.tsx` gates t
 ```
 src/
   app/                    expo-router routes
-    (tabs)/               home, wallets, transactions, budget, more
+    (tabs)/               home, wallets, transactions, debts, more
   components/
     ui/                   generic primitives (button, sheet, dropdown, …)
     features/<feature>/   UI for one feature
@@ -91,6 +91,6 @@ These are non-obvious and each one caused a silent bug:
 
 ## Status
 
-Working: onboarding, the tab shell, the wallet dashboard carousel, and the wallets screen with search, category filter and create/edit/delete.
+Working: onboarding, the tab shell, the wallet dashboard carousel with spending insights, the wallets screen with search, category filter and create/edit/delete, recording and filtering transactions, and the debts module (schedules, instalments, payments and allocations).
 
-Not built yet: recording transactions, the debts screen, budgets (there is no `budgets` table — the tab is a placeholder), and Google sign-in (the button is present but disabled; the seam is `authService.signInWithGoogle`).
+Not built yet: budgets — the tab was given to debts instead, and there is no `budgets` table; a transaction detail screen; and Google sign-in (the button is present but disabled; the seam is `authService.signInWithGoogle`).

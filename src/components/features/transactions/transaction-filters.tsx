@@ -8,16 +8,20 @@ import type { TimeRange } from "@/hooks/features/transactions/use-transaction-fi
 import { useWallets } from "@/hooks/features/wallets/use-wallets";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
+import { CategoryFilterChip } from "./category-filter-chip";
 import { DateField } from "./date-field";
 
 type TransactionFiltersProps = {
   search: string;
   walletId: number | null;
+  /** Only ever set by a link in from elsewhere; cleared with the chip below. */
+  categoryId: number | null;
   range: TimeRange;
   customFrom: Date | null;
   customTo: Date | null;
   onSearchChange: (value: string) => void;
   onWalletChange: (walletId: number | null) => void;
+  onCategoryClear: () => void;
   onRangeChange: (range: TimeRange) => void;
   onCustomFromChange: (value: Date) => void;
   onCustomToChange: (value: Date) => void;
@@ -45,11 +49,13 @@ const RANGE_LABEL_KEYS = {
 export function TransactionFilters({
   search,
   walletId,
+  categoryId,
   range,
   customFrom,
   customTo,
   onSearchChange,
   onWalletChange,
+  onCategoryClear,
   onRangeChange,
   onCustomFromChange,
   onCustomToChange,
@@ -153,6 +159,12 @@ export function TransactionFilters({
           />
         </View>
       </View>
+
+      {/* There is no category dropdown — this filter only ever arrives from a
+          link, so it needs a way out rather than a way in. */}
+      {categoryId !== null ? (
+        <CategoryFilterChip categoryId={categoryId} onClear={onCategoryClear} />
+      ) : null}
 
       {/* Rendered inline rather than inside a sheet: DateField opens a bottom
           sheet of its own, and stacking one sheet on another is a fight not

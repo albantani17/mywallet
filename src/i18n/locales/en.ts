@@ -25,7 +25,7 @@ export const en: Translation = {
     home: "Home",
     wallets: "Wallets",
     transactions: "Transactions",
-    budget: "Budget",
+    debts: "Debts",
     more: "More",
   },
   dashboard: {
@@ -34,8 +34,26 @@ export const en: Translation = {
     seeAll: "See all",
     actions: {
       addTransaction: "Add Transaction",
-      debts: "Debts",
     },
+  },
+  insights: {
+    title: "Insights",
+    monthTitle: "This month",
+    asOf: "through {{date}}",
+    vsMonth: "vs {{month}}",
+    noComparison: "Nothing to compare with yet",
+    dailyAverage: "{{amount}}/day",
+    projected: "on track for {{amount}}",
+    breakdownTitle: "Where it went",
+    otherCategories: "Other",
+    uncategorised: "Uncategorised",
+    noSpending: "Nothing spent this month yet.",
+    largest: "Largest",
+    cashFlowTitle: "Cash flow, 6 months",
+    income: "In",
+    expense: "Out",
+    net: "Net {{amount}}",
+    debtCashFlow: "Debt cash flow {{amount}}",
   },
   wallets: {
     title: "Wallets",
@@ -124,6 +142,7 @@ export const en: Translation = {
       searchPlaceholder: "Search notes or wallets",
       wallet: "Wallet",
       allWallets: "All wallets",
+      clearCategory: "Clear the category filter",
       time: "Time",
       allTime: "All time",
       today: "Today",
@@ -219,7 +238,6 @@ export const en: Translation = {
   },
   debts: {
     title: "Debts & Receivables",
-    back: "Back",
     tabs: {
       receivable: "Owed to me",
       payable: "I owe",
@@ -491,12 +509,6 @@ export const en: Translation = {
     willRemain: "{{amount}} will still be owed after this.",
     submit: "Save payment",
     failed: "Could not save the payment. Try again.",
-  },
-  budget: {
-    title: "Budget",
-    comingSoonTitle: "Budgets are coming",
-    comingSoonDescription:
-      "Set a spending limit per category and watch what's left each month.",
   },
   more: {
     title: "More",

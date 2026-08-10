@@ -18,6 +18,7 @@ const PAGE_SIZE = 50;
 const NO_FILTERS: TransactionFilterValues = {
   search: "",
   walletId: null,
+  categoryId: null,
   from: null,
   to: null,
 };
@@ -55,7 +56,7 @@ export function useTransactions(filters: TransactionFilterValues = NO_FILTERS) {
    * below never runs with the stale one — an effect would let a 400-row read
    * fire first and only then correct itself.
    */
-  const filterKey = `${search}|${filters.walletId}|${fromTime}|${toTime}`;
+  const filterKey = `${search}|${filters.walletId}|${filters.categoryId}|${fromTime}|${toTime}`;
   const [lastFilterKey, setLastFilterKey] = useState(filterKey);
   if (filterKey !== lastFilterKey) {
     setLastFilterKey(filterKey);
@@ -67,11 +68,20 @@ export function useTransactions(filters: TransactionFilterValues = NO_FILTERS) {
       limit,
       search,
       walletId: filters.walletId ?? undefined,
+      categoryId: filters.categoryId ?? undefined,
       from: filters.from ?? undefined,
       to: filters.to ?? undefined,
     }),
     TRANSACTION_TABLES,
-    [limit, refreshKey, search, filters.walletId, fromTime, toTime],
+    [
+      limit,
+      refreshKey,
+      search,
+      filters.walletId,
+      filters.categoryId,
+      fromTime,
+      toTime,
+    ],
   );
 
   useEffect(settle, [settle, updatedAt, error]);
