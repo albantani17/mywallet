@@ -20,8 +20,8 @@ const MAX_NOTE_LENGTH = 200;
 type RecordPaymentOptions = {
   debtId: number;
   installments: InstallmentWithPaid[];
-  /** What is still owed — seeds the amount field once. */
-  outstanding: number;
+  /** The bill due now — seeds the amount field once. See `dueBreakdown`. */
+  suggestedAmount: number;
 };
 
 /**
@@ -33,7 +33,7 @@ type RecordPaymentOptions = {
  * the live installment query. What the user sees is what gets written.
  */
 export function useRecordPayment(
-  { debtId, installments, outstanding }: RecordPaymentOptions,
+  { debtId, installments, suggestedAmount }: RecordPaymentOptions,
   onSuccess?: () => void,
 ) {
   const { t } = useTranslation();
@@ -53,12 +53,13 @@ export function useRecordPayment(
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Paying the lot is the common case, so the field starts there. It waits for
-  // the installments to load, and stops the moment the user types.
+  // What is actually due now, not the whole balance: the question the form has
+  // to answer is "how much do I pay this month". It waits for the installments
+  // to load, and stops the moment the user types or picks a preset.
   useEffect(() => {
-    if (hasEditedAmount || outstanding <= 0) return;
-    setAmountValue((current) => (current === null ? outstanding : current));
-  }, [hasEditedAmount, outstanding]);
+    if (hasEditedAmount || suggestedAmount <= 0) return;
+    setAmountValue((current) => (current === null ? suggestedAmount : current));
+  }, [hasEditedAmount, suggestedAmount]);
 
   const amount = amountValue === null ? "" : formatAmount(amountValue, locale);
 
@@ -114,6 +115,18 @@ export function useRecordPayment(
     if (Math.abs(parsed) > MAX_AMOUNT) return;
 
     setAmountValue(Math.abs(parsed));
+  }, []);
+
+  /**
+   * A preset amount, from the quick picks under the field.
+   *
+   * It counts as an edit: once the user has chosen a figure, the seed must
+   * never come back and overwrite it when the live query re-runs.
+   */
+  const pickAmount = useCallback((value: number) => {
+    setHasEditedAmount(true);
+    setAmountValue(Math.min(Math.abs(value), MAX_AMOUNT));
+    setErrors((current) => ({ ...current, amount: undefined, form: undefined }));
   }, []);
 
   const changeWalletId = useCallback((value: number) => {
@@ -268,6 +281,7 @@ export function useRecordPayment(
     isSubmitting,
 
     changeAmount,
+    pickAmount,
     changePaidAt: setPaidAt,
     changeWalletId,
     changeMethod: setMethod,

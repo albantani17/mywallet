@@ -7,6 +7,10 @@
  * what has actually landed on the row.
  */
 
+// Relative, with the extension: `node --test` runs this file straight from
+// source, where the `@/` alias and extensionless resolution do not exist.
+import { byOldestFirst } from "./payment-allocator.ts";
+
 const MS_PER_DAY = 86_400_000;
 
 export const INSTALLMENT_STATUSES = [
@@ -130,5 +134,94 @@ export function summarise(
     // An installment-less debt is not settled; it is one whose schedule has
     // not been generated yet.
     isSettled: installments.length > 0 && paidCount === installments.length,
+  };
+}
+
+/** What the payment form needs to answer "how much am I supposed to pay?". */
+export type DueInstallment = StatusInstallment & {
+  id: number;
+  sequence: number;
+  /** `totalAmount - paidAmount`, never negative. */
+  remaining: number;
+};
+
+export type DueBreakdown = {
+  /** The oldest installment still owed, or null once every one is covered. */
+  next: DueInstallment | null;
+  nextRemaining: number;
+  /** Still owed on rows past their due date plus grace. */
+  arrearsAmount: number;
+  arrearsCount: number;
+  /**
+   * Still owed on every row already billed — due date on or before now.
+   *
+   * Grace is deliberately not applied here: it decides when something is
+   * called *late*, not when it is *payable*. An installment inside its grace
+   * window is money the user owes today.
+   */
+  dueNowAmount: number;
+  /** What the amount field starts at. Never zero while anything is owed. */
+  suggestedAmount: number;
+};
+
+/**
+ * The bill in front of the user right now, split out of the whole obligation.
+ *
+ * The form used to offer one number — the entire outstanding balance — which
+ * answers "how much is left" but not "how much do I pay this month". Both come
+ * from the same rows, so they are derived together against one clock.
+ */
+export function dueBreakdown<T extends DueInstallment>(
+  installments: T[],
+  options: { graceDays?: number; now?: Date } = {},
+): DueBreakdown {
+  const now = options.now ?? new Date();
+
+  let arrearsAmount = 0;
+  let arrearsCount = 0;
+  let dueNowAmount = 0;
+  let outstanding = 0;
+
+  for (const installment of installments) {
+    const remaining = Math.max(
+      installment.totalAmount - installment.paidAmount,
+      0,
+    );
+    if (remaining === 0) continue;
+
+    outstanding += remaining;
+
+    if (installment.dueDate && installment.dueDate.getTime() <= now.getTime()) {
+      dueNowAmount += remaining;
+    }
+
+    if (isOverdue(installment, { ...options, now })) {
+      arrearsAmount += remaining;
+      arrearsCount += 1;
+    }
+  }
+
+  // Oldest first, so `next` is the row a payment would land on — the same
+  // order the allocator fills.
+  const next =
+    installments
+      .filter((installment) => installment.paidAmount < installment.totalAmount)
+      .sort(byOldestFirst)[0] ?? null;
+
+  const nextRemaining = next
+    ? Math.max(next.totalAmount - next.paidAmount, 0)
+    : 0;
+
+  return {
+    next: next
+      ? { ...next, remaining: nextRemaining }
+      : null,
+    nextRemaining,
+    arrearsAmount,
+    arrearsCount,
+    dueNowAmount,
+    // Nothing billed yet (an `open` schedule, or a first installment still in
+    // the future) still deserves a sensible figure rather than a zero.
+    suggestedAmount: dueNowAmount || nextRemaining || outstanding,
   };
 }

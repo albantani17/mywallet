@@ -5,11 +5,10 @@ import { Pressable, Text, View } from "react-native";
 import type { CounterpartyKind, InstallmentWithPaid } from "@/db";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { installmentStatus } from "@/services/debt-status";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-date";
 
-import { installmentTone, type InstallmentTone } from "./installment-tone";
+import { InstallmentStatusChip } from "./installment-status-chip";
 
 type DebtInstallmentRowProps = {
   installment: InstallmentWithPaid;
@@ -19,35 +18,6 @@ type DebtInstallmentRowProps = {
   currency: string;
   onEdit: (installment: InstallmentWithPaid) => void;
 };
-
-// Full class strings per tone: cn only concatenates, so a colour layered over
-// another would leave both applied and the winner up to stylesheet order.
-const CHIP: Record<InstallmentTone, string> = {
-  paid: "rounded-full bg-primary px-2 py-0.5",
-  partial: "rounded-full bg-primary-soft px-2 py-0.5",
-  overdue: "rounded-full bg-danger px-2 py-0.5",
-  late: "rounded-full bg-elevated px-2 py-0.5",
-  upcoming: "rounded-full bg-elevated px-2 py-0.5",
-  open: "rounded-full bg-elevated px-2 py-0.5",
-};
-
-const CHIP_LABEL: Record<InstallmentTone, string> = {
-  paid: "text-[11px] font-semibold text-primary-fg",
-  partial: "text-[11px] font-semibold text-primary",
-  overdue: "text-[11px] font-semibold text-primary-fg",
-  late: "text-[11px] font-semibold text-fg-muted",
-  upcoming: "text-[11px] font-semibold text-fg-muted",
-  open: "text-[11px] font-semibold text-fg-muted",
-};
-
-const LABEL_KEYS = {
-  paid: "debts.installmentStatus.paid",
-  partial: "debts.installmentStatus.partial",
-  overdue: "debts.installmentStatus.overdue",
-  late: "debts.installmentStatus.late",
-  upcoming: "debts.installmentStatus.upcoming",
-  open: "debts.installmentStatus.open",
-} as const;
 
 /**
  * One obligation.
@@ -66,11 +36,6 @@ export function DebtInstallmentRow({
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
   const colors = useThemeColors();
-
-  const tone = installmentTone(
-    installmentStatus(installment, { graceDays, now }),
-    counterpartyKind,
-  );
 
   const money = (value: number) => formatCurrency(value, locale, currency);
   const wasMoved =
@@ -92,9 +57,12 @@ export function DebtInstallmentRow({
               ? formatDate(installment.dueDate, locale)
               : t("debtDetail.noDueDate")}
           </Text>
-          <View className={CHIP[tone]}>
-            <Text className={CHIP_LABEL[tone]}>{t(LABEL_KEYS[tone])}</Text>
-          </View>
+          <InstallmentStatusChip
+            installment={installment}
+            counterpartyKind={counterpartyKind}
+            graceDays={graceDays}
+            now={now}
+          />
         </View>
 
         <Text className="text-[11px] text-fg-muted">

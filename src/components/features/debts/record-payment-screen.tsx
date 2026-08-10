@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDebt, useDebtSchedule } from "@/hooks/features/debts/use-debt";
 import { useInstallments } from "@/hooks/features/debts/use-installments";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { summarise } from "@/services/debt-status";
+import { dueBreakdown, summarise } from "@/services/debt-status";
 
 import { RecordPaymentForm } from "./record-payment-form";
 
@@ -35,11 +35,16 @@ export function RecordPaymentScreen({ debtId }: RecordPaymentScreenProps) {
   const insets = useSafeAreaInsets();
 
   const { debt, now, isReady, refreshKey } = useDebt(debtId);
-  const { graceDays } = useDebtSchedule(debtId, refreshKey);
+  const { schedule, graceDays } = useDebtSchedule(debtId, refreshKey);
   const { installments } = useInstallments(debtId, refreshKey);
 
   const progress = useMemo(
     () => summarise(installments, { graceDays, now }),
+    [graceDays, installments, now],
+  );
+
+  const due = useMemo(
+    () => dueBreakdown(installments, { graceDays, now }),
     [graceDays, installments, now],
   );
 
@@ -98,7 +103,11 @@ export function RecordPaymentScreen({ debtId }: RecordPaymentScreenProps) {
             <RecordPaymentForm
               debt={debt}
               installments={installments}
-              outstanding={progress.outstanding}
+              progress={progress}
+              due={due}
+              installmentAmount={schedule?.installmentAmount ?? null}
+              graceDays={graceDays}
+              now={now}
               onSaved={close}
             />
           )}

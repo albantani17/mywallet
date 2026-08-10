@@ -441,6 +441,16 @@ export type Translation = {
     amountPlaceholder: string;
     amountRequired: string;
     amountTooLarge: string;
+    dueTitle: string;
+    dueInstallment: string;
+    dueOn: string;
+    dueNoDate: string;
+    dueArrears: string;
+    dueProgress: string;
+    duePerPeriod: string;
+    pickDueNow: string;
+    pickOneInstallment: string;
+    pickSettle: string;
     dateLabel: string;
     walletLabelPayable: string;
     walletLabelReceivable: string;
@@ -943,6 +953,16 @@ export const id: Translation = {
     amountPlaceholder: "0",
     amountRequired: "Nominal wajib diisi",
     amountTooLarge: "Nominal terlalu besar",
+    dueTitle: "Tagihan sekarang",
+    dueInstallment: "Cicilan #{{sequence}}",
+    dueOn: "Jatuh tempo {{date}}",
+    dueNoDate: "Tanpa tanggal jatuh tempo",
+    dueArrears: "Tunggakan {{count}} cicilan · {{amount}}",
+    dueProgress: "{{paid}} dari {{count}} cicilan lunas",
+    duePerPeriod: "Cicilan per periode {{amount}}",
+    pickDueNow: "Jatuh tempo {{amount}}",
+    pickOneInstallment: "1 cicilan {{amount}}",
+    pickSettle: "Lunasi {{amount}}",
     dateLabel: "Tanggal bayar",
     walletLabelPayable: "Uang keluar dari (opsional)",
     walletLabelReceivable: "Uang masuk ke (opsional)",

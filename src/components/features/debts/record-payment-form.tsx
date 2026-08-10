@@ -16,15 +16,22 @@ import {
 import { useRecordPayment } from "@/hooks/features/debts/use-record-payment";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import type { DebtProgress, DueBreakdown } from "@/services/debt-status";
 import { formatCurrency } from "@/utils/format-currency";
 
 import { PaymentAllocationEditor } from "./payment-allocation-editor";
 import { PaymentAllocationPreview } from "./payment-allocation-preview";
+import { PaymentAmountPicks } from "./payment-amount-picks";
+import { PaymentDueCard } from "./payment-due-card";
 
 type RecordPaymentFormProps = {
   debt: DebtWithSummary;
   installments: InstallmentWithPaid[];
-  outstanding: number;
+  progress: DebtProgress;
+  due: DueBreakdown;
+  installmentAmount: number | null;
+  graceDays: number;
+  now: Date;
   onSaved: () => void;
 };
 
@@ -38,15 +45,21 @@ const METHOD_KEYS = {
 export function RecordPaymentForm({
   debt,
   installments,
-  outstanding,
+  progress,
+  due,
+  installmentAmount,
+  graceDays,
+  now,
   onSaved,
 }: RecordPaymentFormProps) {
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
   const colors = useThemeColors();
 
+  const outstanding = progress.outstanding;
+
   const form = useRecordPayment(
-    { debtId: debt.id, installments, outstanding },
+    { debtId: debt.id, installments, suggestedAmount: due.suggestedAmount },
     onSaved,
   );
 
@@ -69,6 +82,16 @@ export function RecordPaymentForm({
         <Text className="text-xs text-fg-muted">{debt.title}</Text>
       </View>
 
+      <PaymentDueCard
+        due={due}
+        progress={progress}
+        counterpartyKind={debt.counterpartyKind}
+        installmentAmount={installmentAmount}
+        graceDays={graceDays}
+        now={now}
+        currency={debt.currency}
+      />
+
       <View className="mx-6 flex-col gap-5 rounded-3xl bg-surface p-6">
         <View className="flex-col gap-1.5">
           <TextField
@@ -80,6 +103,14 @@ export function RecordPaymentForm({
             keyboardType="number-pad"
             size="large"
           />
+          <PaymentAmountPicks
+            due={due}
+            outstanding={outstanding}
+            currency={debt.currency}
+            selected={form.amountValue}
+            onPick={form.pickAmount}
+          />
+
           <Text className="text-xs text-fg-muted">
             {remainingAfter === 0
               ? t("newPayment.willSettle")
