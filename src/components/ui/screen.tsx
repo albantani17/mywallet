@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, type ScrollViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { cn } from "@/utils/cn";
@@ -9,6 +9,8 @@ type ScreenProps = {
   title?: string;
   /** Wraps the content in a ScrollView. Off for screens that scroll their own. */
   scrollable?: boolean;
+  /** Pull-to-refresh, only meaningful together with `scrollable`. */
+  refreshControl?: ScrollViewProps["refreshControl"];
   className?: string;
 };
 
@@ -20,21 +22,25 @@ export function Screen({
   children,
   title,
   scrollable = false,
+  refreshControl,
   className,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const Container = scrollable ? ScrollView : View;
 
   return (
-    <View className="flex-1 flex-col bg-brand-canvas">
+    <View className="flex-1 flex-col bg-canvas">
       <Container
         className={cn("flex-1", className)}
         contentContainerClassName={scrollable ? "pb-8" : undefined}
         style={{ paddingTop: insets.top + 12 }}
         showsVerticalScrollIndicator={false}
+        // A plain View would reject the prop outright, so it is only passed on
+        // when this screen actually scrolls.
+        refreshControl={scrollable ? refreshControl : undefined}
       >
         {title ? (
-          <Text className="px-6 pb-4 text-2xl font-extrabold text-white">
+          <Text className="px-6 pb-4 text-2xl font-extrabold text-fg">
             {title}
           </Text>
         ) : null}

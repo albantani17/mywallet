@@ -19,17 +19,29 @@ type ButtonProps = {
 // Full class strings per variant: Uniwind resolves classes from the literal
 // text in the source, so these can never be assembled from fragments.
 const CONTAINER_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-brand-primary",
-  secondary: "bg-white border border-black/10",
+  primary: "bg-primary",
+  secondary: "bg-elevated border border-line",
   ghost: "bg-transparent",
-  destructive: "bg-red-600",
+  destructive: "bg-danger",
 };
 
+// primary and destructive sit on a solid fill, so their label follows the fill
+// rather than the theme — text-fg would vanish into green in light mode.
 const LABEL_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "text-white",
-  secondary: "text-brand-logo-fg",
-  ghost: "text-brand-sheet-muted",
-  destructive: "text-white",
+  primary: "text-primary-fg",
+  secondary: "text-fg",
+  ghost: "text-fg-muted",
+  destructive: "text-primary-fg",
+};
+
+// The spinner takes the same colour as the label, but Uniwind's *ColorClassName
+// props read `accentColor` off the resolved style — a `text-*` class resolves to
+// nothing there and the prop silently falls back to RN's default blue.
+const SPINNER_VARIANTS: Record<ButtonVariant, string> = {
+  primary: "accent-primary-fg",
+  secondary: "accent-fg",
+  ghost: "accent-fg-muted",
+  destructive: "accent-primary-fg",
 };
 
 export function Button({
@@ -59,7 +71,7 @@ export function Button({
       )}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" color="#ffffff" />
+        <ActivityIndicator size="small" colorClassName={SPINNER_VARIANTS[variant]} />
       ) : (
         <>
           {startContent ? <View>{startContent}</View> : null}

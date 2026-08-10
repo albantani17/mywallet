@@ -19,13 +19,14 @@ export function CreateWalletScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 flex-col bg-brand-canvas">
-      <View className="absolute -right-16 -top-10 size-64 rounded-full bg-brand-canvas-tint opacity-60" />
+    <View className="flex-1 flex-col bg-canvas">
+      <View className="absolute -right-16 -top-10 size-64 rounded-full bg-surface opacity-60" />
 
       <KeyboardAvoidingView
         className="flex-1"
-        // Android relies on the default adjustResize behaviour.
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        // See new-transaction-screen: an undefined behavior is inert, and
+        // adjustResize no longer applies under SDK 57's mandatory edge-to-edge.
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
           className="flex-1"
@@ -37,15 +38,15 @@ export function CreateWalletScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-col px-6 pb-8">
-            <Text className="text-[28px] font-extrabold leading-9 text-white">
+            <Text className="text-[28px] font-extrabold leading-9 text-fg">
               {t("createWallet.title")}
             </Text>
-            <Text className="mt-3 text-base leading-6 text-brand-muted">
+            <Text className="mt-3 text-base leading-6 text-fg-muted">
               {t("createWallet.description")}
             </Text>
           </View>
 
-          <View className="mx-6 flex-col rounded-3xl bg-brand-sheet p-6">
+          <View className="mx-6 flex-col rounded-3xl bg-surface p-6">
             <CreateWalletForm />
           </View>
         </ScrollView>

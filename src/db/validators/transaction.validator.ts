@@ -37,6 +37,12 @@ export const transactionInsertSchema = createInsertSchema(transactions)
   .refine((t) => t.toWalletId == null || t.toWalletId !== t.walletId, {
     message: "Source and destination wallet must differ",
     path: ["toWalletId"],
+  })
+  // dueDate is what distinguishes a bill from a plain expense; no other type
+  // has anything to be due.
+  .refine((t) => t.type === "bill" || t.dueDate == null, {
+    message: "Only a bill may have a due date",
+    path: ["dueDate"],
   });
 
 export const transactionUpdateSchema = createUpdateSchema(transactions).extend({
@@ -49,9 +55,14 @@ export type Transaction = z.infer<typeof transactionSelectSchema>;
 export type TransactionInsert = z.infer<typeof transactionInsertSchema>;
 export type TransactionUpdate = z.infer<typeof transactionUpdateSchema>;
 
-/** A transaction joined with the names it refers to, for list rendering. */
+/** A transaction joined with what a list row needs to render itself. */
 export type TransactionWithRelations = Transaction & {
   walletName: string | null;
+  walletCurrency: string | null;
   toWalletName: string | null;
   categoryName: string | null;
+  categorySlug: string | null;
+  categoryIcon: string | null;
+  categoryColor: string | null;
+  categoryIsBuiltIn: boolean | null;
 };

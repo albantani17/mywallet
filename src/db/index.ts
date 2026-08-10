@@ -1,6 +1,7 @@
 // Public entry point of the data layer. UI and services should import
 // repositories from here and leave `db` to the repositories themselves.
 export { db, sqliteDb, type Database } from "./client";
+export { subscribeToTables } from "./table-changes";
 export * from "./repositories";
 export * from "./validators";
 

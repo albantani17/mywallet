@@ -26,7 +26,7 @@ export function WalletCard({ wallet, className }: WalletCardProps) {
   const category = resolve(wallet.type);
 
   return (
-    <View className={cn("flex-col rounded-3xl bg-brand-sheet p-5", className)}>
+    <View className={cn("flex-col rounded-3xl bg-surface p-5", className)}>
       <View className="flex-row items-center gap-3">
         <View
           className="size-10 flex-col items-center justify-center rounded-full"
@@ -35,20 +35,20 @@ export function WalletCard({ wallet, className }: WalletCardProps) {
           <Ionicons name={category.icon} size={18} color={category.color} />
         </View>
         <View className="flex-1 flex-col">
-          <Text className="text-base font-bold text-brand-logo-fg" numberOfLines={1}>
+          <Text className="text-base font-bold text-fg" numberOfLines={1}>
             {wallet.name}
           </Text>
-          <Text className="text-xs text-brand-sheet-muted">
+          <Text className="text-xs text-fg-muted">
             {category.label}
           </Text>
         </View>
       </View>
 
-      <Text className="mt-5 text-xs font-medium text-brand-sheet-muted">
+      <Text className="mt-5 text-xs font-medium text-fg-muted">
         {t("wallets.balance")}
       </Text>
       <Text
-        className="mt-1 text-2xl font-extrabold text-brand-logo-fg"
+        className="mt-1 text-2xl font-extrabold text-fg"
         numberOfLines={1}
         adjustsFontSizeToFit
       >

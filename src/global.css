@@ -1,15 +1,55 @@
 @import 'tailwindcss';
 @import 'uniwind';
 
-/* Brand palette for the onboarding surface. These are fixed brand colors, not
-   light/dark theme tokens — the onboarding screen looks the same either way. */
-@theme {
-  --color-brand-canvas: #2e3d33; /* dark green canvas */
-  --color-brand-canvas-tint: #35473a; /* decorative circles */
-  --color-brand-sheet: #f6f4ec; /* cream bottom panel */
-  --color-brand-primary: #2f7d57; /* forest green primary button */
-  --color-brand-logo: #a7d9b0; /* light green logo badge */
-  --color-brand-logo-fg: #1f3d2b; /* text inside the logo badge */
-  --color-brand-muted: #9fb0a4; /* secondary text on the canvas */
-  --color-brand-sheet-muted: #8a978c; /* secondary text on the panel */
+/*
+ * Surfaces, text and brand hues, per theme.
+ *
+ * Three surface layers, meaning the same thing in both themes: `canvas` is the
+ * screen behind everything, `surface` is a panel on it (card, sheet, tab bar),
+ * and `elevated` is a control inside a panel (input, chip, pressed state).
+ * Because the tokens swap, components never need a `dark:` class.
+ *
+ * A colour token must never be named after a Tailwind size step — `base`, `xs`,
+ * `sm`, `lg`, `xl` and friends. Tailwind resolves `text-*` against the colour
+ * namespace first, so `--color-base` turned `text-base` from a font size into a
+ * colour: every `text-base` in the app silently lost its 16px, and in
+ * TextField it also overrode `text-fg` and painted the input white on white.
+ * That is why this layer is `canvas` and not `base`.
+ *
+ * `primary`, `primary-fg` and `danger` hold the same value in both blocks —
+ * green is the accent, never a background, so it needs no dark counterpart.
+ * They are repeated rather than declared in a plain `@theme` block so they end
+ * up in the per-theme variable map that `useCSSVariable` reads; the JS-side
+ * palette in use-theme-colors.ts depends on that.
+ *
+ * The two blocks must declare exactly the same variable names — the Uniwind
+ * bundler fails the build with "All themes must have the same variables"
+ * otherwise.
+ */
+@variant light {
+  --color-canvas: #ffffff;
+  --color-surface: #f5f5f5;
+  --color-elevated: #ebebeb;
+  --color-fg: #171717;
+  --color-fg-muted: #737373;
+  --color-line: #00000014;
+  --color-scrim: #00000066;
+  --color-primary: #2f7d57;
+  --color-primary-fg: #ffffff;
+  --color-primary-soft: #2f7d5714;
+  --color-danger: #dc2626;
+}
+
+@variant dark {
+  --color-canvas: #0f0f0f;
+  --color-surface: #1c1c1c;
+  --color-elevated: #282828;
+  --color-fg: #fafafa;
+  --color-fg-muted: #a3a3a3;
+  --color-line: #ffffff1f;
+  --color-scrim: #000000a6;
+  --color-primary: #2f7d57;
+  --color-primary-fg: #ffffff;
+  --color-primary-soft: #2f7d5729;
+  --color-danger: #dc2626;
 }

@@ -22,7 +22,7 @@ export function WalletCreateSheet({ isOpen, onClose }: WalletCreateSheetProps) {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <View className="flex-col gap-5">
-        <Text className="text-xl font-bold text-brand-logo-fg">
+        <Text className="text-xl font-bold text-fg">
           {t("createWallet.sheetTitle")}
         </Text>
 

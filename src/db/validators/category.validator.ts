@@ -11,12 +11,17 @@ const nameSchema = z
   .string()
   .trim()
   .min(1, "Category name is required")
-  .max(50, "Category name is too long");
+  .max(30, "Category name is too long");
+
+const slugSchema = z.string().trim().min(1, "Category slug is required");
 
 export const categorySelectSchema = createSelectSchema(categories);
 
+// slug is required despite its `""` column default: the default only exists so
+// the column could be added to a shipped table, never as a usable value.
 export const categoryInsertSchema = createInsertSchema(categories).extend({
   name: nameSchema,
+  slug: slugSchema,
 });
 
 export const categoryUpdateSchema = createUpdateSchema(categories).extend({

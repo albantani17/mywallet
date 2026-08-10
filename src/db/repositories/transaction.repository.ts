@@ -1,7 +1,7 @@
-import { and, desc, eq, gte, lte, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, like, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 
-import { db } from "../client";
+import { db, type Executor } from "../client";
 import { categories } from "../schema/categories";
 import { transactions } from "../schema/transactions";
 import { wallets } from "../schema/wallets";
@@ -19,6 +19,8 @@ export type TransactionListOptions = {
   debtId?: number;
   from?: Date;
   to?: Date;
+  /** Free text matched against the note and the wallet name. */
+  search?: string;
   limit?: number;
   offset?: number;
 };
@@ -53,6 +55,20 @@ function buildFilters(options: TransactionListOptions): SQL | undefined {
   if (options.from) filters.push(gte(transactions.occurredAt, options.from));
   if (options.to) filters.push(lte(transactions.occurredAt, options.to));
 
+  const needle = options.search?.trim();
+  if (needle) {
+    // Note and wallet name only. The category is deliberately left out: a
+    // built-in category renders a translated label (BUILT_IN_LABEL_KEYS in
+    // transaction-category.ts) rather than categories.name, so matching the
+    // stored name would miss exactly the words the user can see.
+    //
+    // LIKE is case-insensitive for ASCII in SQLite, so no lower() is needed.
+    const pattern = `%${needle}%`;
+    filters.push(
+      or(like(transactions.note, pattern), like(wallets.name, pattern))!,
+    );
+  }
+
   return filters.length ? and(...filters) : undefined;
 }
 
@@ -75,10 +91,19 @@ export const transactionQueries = {
         fee: transactions.fee,
         note: transactions.note,
         occurredAt: transactions.occurredAt,
+        dueDate: transactions.dueDate,
         createdAt: transactions.createdAt,
         walletName: wallets.name,
+        walletCurrency: wallets.currency,
         toWalletName: targetWallets.name,
         categoryName: categories.name,
+        // A list row draws the category the same way the pickers do — tinted
+        // glyph plus a label that stays translated for the built-ins, which is
+        // what the slug is for.
+        categorySlug: categories.slug,
+        categoryIcon: categories.icon,
+        categoryColor: categories.color,
+        categoryIsBuiltIn: categories.isBuiltIn,
       })
       .from(transactions)
       .leftJoin(wallets, eq(transactions.walletId, wallets.id))
@@ -142,7 +167,9 @@ export const transactionRepository = {
     const rows = await db
       .select({
         income: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'income' THEN ${transactions.amount} ELSE 0 END), 0)`,
-        expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'expense' THEN ${transactions.amount} ELSE 0 END), 0)`,
+        // A bill is an expense that happens to carry a due date, so it belongs
+        // on the same side of the summary.
+        expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} IN ('expense', 'bill') THEN ${transactions.amount} ELSE 0 END), 0)`,
       })
       .from(transactions)
       .where(
@@ -155,5 +182,17 @@ export const transactionRepository = {
     const income = Number(rows[0]?.income ?? 0);
     const expense = Number(rows[0]?.expense ?? 0);
     return { income, expense, net: income - expense };
+  },
+
+  /** Synchronous variants for use inside a db.transaction callback. */
+  sync: {
+    insert: (data: TransactionInsert, exec: Executor = db): Transaction => {
+      const [row] = exec.insert(transactions).values(data).returning().all();
+      return row;
+    },
+
+    remove: (id: number, exec: Executor = db): void => {
+      exec.delete(transactions).where(eq(transactions.id, id)).run();
+    },
   },
 };

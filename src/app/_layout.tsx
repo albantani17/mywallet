@@ -1,36 +1,90 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Stack } from "expo-router";
+import {
+  DarkTheme,
+  DefaultTheme,
+  Stack,
+  ThemeProvider,
+  type Theme,
+} from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as SystemUI from "expo-system-ui";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, View, useColorScheme } from "react-native";
 
+import { BUILT_IN_TRANSACTION_CATEGORY_SEEDS } from "@/components/features/transactions/transaction-category";
 import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-type";
 import { db } from "@/db";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { categoryService } from "@/services/category-service";
+import { debtPresetService } from "@/services/debt-preset-service";
 import { walletCategoryService } from "@/services/wallet-category-service";
 import migrations from "../../drizzle/migrations";
 
 import "../global.css";
 import "@/i18n";
 
+/**
+ * The navigators' own palette, built from the same tokens as the rest of the
+ * app.
+ *
+ * Without this, React Navigation falls back to its DefaultTheme, whose
+ * background is rgb(242, 242, 242) — and that surface is what a screen slides
+ * across during a transition. In dark mode it reads as a white panel sweeping
+ * over the app, because only the screens themselves were ever themed.
+ */
+function navigationTheme(
+  isDark: boolean,
+  colors: ReturnType<typeof useThemeColors>,
+): Theme {
+  const base = isDark ? DarkTheme : DefaultTheme;
+
+  return {
+    ...base,
+    colors: {
+      ...base.colors,
+      background: colors.canvas,
+      card: colors.surface,
+      text: colors.fg,
+      border: colors.line,
+      primary: colors.primary,
+    },
+  };
+}
+
 export default function RootLayout() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
+  // Uniwind.setTheme pushes the chosen theme into Appearance (see
+  // user-service.applyUserPreferences), so this follows an explicit in-app
+  // choice, not just the OS setting.
+  const isDark = useColorScheme() === "dark";
   // Applies any pending migration before the app renders; the database is not
   // usable until `success` flips.
   const { success, error } = useMigrations(db, migrations);
   const [isSeeded, setIsSeeded] = useState(false);
 
-  // Inserts the built-in wallet categories once the tables exist. Idempotent,
-  // so it is also what backfills a device that upgraded from before the
-  // wallet_categories table. A failure must not block the app — the category
-  // resolver falls back to a generic icon — so this settles either way.
+  // Inserts the built-in wallet and transaction categories once the tables
+  // exist. Idempotent, so it is also what backfills a device that upgraded
+  // from before those columns existed. A failure must not block the app — the
+  // category resolvers fall back to a generic icon — so this settles either
+  // way, and the two seeds are independent enough that one failing should not
+  // discard the other.
   useEffect(() => {
     if (!success) return;
 
     let isCurrent = true;
-    walletCategoryService
-      .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
-      .catch((e) => console.error("Failed to seed wallet categories", e))
+    Promise.all([
+      walletCategoryService
+        .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
+        .catch((e) => console.error("Failed to seed wallet categories", e)),
+      categoryService
+        .ensureBuiltIns(BUILT_IN_TRANSACTION_CATEGORY_SEEDS)
+        .catch((e) => console.error("Failed to seed transaction categories", e)),
+      debtPresetService
+        .ensureBuiltIns()
+        .catch((e) => console.error("Failed to seed debt presets", e)),
+    ])
       .finally(() => {
         if (isCurrent) setIsSeeded(true);
       });
@@ -40,10 +94,24 @@ export default function RootLayout() {
     };
   }, [success]);
 
+  /**
+   * Paints the native window behind the whole React tree.
+   *
+   * This is the bottom-most surface — below the navigators, below every
+   * screen — and it defaults to white. A native stack animation lifts the
+   * screens off it briefly, which is exactly when a white edge shows through
+   * in dark mode. Re-runs on a theme change so the toggle takes effect at once.
+   */
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colors.canvas).catch((e) =>
+      console.error("Failed to set the window background", e),
+    );
+  }, [colors.canvas]);
+
   if (error) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas p-6">
-        <Text className="text-center text-red-400">
+      <View className="flex-1 flex-col items-center justify-center bg-canvas p-6">
+        <Text className="text-center text-danger">
           {t("common.migrationFailed")}: {error.message}
         </Text>
       </View>
@@ -53,22 +121,24 @@ export default function RootLayout() {
   // Also waits on the seed, so the category tabs never render empty.
   if (!success || !isSeeded) {
     return (
-      <View className="flex-1 flex-col items-center justify-center bg-brand-canvas">
-        <ActivityIndicator color="#ffffff" />
+      <View className="flex-1 flex-col items-center justify-center bg-canvas">
+        <ActivityIndicator colorClassName="accent-fg" />
       </View>
     );
   }
 
   return (
-    <>
-      <StatusBar style="light" />
+    <ThemeProvider value={navigationTheme(isDark, colors)}>
+      {/* "auto" follows the OS colour scheme, and Uniwind.setTheme pushes the
+          chosen theme into Appearance — so an explicit theme drives this too. */}
+      <StatusBar style="auto" />
       <Stack
         screenOptions={{
           headerShown: false,
           animation: "slide_from_right",
-          contentStyle: { backgroundColor: "#2e3d33" },
+          contentStyle: { backgroundColor: colors.canvas },
         }}
       />
-    </>
+    </ThemeProvider>
   );
 }

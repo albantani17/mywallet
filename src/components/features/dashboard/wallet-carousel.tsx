@@ -13,9 +13,10 @@ import Animated, {
 
 import { WalletCard } from "@/components/features/wallets/wallet-card";
 import type { WalletWithBalance } from "@/db";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.78);
+const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.875);
 const GAP = 12;
 const SNAP_INTERVAL = CARD_WIDTH + GAP;
 // Centres the first and last card instead of leaving them flush to the edge.
@@ -102,7 +103,14 @@ function Slide({ index, scrollX, children }: SlideProps) {
 
     return {
       transform: [
-        { scale: interpolate(scrollX.value, inputRange, [0.93, 1, 0.93], "clamp") },
+        {
+          scale: interpolate(
+            scrollX.value,
+            inputRange,
+            [0.93, 1, 0.93],
+            "clamp",
+          ),
+        },
       ],
       opacity: interpolate(scrollX.value, inputRange, [0.6, 1, 0.6], "clamp"),
     };
@@ -116,18 +124,19 @@ function Slide({ index, scrollX, children }: SlideProps) {
 }
 
 function MoreTile() {
+  const colors = useThemeColors();
   const { t } = useTranslation();
 
   return (
     <Link href="/wallets" asChild>
       <Pressable
         accessibilityRole="button"
-        className="flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-white/15 bg-white/10 p-5 active:opacity-70"
+        className="flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-line bg-surface p-5 active:opacity-70"
       >
-        <View className="size-12 flex-col items-center justify-center rounded-full bg-white/15">
-          <Ionicons name="arrow-forward" size={22} color="#a7d9b0" />
+        <View className="size-12 flex-col items-center justify-center rounded-full bg-elevated">
+          <Ionicons name="arrow-forward" size={22} color={colors.primary} />
         </View>
-        <Text className="text-sm font-semibold text-white">
+        <Text className="text-sm font-semibold text-fg">
           {t("dashboard.seeAll")}
         </Text>
       </Pressable>
@@ -145,5 +154,7 @@ function Dot({ index, scrollX }: Omit<SlideProps, "children">) {
     };
   });
 
-  return <Animated.View className="h-1.5 rounded-full bg-white" style={style} />;
+  return (
+    <Animated.View className="h-1.5 rounded-full bg-elevated" style={style} />
+  );
 }

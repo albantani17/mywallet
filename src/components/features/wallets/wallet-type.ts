@@ -1,16 +1,17 @@
-import { Ionicons } from "@expo/vector-icons";
-import type { ComponentProps } from "react";
-
 import { BUILT_IN_WALLET_TYPES } from "@/db";
+import {
+  toIonicon,
+  type IoniconName,
+} from "@/components/features/shared/icon-choices";
 
-type IoniconName = ComponentProps<typeof Ionicons>["name"];
-
-/** ~15% alpha suffix for the logo circle behind an icon. */
-export const TINT_ALPHA = "26";
+export {
+  COLOR_CHOICES,
+  FALLBACK_COLOR,
+  TINT_ALPHA,
+} from "@/components/features/shared/icon-choices";
 
 /** Shown for a slug with no matching row — a deleted category, say. */
 export const FALLBACK_ICON: IoniconName = "wallet-outline";
-export const FALLBACK_COLOR = "#8a978c";
 
 /**
  * Seeds for the four built-in categories.
@@ -51,13 +52,9 @@ export function isBuiltInSlug(slug: string): boolean {
   return BUILT_IN_SLUGS.has(slug);
 }
 
-/**
- * The DB stores the glyph as free text; Ionicons types it as a union. Cast at
- * this single boundary — an unknown name renders nothing rather than throwing,
- * and the icon picker only ever writes names from ICON_CHOICES.
- */
+/** Wallet-flavoured binding of the shared cast: a missing glyph is a wallet. */
 export function toIconName(icon: string | null | undefined): IoniconName {
-  return (icon ?? FALLBACK_ICON) as IoniconName;
+  return toIonicon(icon, FALLBACK_ICON);
 }
 
 /** Offered when creating a category. */
@@ -78,15 +75,4 @@ export const ICON_CHOICES: IoniconName[] = [
   "briefcase-outline",
   "shield-checkmark-outline",
   "star-outline",
-];
-
-export const COLOR_CHOICES = [
-  "#2f7d57",
-  "#2563eb",
-  "#7c3aed",
-  "#d97706",
-  "#dc2626",
-  "#0891b2",
-  "#db2777",
-  "#65a30d",
 ];

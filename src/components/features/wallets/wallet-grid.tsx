@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Dimensions, FlatList, View } from "react-native";
 
 import { EmptyState } from "@/components/ui/empty-state";
+import { AppRefreshControl } from "@/components/ui/refresh-control";
 import type { WalletWithBalance } from "@/db";
 import { useWalletActions } from "@/hooks/features/wallets/use-wallet-actions";
 import { useWalletFilters } from "@/hooks/features/wallets/use-wallet-filters";
@@ -67,6 +68,8 @@ export function WalletGrid() {
     setFilter,
     isReady,
     hasWallets,
+    isRefreshing,
+    refresh,
   } = useWalletFilters();
 
   const { activeWallet, isEditOpen, isDeleteOpen, edit, remove, close } =
@@ -77,7 +80,7 @@ export function WalletGrid() {
   if (!isReady) {
     return (
       <View className="flex-1 flex-col items-center justify-center">
-        <ActivityIndicator color="#ffffff" />
+        <ActivityIndicator colorClassName="accent-fg" />
       </View>
     );
   }
@@ -99,6 +102,9 @@ export function WalletGrid() {
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
+        }
         ListHeaderComponent={
           <View className="flex-col gap-3">
             <WalletSearch value={query} onChange={setQuery} />

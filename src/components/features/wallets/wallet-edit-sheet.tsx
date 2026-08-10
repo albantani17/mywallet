@@ -38,7 +38,7 @@ export function WalletEditSheet({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <View className="flex-col gap-5">
-        <Text className="text-xl font-bold text-brand-logo-fg">
+        <Text className="text-xl font-bold text-fg">
           {t("wallets.edit.title")}
         </Text>
 
@@ -56,15 +56,15 @@ export function WalletEditSheet({
         {hasUsage ? (
           // Type and opening balance are locked: changing either would move
           // historical balances without touching a single transaction.
-          <View className="flex-row items-start gap-2 rounded-2xl bg-black/5 p-3">
-            <Text className="flex-1 text-xs leading-4 text-brand-sheet-muted">
+          <View className="flex-row items-start gap-2 rounded-2xl bg-elevated p-3">
+            <Text className="flex-1 text-xs leading-4 text-fg-muted">
               {t("wallets.edit.lockedNote", { count: usageCount })}
             </Text>
           </View>
         ) : (
           <>
             <View className="flex-col gap-2">
-              <Text className="text-sm font-medium text-brand-logo-fg">
+              <Text className="text-sm font-medium text-fg">
                 {t("createWallet.typeLabel")}
               </Text>
               <WalletTypePicker value={type} onChange={changeType} />
@@ -82,7 +82,7 @@ export function WalletEditSheet({
         )}
 
         {errors.form ? (
-          <Text className="text-sm text-red-500">{errors.form}</Text>
+          <Text className="text-sm text-danger">{errors.form}</Text>
         ) : null}
 
         <View className="flex-row justify-end gap-3">

@@ -8,6 +8,7 @@ import { TextField } from "@/components/ui/text-field";
 import type { WalletWithBalance } from "@/db";
 import { useDeleteWallet } from "@/hooks/features/wallets/use-delete-wallet";
 import type { RemoveWalletResult } from "@/services/wallet-service";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type WalletDeleteSheetProps = {
   wallet: WalletWithBalance;
@@ -22,6 +23,7 @@ export function WalletDeleteSheet({
   onClose,
   onRemoved,
 }: WalletDeleteSheetProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
   const {
     step,
@@ -57,15 +59,15 @@ export function WalletDeleteSheet({
             <Ionicons
               name={hasUsage ? "eye-off-outline" : "trash-outline"}
               size={20}
-              color="#dc2626"
+              color={colors.danger}
             />
           </View>
-          <Text className="flex-1 text-lg font-bold text-brand-logo-fg">
+          <Text className="flex-1 text-lg font-bold text-fg">
             {title}
           </Text>
         </View>
 
-        <Text className="text-sm leading-5 text-brand-sheet-muted">
+        <Text className="text-sm leading-5 text-fg-muted">
           {hasUsage
             ? t("wallets.delete.usedMessage", { count: usageCount })
             : t("wallets.delete.message")}
@@ -73,7 +75,7 @@ export function WalletDeleteSheet({
 
         {isNameStep ? (
           <View className="flex-col gap-2">
-            <Text className="text-sm text-brand-logo-fg">
+            <Text className="text-sm text-fg">
               {t("wallets.delete.typeNamePrompt", { name: wallet.name })}
             </Text>
             <TextField
@@ -86,7 +88,7 @@ export function WalletDeleteSheet({
           </View>
         ) : null}
 
-        {error ? <Text className="text-sm text-red-500">{error}</Text> : null}
+        {error ? <Text className="text-sm text-danger">{error}</Text> : null}
 
         <View className="mt-1 flex-row justify-end gap-3">
           <Button

@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { useWalletCategories } from "@/hooks/features/wallets/use-wallet-categories";
 import type { WalletFilter } from "@/hooks/features/wallets/use-wallet-filters";
 import { cn } from "@/utils/cn";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type WalletTypeTabsProps = {
   value: WalletFilter;
@@ -22,6 +23,7 @@ export function WalletTypeTabs({
   onChange,
   onAddCategory,
 }: WalletTypeTabsProps) {
+  const colors = useThemeColors();
   const { t } = useTranslation();
   const { categories, labelOf } = useWalletCategories();
 
@@ -52,14 +54,17 @@ export function WalletTypeTabs({
               className={cn(
                 "flex-row items-center self-start rounded-full border px-3 py-1.5",
                 isActive
-                  ? "border-brand-logo bg-brand-logo"
-                  : "border-white/15 bg-white/5",
+                  ? "border-primary bg-primary"
+                  : "border-line bg-surface",
               )}
             >
               <Text
                 className={cn(
                   "text-xs font-semibold",
-                  isActive ? "text-brand-logo-fg" : "text-brand-muted",
+                  // The active chip sits on a solid green fill, so its label
+                  // follows the fill rather than the theme — text-fg is nearly
+                  // black in light mode and disappears into the green.
+                  isActive ? "text-primary-fg" : "text-fg-muted",
                 )}
               >
                 {tab.label}
@@ -74,9 +79,9 @@ export function WalletTypeTabs({
         accessibilityLabel={t("wallets.categories.add")}
         onPress={onAddCategory}
         hitSlop={8}
-        className="size-8 flex-col items-center justify-center rounded-full border border-white/15 bg-white/10 active:opacity-70"
+        className="size-8 flex-col items-center justify-center rounded-full border border-line bg-surface active:opacity-70"
       >
-        <Ionicons name="add" size={18} color="#a7d9b0" />
+        <Ionicons name="add" size={18} color={colors.primary} />
       </Pressable>
     </View>
   );
