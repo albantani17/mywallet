@@ -7,17 +7,18 @@ import { Pressable, Text, View } from "react-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type Action = {
-  key: "addTransaction" | "debts";
+  key: "addTransaction";
   icon: ComponentProps<typeof Ionicons>["name"];
   href: Href;
 };
 
+// Debts used to sit here too; it has its own tab now, and a second way in from
+// the same screen only makes the tab bar look like it is missing something.
 const ACTIONS: Action[] = [
   { key: "addTransaction", icon: "add-circle-outline", href: "/transaction/new" },
-  { key: "debts", icon: "people-outline", href: "/debts" },
 ];
 
-/** The two entry points below the wallet list. */
+/** The way into recording a transaction, below the wallet list. */
 export function DashboardActions() {
   const colors = useThemeColors();
   const { t } = useTranslation();

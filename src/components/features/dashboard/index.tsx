@@ -4,16 +4,19 @@ import { ActivityIndicator, Text, View } from "react-native";
 import { AppRefreshControl } from "@/components/ui/refresh-control";
 import { Screen } from "@/components/ui/screen";
 import { useDashboardSummary } from "@/hooks/features/dashboard/use-dashboard-summary";
+import { useInsights } from "@/hooks/features/dashboard/use-insights";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { DashboardActions } from "./dashboard-actions";
+import { InsightSection } from "./insight-section";
 import { WalletCarousel } from "./wallet-carousel";
 
 export function Dashboard() {
   const { t } = useTranslation();
   const { user } = useCurrentUser();
+  const insights = useInsights();
   const { topWallets, hasMore, isReady, isRefreshing, refresh } =
-    useDashboardSummary();
+    useDashboardSummary(insights.refresh);
 
   if (!isReady) {
     return (
@@ -49,6 +52,8 @@ export function Dashboard() {
         </View>
 
         <DashboardActions />
+
+        <InsightSection insights={insights} />
       </View>
     </Screen>
   );

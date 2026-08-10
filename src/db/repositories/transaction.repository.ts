@@ -25,12 +25,6 @@ export type TransactionListOptions = {
   offset?: number;
 };
 
-export type MonthlySummary = {
-  income: number;
-  expense: number;
-  net: number;
-};
-
 // Second reference to `wallets` so a transfer's destination can be joined
 // alongside its source in one query.
 const targetWallets = alias(wallets, "target_wallets");
@@ -154,34 +148,6 @@ export const transactionRepository = {
 
   async remove(id: number): Promise<void> {
     await db.delete(transactions).where(eq(transactions.id, id));
-  },
-
-  /**
-   * Income and expense totals for a calendar month. Transfers are excluded:
-   * moving money between your own wallets is not spending.
-   */
-  async getMonthlySummary(month: Date): Promise<MonthlySummary> {
-    const from = new Date(month.getFullYear(), month.getMonth(), 1);
-    const to = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59, 999);
-
-    const rows = await db
-      .select({
-        income: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'income' THEN ${transactions.amount} ELSE 0 END), 0)`,
-        // A bill is an expense that happens to carry a due date, so it belongs
-        // on the same side of the summary.
-        expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} IN ('expense', 'bill') THEN ${transactions.amount} ELSE 0 END), 0)`,
-      })
-      .from(transactions)
-      .where(
-        and(
-          gte(transactions.occurredAt, from),
-          lte(transactions.occurredAt, to),
-        ),
-      );
-
-    const income = Number(rows[0]?.income ?? 0);
-    const expense = Number(rows[0]?.expense ?? 0);
-    return { income, expense, net: income - expense };
   },
 
   /** Synchronous variants for use inside a db.transaction callback. */

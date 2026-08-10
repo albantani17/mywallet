@@ -39,6 +39,59 @@ export function endOfDay(date: Date): Date {
   return copy;
 }
 
+/**
+ * Month boundaries in local time, on a copy.
+ *
+ * The insight queries compare like-for-like windows, so the two ends have to be
+ * built the same way: the first instant of the first day, the last instant of
+ * the last one.
+ */
+export function startOfMonth(date: Date): Date {
+  return startOfDay(new Date(date.getFullYear(), date.getMonth(), 1));
+}
+
+export function endOfMonth(date: Date): Date {
+  // Day 0 of the next month is the last day of this one, leap years included.
+  return endOfDay(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+}
+
+/**
+ * Shifts by whole months, clamping the day rather than overflowing: one month
+ * before 31 March is 28 February, not 3 March.
+ */
+export function addMonths(date: Date, months: number): Date {
+  const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth() + 1,
+    0,
+  ).getDate();
+
+  const copy = new Date(date);
+  copy.setFullYear(target.getFullYear(), target.getMonth(), Math.min(date.getDate(), lastDay));
+  return copy;
+}
+
+/** How many days the month containing `date` has. */
+export function daysInMonth(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+/** "Agu" / "Aug" — the axis label for a monthly chart. */
+export function formatMonthShort(date: Date, locale: AppLocale): string {
+  return new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
+    month: "short",
+  }).format(date);
+}
+
+/** "Agu 2026" / "Aug 2026", for a comparison that may cross a year. */
+export function formatMonthYear(date: Date, locale: AppLocale): string {
+  return new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 /** True when both dates fall on the same calendar day in local time. */
 export function isSameDay(a: Date, b: Date): boolean {
   return (

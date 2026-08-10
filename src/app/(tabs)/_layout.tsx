@@ -14,7 +14,7 @@ const ICONS: Record<string, { active: IoniconName; inactive: IoniconName }> = {
   home: { active: "home", inactive: "home-outline" },
   wallets: { active: "wallet", inactive: "wallet-outline" },
   transactions: { active: "swap-vertical", inactive: "swap-vertical-outline" },
-  budget: { active: "pie-chart", inactive: "pie-chart-outline" },
+  debts: { active: "people", inactive: "people-outline" },
   more: {
     active: "ellipsis-horizontal",
     inactive: "ellipsis-horizontal-outline",
@@ -96,8 +96,8 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="budget"
-        options={{ title: t("tabs.budget"), tabBarIcon: tabIcon("budget") }}
+        name="debts"
+        options={{ title: t("tabs.debts"), tabBarIcon: tabIcon("debts") }}
       />
       <Tabs.Screen
         name="more"
