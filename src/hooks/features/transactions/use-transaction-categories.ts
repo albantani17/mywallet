@@ -1,12 +1,12 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useTranslation } from "react-i18next";
 
 import {
   BUILT_IN_LABEL_KEYS,
   toIconName,
 } from "@/components/features/transactions/transaction-category";
-import { categoryQueries } from "@/db";
+import { categoryQueries, schema } from "@/db";
 import type { Category, CategoryType } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 
 export type ResolvedTransactionCategory = {
   id: number;
@@ -24,9 +24,11 @@ export type ResolvedTransactionCategory = {
  */
 export function useTransactionCategories(type: CategoryType) {
   const { t } = useTranslation();
-  const { data, updatedAt } = useLiveQuery(categoryQueries.listByType(type), [
-    type,
-  ]);
+  const { data, updatedAt } = useLiveData(
+    categoryQueries.listByType(type),
+    [schema.categories],
+    [type],
+  );
 
   const categories = data ?? [];
 

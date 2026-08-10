@@ -1,8 +1,11 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useEffect } from "react";
 
-import { walletQueries } from "@/db";
+import { schema, walletQueries } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 import { useRefresh } from "@/hooks/use-refresh";
+
+/** Balances are summed from transactions, and the debt count from debts. */
+export const WALLET_TABLES = [schema.wallets, schema.transactions, schema.debts];
 
 /**
  * Live list of active wallets with their derived balances. Shared by the tabs
@@ -11,8 +14,9 @@ import { useRefresh } from "@/hooks/use-refresh";
 export function useWallets({ includeArchived = false } = {}) {
   const { refreshKey, isRefreshing, refresh, settle } = useRefresh();
 
-  const { data, error, updatedAt } = useLiveQuery(
+  const { data, error, updatedAt } = useLiveData(
     walletQueries.listWithBalances({ includeArchived }),
+    WALLET_TABLES,
     [includeArchived, refreshKey],
   );
 

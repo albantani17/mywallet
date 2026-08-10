@@ -1,9 +1,16 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 
-import { transactionQueries } from "@/db";
+import { schema, transactionQueries } from "@/db";
 import type { TransactionFilterValues } from "@/hooks/features/transactions/use-transaction-filters";
+import { useLiveData } from "@/hooks/use-live-data";
 import { useRefresh } from "@/hooks/use-refresh";
+
+/** The wallet and category names each row shows are joined in. */
+const TRANSACTION_TABLES = [
+  schema.transactions,
+  schema.wallets,
+  schema.categories,
+];
 
 /** How many rows to add each time the list reaches its end. */
 const PAGE_SIZE = 50;
@@ -55,7 +62,7 @@ export function useTransactions(filters: TransactionFilterValues = NO_FILTERS) {
     setLimit(PAGE_SIZE);
   }
 
-  const { data, error, updatedAt } = useLiveQuery(
+  const { data, error, updatedAt } = useLiveData(
     transactionQueries.list({
       limit,
       search,
@@ -63,6 +70,7 @@ export function useTransactions(filters: TransactionFilterValues = NO_FILTERS) {
       from: filters.from ?? undefined,
       to: filters.to ?? undefined,
     }),
+    TRANSACTION_TABLES,
     [limit, refreshKey, search, filters.walletId, fromTime, toTime],
   );
 

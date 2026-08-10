@@ -1,8 +1,8 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useTranslation } from "react-i18next";
 
-import { walletCategoryQueries } from "@/db";
+import { schema, walletCategoryQueries } from "@/db";
 import type { WalletCategory } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 import {
   FALLBACK_COLOR,
   FALLBACK_ICON,
@@ -37,7 +37,9 @@ export type ResolvedCategory = {
  */
 export function useWalletCategories() {
   const { t } = useTranslation();
-  const { data, updatedAt } = useLiveQuery(walletCategoryQueries.list());
+  const { data, updatedAt } = useLiveData(walletCategoryQueries.list(), [
+    schema.walletCategories,
+  ]);
 
   const categories = data ?? [];
   const bySlug = new Map(categories.map((category) => [category.slug, category]));

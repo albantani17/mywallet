@@ -1,9 +1,22 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useEffect } from "react";
 
 import type { DebtDirection, DebtWithSummary } from "@/db";
-import { debtQueries } from "@/db";
+import { debtQueries, schema } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 import { useRefresh } from "@/hooks/use-refresh";
+
+/**
+ * Everything a debt summary reads. Only `debts` is the FROM table; the money
+ * comes from the installments and the allocations against them, the name from
+ * the counterparty, and the grace period from the schedule.
+ */
+export const DEBT_SUMMARY_TABLES = [
+  schema.debts,
+  schema.counterparties,
+  schema.installments,
+  schema.paymentAllocations,
+  schema.debtSchedules,
+];
 
 /**
  * Live list of debts in one direction — open and closed both, so a debt does
@@ -14,8 +27,9 @@ import { useRefresh } from "@/hooks/use-refresh";
 export function useDebts(direction: DebtDirection) {
   const { refreshKey, isRefreshing, refresh, settle } = useRefresh();
 
-  const { data, error, updatedAt } = useLiveQuery(
+  const { data, error, updatedAt } = useLiveData(
     debtQueries.listWithSummary({ direction }),
+    DEBT_SUMMARY_TABLES,
     [direction, refreshKey],
   );
 

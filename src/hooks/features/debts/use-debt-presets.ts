@@ -1,10 +1,10 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { presetLabelKey } from "@/components/features/debts/debt-presets";
-import { debtPresetQueries } from "@/db";
+import { debtPresetQueries, schema } from "@/db";
 import type { DebtDirection, DebtPreset } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 
 /**
  * The financial products a new debt can start from.
@@ -14,7 +14,9 @@ import type { DebtDirection, DebtPreset } from "@/db";
  */
 export function useDebtPresets() {
   const { t } = useTranslation();
-  const { data, updatedAt } = useLiveQuery(debtPresetQueries.list());
+  const { data, updatedAt } = useLiveData(debtPresetQueries.list(), [
+    schema.debtPresets,
+  ]);
 
   const presets = data ?? [];
 

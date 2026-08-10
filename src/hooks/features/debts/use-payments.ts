@@ -1,7 +1,6 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-
-import { paymentQueries } from "@/db";
+import { paymentQueries, schema } from "@/db";
 import type { PaymentWithAllocations } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 
 /**
  * A debt's payments, newest first.
@@ -10,8 +9,9 @@ import type { PaymentWithAllocations } from "@/db";
  * back with each row so the history can show it rather than letting it vanish.
  */
 export function usePayments(debtId: number | null, refreshKey = 0) {
-  const { data, error, updatedAt } = useLiveQuery(
+  const { data, error, updatedAt } = useLiveData(
     paymentQueries.listByDebt(debtId ?? -1),
+    [schema.payments, schema.paymentAllocations, schema.wallets],
     [debtId, refreshKey],
   );
 

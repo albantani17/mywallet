@@ -1,10 +1,10 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useCallback, useEffect } from "react";
 
 import { walletQueries } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 import { useRefresh } from "@/hooks/use-refresh";
 
-import { useWallets } from "../wallets/use-wallets";
+import { useWallets, WALLET_TABLES } from "../wallets/use-wallets";
 
 export const CAROUSEL_LIMIT = 3;
 
@@ -23,8 +23,9 @@ export function useDashboardSummary() {
 
   const { refreshKey, refresh: refreshCarousel, settle } = useRefresh();
 
-  const { data: topWallets, updatedAt } = useLiveQuery(
+  const { data: topWallets, updatedAt } = useLiveData(
     walletQueries.topByBalance(CAROUSEL_LIMIT),
+    WALLET_TABLES,
     [refreshKey],
   );
 

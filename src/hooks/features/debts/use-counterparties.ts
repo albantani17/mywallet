@@ -1,7 +1,6 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-
-import { counterpartyQueries } from "@/db";
+import { counterpartyQueries, schema } from "@/db";
 import type { CounterpartyKind, CounterpartyWithUsage } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
 
 /**
  * The parties already on file, for the "used before" chips.
@@ -11,9 +10,12 @@ import type { CounterpartyKind, CounterpartyWithUsage } from "@/db";
  * seeing why.
  */
 export function useCounterparties(kind?: CounterpartyKind) {
-  const { data, updatedAt } = useLiveQuery(counterpartyQueries.list({ kind }), [
-    kind,
-  ]);
+  // The usage count each chip shows is summed from the debts table.
+  const { data, updatedAt } = useLiveData(
+    counterpartyQueries.list({ kind }),
+    [schema.counterparties, schema.debts],
+    [kind],
+  );
 
   return {
     counterparties: (data ?? []) as CounterpartyWithUsage[],

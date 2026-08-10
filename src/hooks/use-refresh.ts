@@ -1,14 +1,12 @@
 import { useCallback, useState } from "react";
 
 /**
- * Pull-to-refresh plumbing for a useLiveQuery-backed hook.
+ * Pull-to-refresh plumbing for a live-query-backed hook.
  *
- * The live query subscribes to one table only — the one it selects FROM — so
- * anything derived from another table goes stale silently. A wallet balance is
- * summed from `transactions`, but its query watches `wallets`, so recording a
- * transaction elsewhere in the app leaves the displayed balance behind until
- * something happens to touch the wallets table. Refreshing re-runs the query
- * outright.
+ * Keeping data current is `useLiveData`'s job — it watches every table a query
+ * reads, so a payment recorded elsewhere reaches the screen on its own. This
+ * hook is the manual gesture on top: it forces a re-read and, more to the
+ * point, gives the user a spinner that says the app looked again.
  *
  * `refreshKey` goes into the query's dependency list; the caller calls
  * `settle()` when a result lands, which is what stops the spinner. Passing

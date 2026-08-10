@@ -1,8 +1,10 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMemo } from "react";
 
 import { debtQueries } from "@/db";
 import type { DebtDirection } from "@/db";
+import { useLiveData } from "@/hooks/use-live-data";
+
+import { DEBT_SUMMARY_TABLES } from "./use-debts";
 
 export type DebtTotals = {
   outstanding: number;
@@ -23,8 +25,9 @@ export function useDebtTotals() {
   // One clock for the whole header, so the overdue counts of the two
   // directions cannot be measured a render apart.
   const now = useMemo(() => new Date(), []);
-  const { data, error, updatedAt } = useLiveQuery(
+  const { data, error, updatedAt } = useLiveData(
     debtQueries.totalsByDirection(now),
+    DEBT_SUMMARY_TABLES,
     [now],
   );
 
