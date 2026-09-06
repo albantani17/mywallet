@@ -6,6 +6,7 @@ export * from "./debt.validator";
 export * from "./installment.validator";
 export * from "./payment-allocation.validator";
 export * from "./payment.validator";
+export * from "./quick-entry-alias.validator";
 export * from "./transaction.validator";
 export * from "./user.validator";
 export * from "./wallet-category.validator";

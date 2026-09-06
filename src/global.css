@@ -16,6 +16,12 @@
  * TextField it also overrode `text-fg` and painted the input white on white.
  * That is why this layer is `canvas` and not `base`.
  *
+ * `warning` marks a parsed field the quick-entry parser inferred rather than
+ * read. It is amber and not `danger`: a guess is something to check before
+ * saving, not something that went wrong, and red would teach people to ignore
+ * it. Unlike the accent it does differ per theme — amber-700 stays legible on
+ * white, amber-500 on near-black.
+ *
  * `primary`, `primary-fg` and `danger` hold the same value in both blocks —
  * green is the accent, never a background, so it needs no dark counterpart.
  * They are repeated rather than declared in a plain `@theme` block so they end
@@ -38,6 +44,8 @@
   --color-primary-fg: #ffffff;
   --color-primary-soft: #2f7d5714;
   --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-warning-soft: #b4530914;
 }
 
 @variant dark {
@@ -52,4 +60,6 @@
   --color-primary-fg: #ffffff;
   --color-primary-soft: #2f7d5729;
   --color-danger: #dc2626;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #f59e0b29;
 }

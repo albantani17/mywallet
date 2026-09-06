@@ -35,6 +35,7 @@ export type Translation = {
     seeAll: string;
     actions: {
       addTransaction: string;
+      quickEntry: string;
     };
     quickRepeat: {
       title: string;
@@ -573,6 +574,30 @@ export type Translation = {
       unauthorized: string;
     };
   };
+  quickEntry: {
+    title: string;
+    placeholder: string;
+    hint: string;
+    interpretation: string;
+    guessedHint: string;
+    amountUnknown: string;
+    walletUnknown: string;
+    categoryUnknown: string;
+    remember: string;
+    amountMissing: string;
+    walletMissing: string;
+    failed: string;
+    save: string;
+    openFullForm: string;
+    fields: {
+      type: string;
+      amount: string;
+      wallet: string;
+      toWallet: string;
+      category: string;
+      date: string;
+    };
+  };
   common: {
     migrationFailed: string;
     undo: string;
@@ -612,6 +637,7 @@ export const id: Translation = {
     seeAll: "Lihat semua",
     actions: {
       addTransaction: "Tambah Transaksi",
+      quickEntry: "Catat Cepat",
     },
     quickRepeat: {
       title: "Catat lagi",
@@ -1166,6 +1192,30 @@ export const id: Translation = {
       corrupt: "Berkas cadangan rusak atau tidak lengkap.",
       unauthorized:
         "Akses Google Drive ditolak. Hubungkan ulang akunmu lalu coba lagi.",
+    },
+  },
+  quickEntry: {
+    title: "Catat cepat",
+    placeholder: "kopi 25rb gopay kemarin",
+    hint: "Tulis apa adanya — urutannya bebas.",
+    interpretation: "Yang kubaca",
+    guessedHint: "Yang bertanda kuning itu tebakan. Ketuk untuk membetulkan.",
+    amountUnknown: "Nominal?",
+    walletUnknown: "Dompet?",
+    categoryUnknown: "Tanpa kategori",
+    remember: 'Ingat "{{phrase}}" sebagai {{target}}',
+    amountMissing: "Nominalnya berapa?",
+    walletMissing: "Pilih dompet dulu.",
+    failed: "Gagal menyimpan. Coba lagi.",
+    save: "Simpan",
+    openFullForm: "Buka form lengkap",
+    fields: {
+      type: "Jenis",
+      amount: "Nominal",
+      wallet: "Dompet",
+      toWallet: "Ke dompet",
+      category: "Kategori",
+      date: "Tanggal",
     },
   },
   common: {

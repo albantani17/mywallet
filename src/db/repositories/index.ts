@@ -8,6 +8,7 @@ export * from "./insight.repository";
 export * from "./installment.repository";
 export * from "./payment-allocation.repository";
 export * from "./payment.repository";
+export * from "./quick-entry-alias.repository";
 export * from "./transaction.repository";
 export * from "./user.repository";
 export * from "./wallet-category.repository";

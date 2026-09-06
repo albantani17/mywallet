@@ -8,6 +8,7 @@ import m0003 from './0003_groovy_fallen_one.sql';
 import m0004 from './0004_classy_paper_doll.sql';
 import m0005 from './0005_numerous_pyro.sql';
 import m0006 from './0006_blushing_changeling.sql';
+import m0007 from './0007_brief_stephen_strange.sql';
 
   export default {
     journal,
@@ -18,7 +19,8 @@ m0002,
 m0003,
 m0004,
 m0005,
-m0006
+m0006,
+m0007
     }
   }
   

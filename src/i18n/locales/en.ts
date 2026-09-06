@@ -34,6 +34,7 @@ export const en: Translation = {
     seeAll: "See all",
     actions: {
       addTransaction: "Add Transaction",
+      quickEntry: "Quick Entry",
     },
     quickRepeat: {
       title: "Record again",
@@ -589,6 +590,30 @@ export const en: Translation = {
       corrupt: "The backup file is damaged or incomplete.",
       unauthorized:
         "Google Drive access was refused. Reconnect your account and try again.",
+    },
+  },
+  quickEntry: {
+    title: "Quick entry",
+    placeholder: "coffee 25rb gopay yesterday",
+    hint: "Write it however you like — order does not matter.",
+    interpretation: "What I read",
+    guessedHint: "Anything marked amber is a guess. Tap it to correct it.",
+    amountUnknown: "Amount?",
+    walletUnknown: "Wallet?",
+    categoryUnknown: "Uncategorised",
+    remember: 'Remember "{{phrase}}" as {{target}}',
+    amountMissing: "How much was it?",
+    walletMissing: "Pick a wallet first.",
+    failed: "Could not save it. Try again.",
+    save: "Save",
+    openFullForm: "Open the full form",
+    fields: {
+      type: "Type",
+      amount: "Amount",
+      wallet: "Wallet",
+      toWallet: "To wallet",
+      category: "Category",
+      date: "Date",
     },
   },
   common: {

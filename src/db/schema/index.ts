@@ -8,6 +8,7 @@ export * from "./debts";
 export * from "./installments";
 export * from "./payment-allocations";
 export * from "./payments";
+export * from "./quick-entry-aliases";
 export * from "./relations";
 export * from "./transactions";
 export * from "./users";
