@@ -14,7 +14,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TransactionForm } from "./transaction-form";
 
+import type { TransactionDraft } from "@/hooks/features/transactions/use-create-transaction";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+
+type NewTransactionScreenProps = {
+  /** Pre-filled fields, e.g. from a long-pressed repeat chip. */
+  initial?: Partial<TransactionDraft>;
+};
 
 /**
  * Full-screen form for recording a transaction.
@@ -24,7 +30,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
  * back to /home because the route can be opened as the first entry (a deep
  * link, say), where there is no history to pop.
  */
-export function NewTransactionScreen() {
+export function NewTransactionScreen({ initial }: NewTransactionScreenProps) {
   const colors = useThemeColors();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -76,7 +82,7 @@ export function NewTransactionScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <TransactionForm onSaved={close} />
+          <TransactionForm onSaved={close} initial={initial} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

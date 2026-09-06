@@ -35,6 +35,13 @@ export const en: Translation = {
     actions: {
       addTransaction: "Add Transaction",
     },
+    quickRepeat: {
+      title: "Record again",
+      hint: "Long-press to change it first",
+      saved: "{{name}} recorded",
+      failed: "Could not record it. Try again.",
+      undoFailed: "Could not undo. Delete it from the transaction list.",
+    },
   },
   insights: {
     title: "Insights",
@@ -203,6 +210,7 @@ export const en: Translation = {
     feePlaceholder: "0",
     typeLabel: "Transaction type",
     categoryLabel: "Category",
+    categoryOptionalLabel: "Category (optional)",
     categoryPlaceholder: "Pick a category",
     dateLabel: "Transaction date",
     dateConfirm: "Select",
@@ -216,7 +224,6 @@ export const en: Translation = {
     walletRequired: "Pick a wallet first",
     toWalletRequired: "Pick a destination wallet",
     sameWallet: "The destination wallet must be different",
-    categoryRequired: "Pick a category first",
     noteTooLong: "That note is too long",
     failed: "Could not save the transaction. Try again.",
     categorySheet: {
@@ -586,5 +593,6 @@ export const en: Translation = {
   },
   common: {
     migrationFailed: "Database migration failed",
+    undo: "Undo",
   },
 };

@@ -6,6 +6,7 @@ import { TextField } from "@/components/ui/text-field";
 import {
   categoryTypeFor,
   useCreateTransaction,
+  type TransactionDraft,
 } from "@/hooks/features/transactions/use-create-transaction";
 
 import { CategorySelect } from "./category-select";
@@ -15,6 +16,8 @@ import { WalletSelect } from "./wallet-select";
 
 type TransactionFormProps = {
   onSaved: () => void;
+  /** Seed values; read once on mount, then owned by the form. */
+  initial?: Partial<TransactionDraft>;
 };
 
 /**
@@ -25,9 +28,9 @@ type TransactionFormProps = {
  * Which fields appear is driven entirely by `type`; the hook clears whatever a
  * type cannot carry when it changes.
  */
-export function TransactionForm({ onSaved }: TransactionFormProps) {
+export function TransactionForm({ onSaved, initial }: TransactionFormProps) {
   const { t } = useTranslation();
-  const form = useCreateTransaction(onSaved);
+  const form = useCreateTransaction(onSaved, initial);
 
   const isTransfer = form.type === "transfer";
   const isBill = form.type === "bill";
@@ -82,12 +85,15 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
           </>
         ) : null}
 
+        {/* Optional on purpose: making people classify every coffee before it
+            can be saved is most of what made this form feel like a chore. An
+            uncategorised row still lists and still counts in the insights. */}
         {categoryType ? (
           <CategorySelect
             type={categoryType}
             value={form.categoryId}
             onChange={form.changeCategoryId}
-            error={form.errors.category}
+            isOptional
           />
         ) : null}
 

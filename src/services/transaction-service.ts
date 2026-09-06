@@ -52,4 +52,16 @@ export const transactionService = {
 
     return transactionRepository.create(payload);
   },
+
+  /**
+   * Removes a transaction.
+   *
+   * Nothing to unwind: balances are summed from the rows themselves rather
+   * than cached on the wallet, so deleting the row is the whole undo. Debt
+   * repayments are the exception — `payments.transactionId` points here — but
+   * those are created and removed through debtService, never this.
+   */
+  async deleteTransaction(id: number): Promise<void> {
+    await transactionRepository.remove(id);
+  },
 };

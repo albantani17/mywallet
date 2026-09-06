@@ -36,6 +36,13 @@ export type Translation = {
     actions: {
       addTransaction: string;
     };
+    quickRepeat: {
+      title: string;
+      hint: string;
+      saved: string;
+      failed: string;
+      undoFailed: string;
+    };
   };
   insights: {
     title: string;
@@ -203,6 +210,7 @@ export type Translation = {
     feePlaceholder: string;
     typeLabel: string;
     categoryLabel: string;
+    categoryOptionalLabel: string;
     categoryPlaceholder: string;
     dateLabel: string;
     dateConfirm: string;
@@ -216,7 +224,6 @@ export type Translation = {
     walletRequired: string;
     toWalletRequired: string;
     sameWallet: string;
-    categoryRequired: string;
     noteTooLong: string;
     failed: string;
     categorySheet: {
@@ -568,6 +575,7 @@ export type Translation = {
   };
   common: {
     migrationFailed: string;
+    undo: string;
   };
 };
 
@@ -604,6 +612,13 @@ export const id: Translation = {
     seeAll: "Lihat semua",
     actions: {
       addTransaction: "Tambah Transaksi",
+    },
+    quickRepeat: {
+      title: "Catat lagi",
+      hint: "Tekan lama untuk mengubah dulu",
+      saved: "{{name}} tercatat",
+      failed: "Gagal mencatat. Coba lagi.",
+      undoFailed: "Gagal membatalkan. Hapus manual dari daftar transaksi.",
     },
   },
   insights: {
@@ -774,6 +789,7 @@ export const id: Translation = {
     feePlaceholder: "0",
     typeLabel: "Jenis transaksi",
     categoryLabel: "Kategori",
+    categoryOptionalLabel: "Kategori (opsional)",
     categoryPlaceholder: "Pilih kategori",
     dateLabel: "Tanggal transaksi",
     dateConfirm: "Pilih",
@@ -787,7 +803,6 @@ export const id: Translation = {
     walletRequired: "Pilih dompet dulu",
     toWalletRequired: "Pilih dompet tujuan",
     sameWallet: "Dompet tujuan harus berbeda",
-    categoryRequired: "Pilih kategori dulu",
     noteTooLong: "Catatan terlalu panjang",
     failed: "Transaksi gagal disimpan. Coba lagi.",
     categorySheet: {
@@ -1155,5 +1170,6 @@ export const id: Translation = {
   },
   common: {
     migrationFailed: "Migrasi database gagal",
+    undo: "Urungkan",
   },
 };
