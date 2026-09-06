@@ -1,3 +1,4 @@
+export * from "./backup.repository";
 export * from "./category.repository";
 export * from "./counterparty.repository";
 export * from "./debt-preset.repository";

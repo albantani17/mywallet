@@ -513,6 +513,59 @@ export type Translation = {
     account: string;
     guestAccount: string;
   };
+  backup: {
+    title: string;
+    subtitle: string;
+    open: string;
+    drive: {
+      section: string;
+      description: string;
+      unavailable: string;
+      missingModule: string;
+      signIn: string;
+      signOut: string;
+      signedInAs: string;
+      backUpNow: string;
+      lastBackup: string;
+      backupsTitle: string;
+      empty: string;
+      emptyHint: string;
+      restore: string;
+      refresh: string;
+    };
+    file: {
+      section: string;
+      description: string;
+      export: string;
+      import: string;
+    };
+    confirm: {
+      title: string;
+      message: string;
+      summary: string;
+      typePrompt: string;
+      keyword: string;
+      cancel: string;
+      submit: string;
+    };
+    done: {
+      uploaded: string;
+      exported: string;
+      restored: string;
+      snapshot: string;
+    };
+    errors: {
+      signIn: string;
+      backup: string;
+      restore: string;
+      list: string;
+      unknownFormat: string;
+      futureFormat: string;
+      futureSchema: string;
+      corrupt: string;
+      unauthorized: string;
+    };
+  };
   common: {
     migrationFailed: string;
   };
@@ -1037,6 +1090,68 @@ export const id: Translation = {
     },
     account: "Akun",
     guestAccount: "Akun tamu",
+  },
+  backup: {
+    title: "Cadangkan & Pulihkan",
+    subtitle:
+      "Semua datamu tersimpan di perangkat ini saja. Buat cadangan agar tidak hilang.",
+    open: "Cadangkan & Pulihkan",
+    drive: {
+      section: "Google Drive",
+      description:
+        "Cadangan disimpan di folder MyWallet Backups di Drive milikmu sendiri.",
+      unavailable:
+        "Google Drive belum dikonfigurasi di aplikasi ini. Gunakan cadangan berkas di bawah.",
+      missingModule:
+        "Google Drive belum tersedia di binary ini. Jalankan ulang build (npx expo run:android). Cadangan berkas di bawah tetap bisa dipakai.",
+      signIn: "Hubungkan Google Drive",
+      signOut: "Putuskan",
+      signedInAs: "Terhubung sebagai {{email}}",
+      backUpNow: "Cadangkan sekarang",
+      lastBackup: "Terakhir dicadangkan {{time}}",
+      backupsTitle: "Cadangan di Drive",
+      empty: "Belum ada cadangan",
+      emptyHint: "Cadangan yang kamu buat akan muncul di sini.",
+      restore: "Pulihkan",
+      refresh: "Muat ulang",
+    },
+    file: {
+      section: "Berkas",
+      description:
+        "Simpan satu berkas cadangan ke mana pun, lalu pulihkan dari berkas itu.",
+      export: "Simpan ke berkas",
+      import: "Pulihkan dari berkas",
+    },
+    confirm: {
+      title: "Ganti semua data?",
+      message:
+        "Seluruh dompet, transaksi, hutang dan piutang di perangkat ini akan dihapus dan diganti dengan isi cadangan. Tindakan ini tidak bisa dibatalkan.",
+      summary: "Cadangan {{date}} · {{count}} baris",
+      typePrompt: "Ketik {{keyword}} untuk melanjutkan",
+      keyword: "PULIHKAN",
+      cancel: "Batal",
+      submit: "Pulihkan",
+    },
+    done: {
+      uploaded: "Cadangan tersimpan ke Drive.",
+      exported: "Cadangan siap dibagikan.",
+      restored: "Data berhasil dipulihkan.",
+      snapshot: "Data sebelumnya disalin ke {{uri}}",
+    },
+    errors: {
+      signIn: "Gagal terhubung ke Google. Coba lagi.",
+      backup: "Gagal membuat cadangan. Coba lagi.",
+      restore: "Gagal memulihkan data. Coba lagi.",
+      list: "Gagal memuat daftar cadangan. Coba lagi.",
+      unknownFormat: "Berkas ini bukan cadangan MyWallet.",
+      futureFormat:
+        "Cadangan ini dibuat oleh versi aplikasi yang lebih baru. Perbarui aplikasi lebih dulu.",
+      futureSchema:
+        "Cadangan ini dibuat oleh versi aplikasi yang lebih baru. Perbarui aplikasi lebih dulu.",
+      corrupt: "Berkas cadangan rusak atau tidak lengkap.",
+      unauthorized:
+        "Akses Google Drive ditolak. Hubungkan ulang akunmu lalu coba lagi.",
+    },
   },
   common: {
     migrationFailed: "Migrasi database gagal",

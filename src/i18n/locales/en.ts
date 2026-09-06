@@ -522,6 +522,68 @@ export const en: Translation = {
     account: "Account",
     guestAccount: "Guest account",
   },
+  backup: {
+    title: "Backup & Restore",
+    subtitle:
+      "Everything you record lives on this device only. Back it up so it cannot be lost.",
+    open: "Backup & Restore",
+    drive: {
+      section: "Google Drive",
+      description:
+        "Backups are kept in a MyWallet Backups folder in your own Drive.",
+      unavailable:
+        "Google Drive is not configured in this build. Use the file backup below.",
+      missingModule:
+        "Google Drive is not in this binary yet. Rebuild the app (npx expo run:android). The file backup below still works.",
+      signIn: "Connect Google Drive",
+      signOut: "Disconnect",
+      signedInAs: "Connected as {{email}}",
+      backUpNow: "Back up now",
+      lastBackup: "Last backed up {{time}}",
+      backupsTitle: "Backups on Drive",
+      empty: "No backups yet",
+      emptyHint: "Backups you create will show up here.",
+      restore: "Restore",
+      refresh: "Reload",
+    },
+    file: {
+      section: "File",
+      description:
+        "Save a single backup file anywhere, then restore from that file.",
+      export: "Save to a file",
+      import: "Restore from a file",
+    },
+    confirm: {
+      title: "Replace all data?",
+      message:
+        "Every wallet, transaction, debt and receivable on this device will be deleted and replaced with the contents of the backup. This cannot be undone.",
+      summary: "Backup from {{date}} · {{count}} rows",
+      typePrompt: "Type {{keyword}} to continue",
+      keyword: "RESTORE",
+      cancel: "Cancel",
+      submit: "Restore",
+    },
+    done: {
+      uploaded: "Backup saved to Drive.",
+      exported: "Backup ready to share.",
+      restored: "Your data has been restored.",
+      snapshot: "The previous data was copied to {{uri}}",
+    },
+    errors: {
+      signIn: "Could not connect to Google. Try again.",
+      backup: "Could not create the backup. Try again.",
+      restore: "Could not restore your data. Try again.",
+      list: "Could not load the backup list. Try again.",
+      unknownFormat: "That file is not a MyWallet backup.",
+      futureFormat:
+        "This backup was written by a newer version of the app. Update the app first.",
+      futureSchema:
+        "This backup was written by a newer version of the app. Update the app first.",
+      corrupt: "The backup file is damaged or incomplete.",
+      unauthorized:
+        "Google Drive access was refused. Reconnect your account and try again.",
+    },
+  },
   common: {
     migrationFailed: "Database migration failed",
   },

@@ -12,13 +12,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View, useColorScheme } from "react-native";
 
-import { BUILT_IN_TRANSACTION_CATEGORY_SEEDS } from "@/components/features/transactions/transaction-category";
-import { BUILT_IN_CATEGORY_SEEDS } from "@/components/features/wallets/wallet-type";
 import { db } from "@/db";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { categoryService } from "@/services/category-service";
-import { debtPresetService } from "@/services/debt-preset-service";
-import { walletCategoryService } from "@/services/wallet-category-service";
+import { googleAuthService } from "@/services/google-auth-service";
+import { seedService } from "@/services/seed-service";
 import migrations from "../../drizzle/migrations";
 
 import "../global.css";
@@ -64,35 +61,28 @@ export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations);
   const [isSeeded, setIsSeeded] = useState(false);
 
-  // Inserts the built-in wallet and transaction categories once the tables
-  // exist. Idempotent, so it is also what backfills a device that upgraded
-  // from before those columns existed. A failure must not block the app — the
-  // category resolvers fall back to a generic icon — so this settles either
-  // way, and the two seeds are independent enough that one failing should not
-  // discard the other.
+  // Inserts the built-in categories and debt presets once the tables exist.
+  // See seedService.ensureBuiltIns — it settles either way, so a failure here
+  // cannot keep the app on the spinner.
   useEffect(() => {
     if (!success) return;
 
     let isCurrent = true;
-    Promise.all([
-      walletCategoryService
-        .ensureBuiltIns(BUILT_IN_CATEGORY_SEEDS)
-        .catch((e) => console.error("Failed to seed wallet categories", e)),
-      categoryService
-        .ensureBuiltIns(BUILT_IN_TRANSACTION_CATEGORY_SEEDS)
-        .catch((e) => console.error("Failed to seed transaction categories", e)),
-      debtPresetService
-        .ensureBuiltIns()
-        .catch((e) => console.error("Failed to seed debt presets", e)),
-    ])
-      .finally(() => {
-        if (isCurrent) setIsSeeded(true);
-      });
+    seedService.ensureBuiltIns().finally(() => {
+      if (isCurrent) setIsSeeded(true);
+    });
 
     return () => {
       isCurrent = false;
     };
   }, [success]);
+
+  // Google Sign-In has to be configured before any call into it, and the
+  // Backup screen can be reached at any moment. Cheap, and a no-op when no
+  // client id is set in the app config.
+  useEffect(() => {
+    googleAuthService.configure();
+  }, []);
 
   /**
    * Paints the native window behind the whole React tree.

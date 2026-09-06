@@ -10,6 +10,11 @@
  * "google", `users.email` is nullable, and `userRepository.linkEmail(email)`
  * upgrades the existing guest row in place — so signing in with Google later
  * keeps whatever wallets and transactions the guest already recorded.
+ *
+ * Note that Google sign-in itself *is* wired up, in
+ * `src/services/google-auth-service.ts` — but only to authorise Drive backup.
+ * It never touches the users table. Landing this seam means calling
+ * `googleAuthService.signIn()` and then `userRepository.linkEmail(email)`.
  */
 export const authService = {
   isGoogleSignInAvailable(): boolean {
