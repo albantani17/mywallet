@@ -8,7 +8,11 @@
     "scheme": "mywallet",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.albanhaerulsteam.mywallet",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +21,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.albanhaerulsteam.mywallet"
     },
     "web": {
       "output": "static",
@@ -35,11 +40,20 @@
       ],
       "expo-sqlite",
       "expo-localization",
-      "expo-image"
+      "expo-image",
+      "@react-native-google-signin/google-signin",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "googleWebClientId": "491081111884-m1o4426jko69cjg1l0ljj4kdaruaokc0.apps.googleusercontent.com",
+      "eas": {
+        "projectId": "b51613b3-0bf9-4c57-8d0c-47317a362bdf"
+      }
     }
   }
 }

@@ -11,6 +11,11 @@ type ScreenProps = {
   scrollable?: boolean;
   /** Pull-to-refresh, only meaningful together with `scrollable`. */
   refreshControl?: ScrollViewProps["refreshControl"];
+  /**
+   * Pinned above the content rather than inside it — an undo bar, a toast.
+   * A sibling of the container, so it stays put while the content scrolls.
+   */
+  overlay?: ReactNode;
   className?: string;
 };
 
@@ -23,6 +28,7 @@ export function Screen({
   title,
   scrollable = false,
   refreshControl,
+  overlay,
   className,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
@@ -46,6 +52,7 @@ export function Screen({
         ) : null}
         {children}
       </Container>
+      {overlay}
     </View>
   );
 }

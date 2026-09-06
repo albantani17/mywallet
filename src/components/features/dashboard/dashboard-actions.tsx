@@ -7,18 +7,23 @@ import { Pressable, Text, View } from "react-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type Action = {
-  key: "addTransaction";
+  key: "quickEntry" | "addTransaction";
   icon: ComponentProps<typeof Ionicons>["name"];
   href: Href;
 };
 
 // Debts used to sit here too; it has its own tab now, and a second way in from
 // the same screen only makes the tab bar look like it is missing something.
+//
+// Quick entry leads: it is the fastest path for anything the repeat chips
+// above do not already cover, and the full form stays one tap away for the
+// cases that genuinely need every field.
 const ACTIONS: Action[] = [
+  { key: "quickEntry", icon: "flash-outline", href: "/transaction/quick" },
   { key: "addTransaction", icon: "add-circle-outline", href: "/transaction/new" },
 ];
 
-/** The way into recording a transaction, below the wallet list. */
+/** The two ways into recording a transaction, below the wallet list. */
 export function DashboardActions() {
   const colors = useThemeColors();
   const { t } = useTranslation();
@@ -36,7 +41,10 @@ export function DashboardActions() {
             <View className="size-9 flex-col items-center justify-center rounded-xl bg-primary-soft">
               <Ionicons name={action.icon} size={18} color={colors.primary} />
             </View>
-            <Text className="flex-1 text-sm font-semibold text-fg">
+            <Text
+              numberOfLines={1}
+              className="flex-1 text-sm font-semibold text-fg"
+            >
               {t(`dashboard.actions.${action.key}`)}
             </Text>
           </Pressable>

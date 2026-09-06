@@ -1,9 +1,24 @@
-import { and, desc, eq, gte, like, lte, or, sql, type SQL } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNull,
+  like,
+  lte,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 
 import { db, type Executor } from "../client";
 import { categories } from "../schema/categories";
-import { transactions } from "../schema/transactions";
+import {
+  transactions,
+  type TransactionType,
+} from "../schema/transactions";
 import { wallets } from "../schema/wallets";
 import type {
   Transaction,
@@ -11,6 +26,34 @@ import type {
   TransactionUpdate,
   TransactionWithRelations,
 } from "../validators/transaction.validator";
+
+export type FrequentTransactionOptions = {
+  /** Only transactions on or after this moment count towards a habit. */
+  since: Date;
+  limit?: number;
+};
+
+/**
+ * One repeatable transaction: a shape that has been recorded before, with
+ * everything a chip needs to render itself and everything a write needs to
+ * repeat it.
+ */
+export type FrequentTransaction = {
+  type: TransactionType;
+  amount: number;
+  walletId: number;
+  categoryId: number | null;
+  note: string | null;
+  walletName: string | null;
+  categoryName: string | null;
+  categorySlug: string | null;
+  categoryIcon: string | null;
+  categoryColor: string | null;
+  categoryIsBuiltIn: boolean | null;
+};
+
+/** Habits older than this stop being suggestions. */
+export const FREQUENT_WINDOW_DAYS = 60;
 
 export type TransactionListOptions = {
   /** Matches transactions where the wallet is either the source or the target. */
@@ -108,6 +151,82 @@ export const transactionQueries = {
       .limit(limit)
       .offset(offset);
   },
+
+  /**
+   * The wallet behind each of the most recent transactions, newest first.
+   *
+   * Deliberately plain rows rather than a COALESCE over "most recent per type"
+   * subqueries: drizzle decorrelates a correlated subquery written inside
+   * .select(), so that shape would silently return the wrong wallet. Walking
+   * the rows in TypeScript keeps the fallback chain visible instead.
+   */
+  /**
+   * The shapes recorded most often lately, for one-tap repeating.
+   *
+   * The amount is part of the identity on purpose: "Kopi 25rb" and "Kopi 30rb"
+   * are two suggestions, because a chip whose amount still has to be edited is
+   * no faster than the form it replaces.
+   *
+   * There is no `HAVING count(*) >= 2`. Ordering by uses and then recency
+   * already sinks one-off rows below real habits, so a new user still gets
+   * useful shortcuts from their handful of transactions instead of an empty
+   * strip, and no separate top-up query is needed.
+   *
+   * Transfers are excluded: transfer_shape needs a destination wallet, and a
+   * repeated transfer is rare enough not to earn the extra column.
+   */
+  frequent: ({ since, limit = 6 }: FrequentTransactionOptions) =>
+    db
+      .select({
+        type: transactions.type,
+        amount: transactions.amount,
+        walletId: transactions.walletId,
+        categoryId: transactions.categoryId,
+        note: transactions.note,
+        walletName: wallets.name,
+        categoryName: categories.name,
+        categorySlug: categories.slug,
+        categoryIcon: categories.icon,
+        categoryColor: categories.color,
+        categoryIsBuiltIn: categories.isBuiltIn,
+      })
+      .from(transactions)
+      .leftJoin(wallets, eq(transactions.walletId, wallets.id))
+      .leftJoin(categories, eq(transactions.categoryId, categories.id))
+      .where(
+        and(
+          gte(transactions.occurredAt, since),
+          inArray(transactions.type, ["expense", "income", "bill"]),
+          // Debt cash flow is excluded even though it is repetitive. Repeating
+          // one would insert a repayment-shaped transaction with no payment
+          // allocation behind it, so the debt module and the transaction list
+          // would start disagreeing about what is still owed.
+          isNull(transactions.debtId),
+        ),
+      )
+      // Identifiers are spelled out rather than interpolated from the drizzle
+      // columns: interpolation drops the table qualifier, and these fragments
+      // sit in a three-table join. `note` is normalised so "Kopi" and "kopi "
+      // are one habit rather than two chips.
+      .groupBy(
+        transactions.type,
+        transactions.amount,
+        transactions.walletId,
+        transactions.categoryId,
+        sql`lower(trim(coalesce(transactions.note, '')))`,
+      )
+      .orderBy(
+        sql`count(*) desc`,
+        sql`max(transactions.occurred_at) desc`,
+      )
+      .limit(limit),
+
+  recentWallets: (limit = 30) =>
+    db
+      .select({ type: transactions.type, walletId: transactions.walletId })
+      .from(transactions)
+      .orderBy(desc(transactions.occurredAt), desc(transactions.id))
+      .limit(limit),
 };
 
 export const transactionRepository = {

@@ -14,7 +14,12 @@ type CategorySelectProps = {
   type: CategoryType;
   value: number | null;
   onChange: (categoryId: number) => void;
-  error?: string | null;
+  /**
+   * Marks the label and says in the placeholder what happens if it is left
+   * alone. There is no error slot: nothing can reject an empty category any
+   * more, so a field that could show one would be lying about the rules.
+   */
+  isOptional?: boolean;
 };
 
 /** The chosen category as a field, opening the picker sheet on press. */
@@ -22,7 +27,7 @@ export function CategorySelect({
   type,
   value,
   onChange,
-  error,
+  isOptional = false,
 }: CategorySelectProps) {
   const { t } = useTranslation();
   const { resolved } = useTransactionCategories(type);
@@ -33,9 +38,16 @@ export function CategorySelect({
   return (
     <>
       <SelectField
-        label={t("newTransaction.categoryLabel")}
-        placeholder={t("newTransaction.categoryPlaceholder")}
-        error={error}
+        label={
+          isOptional
+            ? t("newTransaction.categoryOptionalLabel")
+            : t("newTransaction.categoryLabel")
+        }
+        placeholder={
+          isOptional
+            ? t("transactions.uncategorized")
+            : t("newTransaction.categoryPlaceholder")
+        }
         onPress={() => setIsSheetOpen(true)}
       >
         {selected ? (

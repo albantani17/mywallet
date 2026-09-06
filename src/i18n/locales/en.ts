@@ -34,6 +34,14 @@ export const en: Translation = {
     seeAll: "See all",
     actions: {
       addTransaction: "Add Transaction",
+      quickEntry: "Quick Entry",
+    },
+    quickRepeat: {
+      title: "Record again",
+      hint: "Long-press to change it first",
+      saved: "{{name}} recorded",
+      failed: "Could not record it. Try again.",
+      undoFailed: "Could not undo. Delete it from the transaction list.",
     },
   },
   insights: {
@@ -203,6 +211,7 @@ export const en: Translation = {
     feePlaceholder: "0",
     typeLabel: "Transaction type",
     categoryLabel: "Category",
+    categoryOptionalLabel: "Category (optional)",
     categoryPlaceholder: "Pick a category",
     dateLabel: "Transaction date",
     dateConfirm: "Select",
@@ -216,7 +225,6 @@ export const en: Translation = {
     walletRequired: "Pick a wallet first",
     toWalletRequired: "Pick a destination wallet",
     sameWallet: "The destination wallet must be different",
-    categoryRequired: "Pick a category first",
     noteTooLong: "That note is too long",
     failed: "Could not save the transaction. Try again.",
     categorySheet: {
@@ -522,7 +530,94 @@ export const en: Translation = {
     account: "Account",
     guestAccount: "Guest account",
   },
+  backup: {
+    title: "Backup & Restore",
+    subtitle:
+      "Everything you record lives on this device only. Back it up so it cannot be lost.",
+    open: "Backup & Restore",
+    drive: {
+      section: "Google Drive",
+      description:
+        "Backups are kept in a MyWallet Backups folder in your own Drive.",
+      unavailable:
+        "Google Drive is not configured in this build. Use the file backup below.",
+      missingModule:
+        "Google Drive is not in this binary yet. Rebuild the app (npx expo run:android). The file backup below still works.",
+      signIn: "Connect Google Drive",
+      signOut: "Disconnect",
+      signedInAs: "Connected as {{email}}",
+      backUpNow: "Back up now",
+      lastBackup: "Last backed up {{time}}",
+      backupsTitle: "Backups on Drive",
+      empty: "No backups yet",
+      emptyHint: "Backups you create will show up here.",
+      restore: "Restore",
+      refresh: "Reload",
+    },
+    file: {
+      section: "File",
+      description:
+        "Save a single backup file anywhere, then restore from that file.",
+      export: "Save to a file",
+      import: "Restore from a file",
+    },
+    confirm: {
+      title: "Replace all data?",
+      message:
+        "Every wallet, transaction, debt and receivable on this device will be deleted and replaced with the contents of the backup. This cannot be undone.",
+      summary: "Backup from {{date}} · {{count}} rows",
+      typePrompt: "Type {{keyword}} to continue",
+      keyword: "RESTORE",
+      cancel: "Cancel",
+      submit: "Restore",
+    },
+    done: {
+      uploaded: "Backup saved to Drive.",
+      exported: "Backup ready to share.",
+      restored: "Your data has been restored.",
+      snapshot: "The previous data was copied to {{uri}}",
+    },
+    errors: {
+      signIn: "Could not connect to Google. Try again.",
+      backup: "Could not create the backup. Try again.",
+      restore: "Could not restore your data. Try again.",
+      list: "Could not load the backup list. Try again.",
+      unknownFormat: "That file is not a MyWallet backup.",
+      futureFormat:
+        "This backup was written by a newer version of the app. Update the app first.",
+      futureSchema:
+        "This backup was written by a newer version of the app. Update the app first.",
+      corrupt: "The backup file is damaged or incomplete.",
+      unauthorized:
+        "Google Drive access was refused. Reconnect your account and try again.",
+    },
+  },
+  quickEntry: {
+    title: "Quick entry",
+    placeholder: "coffee 25rb gopay yesterday",
+    hint: "Write it however you like — order does not matter.",
+    interpretation: "What I read",
+    guessedHint: "Anything marked amber is a guess. Tap it to correct it.",
+    amountUnknown: "Amount?",
+    walletUnknown: "Wallet?",
+    categoryUnknown: "Uncategorised",
+    remember: 'Remember "{{phrase}}" as {{target}}',
+    amountMissing: "How much was it?",
+    walletMissing: "Pick a wallet first.",
+    failed: "Could not save it. Try again.",
+    save: "Save",
+    openFullForm: "Open the full form",
+    fields: {
+      type: "Type",
+      amount: "Amount",
+      wallet: "Wallet",
+      toWallet: "To wallet",
+      category: "Category",
+      date: "Date",
+    },
+  },
   common: {
     migrationFailed: "Database migration failed",
+    undo: "Undo",
   },
 };
