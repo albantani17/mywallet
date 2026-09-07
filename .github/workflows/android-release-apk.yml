@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Set up JDK 17
@@ -76,8 +76,23 @@ jobs:
             echo "MYWALLET_UPLOAD_KEY_PASSWORD=${ANDROID_KEY_PASSWORD}"
           } >> android/gradle.properties
 
+      # Runs the exact JS bundling that Gradle's createBundleReleaseJsAndAssets
+      # task performs, but with clean, un-nested output so a Metro/JS error is
+      # readable instead of surfacing only as "command 'node' exit value 1".
+      - name: Bundle JS (diagnostic)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          npx expo export:embed \
+            --platform android \
+            --dev false \
+            --bundle-output "$RUNNER_TEMP/index.android.bundle" \
+            --assets-dest "$RUNNER_TEMP/android-assets"
+
       - name: Build release APK
-        run: ./gradlew assembleRelease --no-daemon
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
         working-directory: android
 
       - name: Verify APK is signed with the release key
