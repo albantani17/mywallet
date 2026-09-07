@@ -57,9 +57,22 @@ jobs:
             echo "::error::  macOS:  base64 my-release.jks | tr -d '\\n' | gh secret set ANDROID_KEYSTORE_BASE64"
             exit 1
           }
-          if ! keytool -list -keystore android/app/release.keystore \
-              -storepass "$ANDROID_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
-            echo "::error::Decoded file is not a valid keystore, or ANDROID_KEYSTORE_PASSWORD is wrong."
+
+          # --- diagnostics (no secrets printed) ---
+          echo "decoded size: $(stat -c %s android/app/release.keystore) bytes"
+          echo "file type:    $(file -b android/app/release.keystore)"
+          echo "sha256:       $(sha256sum android/app/release.keystore | cut -d' ' -f1)"
+          echo "pw length:    ${#ANDROID_KEYSTORE_PASSWORD}"
+          echo "--- keytool -list (no password: shows format, not entries) ---"
+          keytool -list -keystore android/app/release.keystore -storepass "" 2>&1 | head -n 5 || true
+          echo "--- keytool -list (with ANDROID_KEYSTORE_PASSWORD) ---"
+          keytool_out="$(keytool -list -keystore android/app/release.keystore -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1)"
+          keytool_rc=$?
+          printf '%s\n' "$keytool_out" | head -n 20
+          if [ $keytool_rc -ne 0 ]; then
+            echo "::error::keytool could not open the keystore (rc=$keytool_rc). See the message above:"
+            echo "::error:: 'Invalid keystore format' / 'DER input' -> the secret is not the raw .jks bytes (wrong file, double base64, or truncated)."
+            echo "::error:: 'password was incorrect' / 'Keystore was tampered with' -> ANDROID_KEYSTORE_PASSWORD does not match this keystore."
             exit 1
           fi
 
