@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Set up JDK 17
@@ -44,12 +44,24 @@ jobs:
       - name: Decode release keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set"
             exit 1
           fi
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
+          # Tolerate line wraps / stray whitespace in the secret value.
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > android/app/release.keystore || {
+            echo "::error::Could not base64-decode ANDROID_KEYSTORE_BASE64. Re-create the secret from the raw .jks:"
+            echo "::error::  Linux:  base64 -w0 my-release.jks | gh secret set ANDROID_KEYSTORE_BASE64"
+            echo "::error::  macOS:  base64 my-release.jks | tr -d '\\n' | gh secret set ANDROID_KEYSTORE_BASE64"
+            exit 1
+          }
+          if ! keytool -list -keystore android/app/release.keystore \
+              -storepass "$ANDROID_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
+            echo "::error::Decoded file is not a valid keystore, or ANDROID_KEYSTORE_PASSWORD is wrong."
+            exit 1
+          fi
 
       - name: Write signing properties
         env:
