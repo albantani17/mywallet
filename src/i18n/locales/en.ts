@@ -39,9 +39,15 @@ export const en: Translation = {
     quickRepeat: {
       title: "Record again",
       hint: "Long-press to change it first",
-      saved: "{{name}} recorded",
       failed: "Could not record it. Try again.",
-      undoFailed: "Could not undo. Delete it from the transaction list.",
+      confirm: {
+        title: "Record this transaction?",
+        action: "Record",
+        cancel: "Cancel",
+        nameLabel: "Name",
+        amountLabel: "Amount",
+        walletLabel: "Wallet",
+      },
     },
   },
   insights: {

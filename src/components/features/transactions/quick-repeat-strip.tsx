@@ -124,8 +124,9 @@ export function QuickRepeatStrip({ onRepeat }: QuickRepeatStripProps) {
                 </Text>
               </View>
 
-              {/* The amount is deliberately loud: it is the one thing a tap
-                  commits to without asking, so it has to be read first. */}
+              {/* The amount is deliberately loud: it is what a tap is about to
+                  record, so it has to be read first — the confirm sheet shows
+                  it again, but the strip is where the choice is made. */}
               <Text numberOfLines={1} className="text-base font-bold text-fg">
                 {formatCurrency(suggestion.amount, locale)}
               </Text>

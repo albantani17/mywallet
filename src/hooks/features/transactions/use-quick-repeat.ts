@@ -4,72 +4,66 @@ import { useTranslation } from "react-i18next";
 import type { FrequentTransaction } from "@/db";
 import { transactionService } from "@/services/transaction-service";
 
-type PendingUndo = {
-  id: number;
-  /** What the chip called it, so the undo bar names the same thing. */
+type PendingRepeat = {
+  suggestion: FrequentTransaction;
+  /** What the chip called it, so the confirm sheet names the same thing. */
   label: string;
 };
 
 /**
- * Records a repeat of an existing transaction shape, and keeps it undoable.
+ * Records a repeat of an existing transaction shape, behind a confirmation.
  *
- * Saving on the first tap rather than opening a confirmation is the whole
- * point — it turns recording a habit into two interactions. The undo window is
- * what makes that safe: the chip shows its amount, so a wrong tap is visible
- * immediately and costs one more tap to reverse.
+ * The chip carries a complete, valid transaction, so a stray tap on the strip
+ * would otherwise write a real transaction with nothing entered. `request`
+ * only stages the shape; `confirm` is the one that commits it, once the sheet
+ * has shown the user what they are about to record.
  */
 export function useQuickRepeat() {
   const { t } = useTranslation();
-  const [pending, setPending] = useState<PendingUndo | null>(null);
+  const [confirming, setConfirming] = useState<PendingRepeat | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // A ref, not the state flag: two taps in the same frame would both read a
   // stale `false` and insert the transaction twice.
   const isBusy = useRef(false);
 
-  const repeat = useCallback(
-    async (suggestion: FrequentTransaction, label: string) => {
-      if (isBusy.current) return;
-      isBusy.current = true;
-      setError(null);
+  const request = useCallback((suggestion: FrequentTransaction, label: string) => {
+    setError(null);
+    setConfirming({ suggestion, label });
+  }, []);
 
-      try {
-        const saved = await transactionService.createTransaction({
-          type: suggestion.type,
-          amount: suggestion.amount,
-          walletId: suggestion.walletId,
-          categoryId: suggestion.categoryId,
-          note: suggestion.note,
-          // The habit is repeated now; only its shape came from the past.
-          occurredAt: new Date(),
-        });
-        setPending({ id: saved.id, label });
-      } catch (e) {
-        console.error("Failed to repeat the transaction", e);
-        setError(t("dashboard.quickRepeat.failed"));
-      } finally {
-        isBusy.current = false;
-      }
-    },
-    [t],
-  );
+  const cancel = useCallback(() => {
+    setConfirming(null);
+    setError(null);
+  }, []);
 
-  const undo = useCallback(async () => {
-    // Cleared before the await: the bar has to disappear on the tap, not when
-    // SQLite gets around to it.
-    const target = pending;
-    setPending(null);
-    if (!target) return;
+  const confirm = useCallback(async () => {
+    if (isBusy.current || !confirming) return;
+    isBusy.current = true;
+    setIsSubmitting(true);
+    setError(null);
+
+    const { suggestion } = confirming;
 
     try {
-      await transactionService.deleteTransaction(target.id);
+      await transactionService.createTransaction({
+        type: suggestion.type,
+        amount: suggestion.amount,
+        walletId: suggestion.walletId,
+        categoryId: suggestion.categoryId,
+        note: suggestion.note,
+        // The habit is repeated now; only its shape came from the past.
+        occurredAt: new Date(),
+      });
+      setConfirming(null);
     } catch (e) {
-      console.error("Failed to undo the repeated transaction", e);
-      setError(t("dashboard.quickRepeat.undoFailed"));
+      console.error("Failed to repeat the transaction", e);
+      setError(t("dashboard.quickRepeat.failed"));
+    } finally {
+      isBusy.current = false;
+      setIsSubmitting(false);
     }
-  }, [pending, t]);
+  }, [confirming, t]);
 
-  // Stable identity: the undo bar restarts its countdown whenever this changes.
-  const dismiss = useCallback(() => setPending(null), []);
-
-  return { repeat, undo, dismiss, pending, error };
+  return { request, confirm, cancel, confirming, isSubmitting, error };
 }
