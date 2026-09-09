@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { QuickRepeatConfirmSheet } from "@/components/features/transactions/quick-repeat-confirm-sheet";
 import { QuickRepeatStrip } from "@/components/features/transactions/quick-repeat-strip";
 import { AppRefreshControl } from "@/components/ui/refresh-control";
 import { Screen } from "@/components/ui/screen";
-import { UndoBar } from "@/components/ui/undo-bar";
 import { useDashboardSummary } from "@/hooks/features/dashboard/use-dashboard-summary";
 import { useInsights } from "@/hooks/features/dashboard/use-insights";
 import { useQuickRepeat } from "@/hooks/features/transactions/use-quick-repeat";
@@ -20,8 +20,8 @@ export function Dashboard() {
   const insights = useInsights();
   const { topWallets, hasMore, isReady, isRefreshing, refresh } =
     useDashboardSummary(insights.refresh);
-  // Owned here rather than inside the strip: the undo bar has to sit in the
-  // screen's overlay slot, outside the scroll view the strip lives in.
+  // Owned here rather than inside the strip: the confirm sheet is a Modal and
+  // its state has to survive the strip unmounting when suggestions change.
   const quickRepeat = useQuickRepeat();
 
   if (!isReady) {
@@ -41,17 +41,14 @@ export function Dashboard() {
         <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
       }
       overlay={
-        quickRepeat.pending ? (
-          <UndoBar
-            message={t("dashboard.quickRepeat.saved", {
-              name: quickRepeat.pending.label,
-            })}
-            actionLabel={t("common.undo")}
-            token={quickRepeat.pending.id}
-            onUndo={quickRepeat.undo}
-            onExpire={quickRepeat.dismiss}
-          />
-        ) : null
+        <QuickRepeatConfirmSheet
+          pending={quickRepeat.confirming}
+          isOpen={!!quickRepeat.confirming}
+          isSubmitting={quickRepeat.isSubmitting}
+          error={quickRepeat.error}
+          onConfirm={quickRepeat.confirm}
+          onClose={quickRepeat.cancel}
+        />
       }
     >
       <View className="flex-col gap-8">
@@ -70,13 +67,9 @@ export function Dashboard() {
           <WalletCarousel wallets={topWallets} showMore={hasMore} />
         </View>
 
-        <QuickRepeatStrip onRepeat={quickRepeat.repeat} />
+        <QuickRepeatStrip onRepeat={quickRepeat.request} />
 
         <DashboardActions />
-
-        {quickRepeat.error ? (
-          <Text className="px-6 text-sm text-danger">{quickRepeat.error}</Text>
-        ) : null}
 
         <InsightSection insights={insights} />
       </View>

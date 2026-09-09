@@ -40,9 +40,15 @@ export type Translation = {
     quickRepeat: {
       title: string;
       hint: string;
-      saved: string;
       failed: string;
-      undoFailed: string;
+      confirm: {
+        title: string;
+        action: string;
+        cancel: string;
+        nameLabel: string;
+        amountLabel: string;
+        walletLabel: string;
+      };
     };
   };
   insights: {
@@ -642,9 +648,15 @@ export const id: Translation = {
     quickRepeat: {
       title: "Catat lagi",
       hint: "Tekan lama untuk mengubah dulu",
-      saved: "{{name}} tercatat",
       failed: "Gagal mencatat. Coba lagi.",
-      undoFailed: "Gagal membatalkan. Hapus manual dari daftar transaksi.",
+      confirm: {
+        title: "Catat transaksi ini?",
+        action: "Catat",
+        cancel: "Batal",
+        nameLabel: "Nama",
+        amountLabel: "Jumlah",
+        walletLabel: "Dompet",
+      },
     },
   },
   insights: {
