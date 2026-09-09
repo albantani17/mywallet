@@ -2,7 +2,7 @@
   "expo": {
     "name": "mywallet",
     "slug": "mywallet",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mywallet",
