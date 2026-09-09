@@ -100,8 +100,8 @@ jobs:
             --platform android \
             --dev false \
             --bundle-output "$RUNNER_TEMP/index.android.bundle" \
-            --assets-dest "$RUNNER_TEMP/android-assets"
-
+            --assets-dest "$RUNNER_TEMP/android-assets" \
+            --verbose
       - name: Build release APK
         env:
           NODE_OPTIONS: --max-old-space-size=6144
