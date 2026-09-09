@@ -10,11 +10,13 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.albanhaerulsteam.mywallet",
+      "buildNumber": "4",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "versionCode": 4,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
