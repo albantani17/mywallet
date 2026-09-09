@@ -82,12 +82,29 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          # `expo prebuild` writes gradle.properties WITHOUT a trailing newline, so a
+          # plain `>>` glues the first line below onto the last generated property:
+          #   expo.inlineModules.watchedDirectories=[]MYWALLET_UPLOAD_STORE_FILE=...
+          # That breaks JSON.parse in expo's autolinking `mirror-kotlin-inline-modules`
+          # step (which Gradle runs at configuration time and whose stderr it swallows,
+          # surfacing only as "Process 'command 'node'' finished with non-zero exit
+          # value 1") and leaves the store-file property undefined for signing.
+          if [ -n "$(tail -c1 android/gradle.properties)" ]; then
+            printf '\n' >> android/gradle.properties
+          fi
+
           {
             echo "MYWALLET_UPLOAD_STORE_FILE=release.keystore"
             echo "MYWALLET_UPLOAD_STORE_PASSWORD=${ANDROID_KEYSTORE_PASSWORD}"
             echo "MYWALLET_UPLOAD_KEY_ALIAS=${ANDROID_KEY_ALIAS}"
             echo "MYWALLET_UPLOAD_KEY_PASSWORD=${ANDROID_KEY_PASSWORD}"
           } >> android/gradle.properties
+
+          # Guard against this class of corruption coming back silently.
+          if ! grep -q '^MYWALLET_UPLOAD_STORE_FILE=' android/gradle.properties; then
+            echo "::error::Signing properties were appended onto an existing line in android/gradle.properties"
+            exit 1
+          fi
 
       # Runs the exact JS bundling that Gradle's createBundleReleaseJsAndAssets
       # task performs, but with clean, un-nested output so a Metro/JS error is
@@ -100,8 +117,8 @@ jobs:
             --platform android \
             --dev false \
             --bundle-output "$RUNNER_TEMP/index.android.bundle" \
-            --assets-dest "$RUNNER_TEMP/android-assets"
-
+            --assets-dest "$RUNNER_TEMP/android-assets" \
+            --verbose
       - name: Build release APK
         env:
           NODE_OPTIONS: --max-old-space-size=6144
