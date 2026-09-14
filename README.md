@@ -6,9 +6,9 @@ Bilingual (Indonesian / English) with an in-app language switch.
 
 ## Download
 
-[![Download APK](https://img.shields.io/github/v/release/albantani17/mywallet?label=Download%20APK&logo=android&logoColor=white&color=3DDC84&sort=semver)](https://github.com/albantani17/mywallet/releases/latest/download/app-release.apk)
+[![Download APK](https://img.shields.io/github/v/release/albantani17/mywallet?label=Download%20APK&logo=android&logoColor=white&color=3DDC84&sort=semver)](https://github.com/albantani17/mywallet/releases/latest/download/mywallet.apk)
 
-The badge shows the latest version and links straight to the signed `app-release.apk`. All builds are on the [releases page](https://github.com/albantani17/mywallet/releases/latest); each `v*` tag builds and attaches its APK automatically (`.github/workflows/android-release-apk.yml`).
+The badge shows the latest version and links straight to the signed `mywallet.apk`. All builds are on the [releases page](https://github.com/albantani17/mywallet/releases/latest); each `v*` tag builds and attaches its APK automatically (`.github/workflows/android-release-apk.yml`).
 
 ## Stack
 

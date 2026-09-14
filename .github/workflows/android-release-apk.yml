@@ -125,9 +125,17 @@ jobs:
         run: ./gradlew assembleRelease --no-daemon --stacktrace
         working-directory: android
 
+      # Gradle names the output after the module (`app`). Rename it once here so
+      # the workflow artifact and the release asset are both `mywallet.apk`; the
+      # README badge links to that filename.
+      - name: Rename APK
+        run: |
+          cd android/app/build/outputs/apk/release
+          mv app-release.apk mywallet.apk
+
       - name: Verify APK is signed with the release key
         run: |
-          APK=android/app/build/outputs/apk/release/app-release.apk
+          APK=android/app/build/outputs/apk/release/mywallet.apk
           APKSIGNER="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
           "$APKSIGNER" verify --print-certs "$APK"
 
@@ -135,12 +143,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mywallet-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/mywallet.apk
           if-no-files-found: error
 
       - name: Attach APK to GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/release/app-release.apk
+          files: android/app/build/outputs/apk/release/mywallet.apk
           fail_on_unmatched_files: true
