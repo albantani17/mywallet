@@ -2,7 +2,7 @@
   "expo": {
     "name": "mywallet",
     "slug": "mywallet",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mywallet",
@@ -10,13 +10,13 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.albanhaerulsteam.mywallet",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "backgroundColor": "#2F7D57",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
