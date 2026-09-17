@@ -1,6 +1,8 @@
 import { transactionInsertSchema, transactionRepository } from "@/db";
 import type { Transaction, TransactionType } from "@/db";
 
+import { assertTransactionCanBeDeleted } from "./transaction-deletion";
+
 export type CreateTransactionInput = {
   type: TransactionType;
   amount: number;
@@ -62,6 +64,7 @@ export const transactionService = {
    * those are created and removed through debtService, never this.
    */
   async deleteTransaction(id: number): Promise<void> {
+    assertTransactionCanBeDeleted(await transactionRepository.isDebtPayment(id));
     await transactionRepository.remove(id);
   },
 };

@@ -1,3 +1,5 @@
+import { router } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, SectionList, Text, View } from "react-native";
 
@@ -11,6 +13,8 @@ import type { AppLocale } from "@/i18n";
 import { formatDate, isSameDay, isToday, isYesterday } from "@/utils/format-date";
 
 import { TransactionRow } from "./transaction-row";
+import { DebtPaymentInfoSheet } from "./debt-payment-info-sheet";
+import { TransactionDeleteSheet } from "./transaction-delete-sheet";
 
 type DaySection = {
   key: string;
@@ -71,6 +75,10 @@ export function TransactionList({
   const { locale } = useActiveLocale();
   const { transactions, isReady, hasMore, loadMore, isRefreshing, refresh } =
     useTransactions(filters);
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<TransactionWithRelations | null>(null);
+  const [debtPayment, setDebtPayment] =
+    useState<TransactionWithRelations | null>(null);
 
   if (!isReady) {
     return (
@@ -86,54 +94,87 @@ export function TransactionList({
   const now = new Date();
 
   return (
-    <SectionList<TransactionWithRelations, DaySection>
-      sections={sections}
-      keyExtractor={(item) => String(item.id)}
-      renderItem={({ item }) => <TransactionRow transaction={item} />}
-      renderSectionHeader={({ section }) => (
-        <View className="bg-canvas py-2">
-          <Text className="text-xs font-semibold uppercase text-fg-muted">
-            {dayLabel(section.date, now, locale, t)}
-          </Text>
-        </View>
-      )}
-      stickySectionHeadersEnabled
-      contentContainerStyle={{
-        paddingHorizontal: 24,
-        paddingBottom: 24,
-        flexGrow: 1,
-      }}
-      showsVerticalScrollIndicator={false}
-      // The search box stays focused while the list is tapped or scrolled.
-      keyboardShouldPersistTaps="handled"
-      refreshControl={
-        <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
-      }
-      onEndReached={hasMore ? loadMore : undefined}
-      onEndReachedThreshold={0.4}
-      ListFooterComponent={
-        hasMore ? (
-          <View className="py-4">
-            <ActivityIndicator colorClassName="accent-fg-muted" />
+    <>
+      <SectionList<TransactionWithRelations, DaySection>
+        sections={sections}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <TransactionRow
+            transaction={item}
+            onDelete={setTransactionToDelete}
+            onManageDebtPayment={setDebtPayment}
+          />
+        )}
+        renderSectionHeader={({ section }) => (
+          <View className="bg-canvas py-2">
+            <Text className="text-xs font-semibold uppercase text-fg-muted">
+              {dayLabel(section.date, now, locale, t)}
+            </Text>
           </View>
-        ) : null
-      }
-      ListEmptyComponent={
-        isFiltered ? (
-          // Transactions exist, but the search or the filters excluded them.
-          <EmptyState
-            icon="search-outline"
-            title={t("transactions.filters.noResultsTitle")}
-            description={t("transactions.filters.noResultsDescription")}
-          />
-        ) : (
-          <EmptyState
-            icon="receipt-outline"
-            title={t("transactions.emptyTitle")}
-            description={t("transactions.emptyDescription")}
-          />
-        )
-      }
-    />
+        )}
+        stickySectionHeadersEnabled
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          paddingBottom: 24,
+          flexGrow: 1,
+        }}
+        showsVerticalScrollIndicator={false}
+        // The search box stays focused while the list is tapped or scrolled.
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <AppRefreshControl isRefreshing={isRefreshing} onRefresh={refresh} />
+        }
+        onEndReached={hasMore ? loadMore : undefined}
+        onEndReachedThreshold={0.4}
+        ListFooterComponent={
+          hasMore ? (
+            <View className="py-4">
+              <ActivityIndicator colorClassName="accent-fg-muted" />
+            </View>
+          ) : null
+        }
+        ListEmptyComponent={
+          isFiltered ? (
+            // Transactions exist, but the search or the filters excluded them.
+            <EmptyState
+              icon="search-outline"
+              title={t("transactions.filters.noResultsTitle")}
+              description={t("transactions.filters.noResultsDescription")}
+            />
+          ) : (
+            <EmptyState
+              icon="receipt-outline"
+              title={t("transactions.emptyTitle")}
+              description={t("transactions.emptyDescription")}
+            />
+          )
+        }
+      />
+
+      {transactionToDelete ? (
+        <TransactionDeleteSheet
+          key={transactionToDelete.id}
+          transaction={transactionToDelete}
+          isOpen
+          onClose={() => setTransactionToDelete(null)}
+        />
+      ) : null}
+
+      {debtPayment ? (
+        <DebtPaymentInfoSheet
+          isOpen
+          onClose={() => setDebtPayment(null)}
+          onOpenDebt={
+            debtPayment.debtId === null
+              ? undefined
+              : () => {
+                  const debtId = debtPayment.debtId;
+                  setDebtPayment(null);
+                  router.push(`/debts/${debtId}`);
+                }
+          }
+        />
+      ) : null}
+    </>
   );
 }

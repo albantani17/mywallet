@@ -4,8 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import { TINT_ALPHA } from "@/components/features/shared/icon-choices";
+import {
+  DropdownMenu,
+  type DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import type { TransactionWithRelations } from "@/db";
 import { useActiveLocale } from "@/hooks/use-active-locale";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 import { formatCurrency } from "@/utils/format-currency";
 import { cn } from "@/utils/cn";
 
@@ -17,6 +22,8 @@ import {
 
 type TransactionRowProps = {
   transaction: TransactionWithRelations;
+  onDelete: (transaction: TransactionWithRelations) => void;
+  onManageDebtPayment: (transaction: TransactionWithRelations) => void;
 };
 
 // A transfer has no category, so it borrows the type's own glyph.
@@ -39,9 +46,14 @@ const AMOUNT_SIGNS = {
   transfer: "",
 } as const;
 
-export function TransactionRow({ transaction }: TransactionRowProps) {
+export function TransactionRow({
+  transaction,
+  onDelete,
+  onManageDebtPayment,
+}: TransactionRowProps) {
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
+  const colors = useThemeColors();
 
   const isTransfer = transaction.type === "transfer";
 
@@ -68,6 +80,25 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
     ? FALLBACK_COLOR
     : (transaction.categoryColor ?? FALLBACK_COLOR);
 
+  const actions: DropdownMenuItem[] = transaction.isDebtPayment
+    ? [
+        {
+          key: "manageDebtPayment",
+          label: t("transactions.actions.manageDebtPayment"),
+          icon: "information-circle-outline",
+          onPress: () => onManageDebtPayment(transaction),
+        },
+      ]
+    : [
+        {
+          key: "delete",
+          label: t("transactions.actions.delete"),
+          icon: "trash-outline",
+          destructive: true,
+          onPress: () => onDelete(transaction),
+        },
+      ];
+
   return (
     <View className="flex-row items-center gap-3 py-2.5">
       <View
@@ -92,20 +123,36 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
         ) : null}
       </View>
 
-      <Text
-        className={cn(
-          "text-base font-bold",
-          AMOUNT_COLORS[transaction.type],
-        )}
-        numberOfLines={1}
-      >
-        {AMOUNT_SIGNS[transaction.type]}
-        {formatCurrency(
-          transaction.amount,
-          locale,
-          transaction.walletCurrency ?? undefined,
-        )}
-      </Text>
+      <View className="flex-row items-center gap-1">
+        <Text
+          className={cn(
+            "text-base font-bold",
+            AMOUNT_COLORS[transaction.type],
+          )}
+          numberOfLines={1}
+        >
+          {AMOUNT_SIGNS[transaction.type]}
+          {formatCurrency(
+            transaction.amount,
+            locale,
+            transaction.walletCurrency ?? undefined,
+          )}
+        </Text>
+
+        <DropdownMenu
+          items={actions}
+          accessibilityLabel={t("transactions.actions.menuLabel")}
+          trigger={
+            <View className="size-8 flex-col items-center justify-center rounded-full">
+              <Ionicons
+                name="ellipsis-vertical"
+                size={16}
+                color={colors.fgMuted}
+              />
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 }

@@ -150,6 +150,20 @@ export type Translation = {
     uncategorized: string;
     emptyTitle: string;
     emptyDescription: string;
+    actions: {
+      menuLabel: string;
+      delete: string;
+      manageDebtPayment: string;
+      cancel: string;
+    };
+    delete: {
+      title: string;
+      message: string;
+      failed: string;
+      debtPaymentTitle: string;
+      debtPaymentMessage: string;
+      openDebt: string;
+    };
     /** Nested so `today` here cannot collide with the day header above. */
     filters: {
       searchPlaceholder: string;
@@ -762,6 +776,21 @@ export const id: Translation = {
     uncategorized: "Tanpa kategori",
     emptyTitle: "Belum ada transaksi",
     emptyDescription: "Transaksi yang kamu catat akan tampil di sini.",
+    actions: {
+      menuLabel: "Aksi transaksi",
+      delete: "Hapus",
+      manageDebtPayment: "Kelola pembayaran utang",
+      cancel: "Batal",
+    },
+    delete: {
+      title: "Hapus transaksi?",
+      message: "Transaksi ini akan dihapus permanen dan saldo akan disesuaikan.",
+      failed: "Gagal menghapus transaksi. Coba lagi.",
+      debtPaymentTitle: "Kelola dari utang",
+      debtPaymentMessage:
+        "Pembayaran utang tidak bisa dihapus dari daftar transaksi. Batalkan dari detail utang agar riwayat cicilan tetap sesuai.",
+      openDebt: "Buka detail utang",
+    },
     filters: {
       searchPlaceholder: "Cari catatan atau dompet",
       wallet: "Dompet",
