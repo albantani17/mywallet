@@ -152,6 +152,21 @@ export const en: Translation = {
     uncategorized: "Uncategorised",
     emptyTitle: "No transactions yet",
     emptyDescription: "Whatever you record will show up here.",
+    actions: {
+      menuLabel: "Transaction actions",
+      delete: "Delete",
+      manageDebtPayment: "Manage debt payment",
+      cancel: "Cancel",
+    },
+    delete: {
+      title: "Delete transaction?",
+      message: "This transaction will be permanently deleted and your balances will be updated.",
+      failed: "Could not delete the transaction. Please try again.",
+      debtPaymentTitle: "Manage from the debt",
+      debtPaymentMessage:
+        "Debt payments cannot be deleted from the transaction list. Cancel the payment from the debt details to keep the installment history accurate.",
+      openDebt: "Open debt details",
+    },
     filters: {
       searchPlaceholder: "Search notes or wallets",
       wallet: "Wallet",

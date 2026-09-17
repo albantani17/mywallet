@@ -15,6 +15,7 @@ import { alias } from "drizzle-orm/sqlite-core";
 
 import { db, type Executor } from "../client";
 import { categories } from "../schema/categories";
+import { payments } from "../schema/payments";
 import {
   transactions,
   type TransactionType,
@@ -141,6 +142,14 @@ export const transactionQueries = {
         categoryIcon: categories.icon,
         categoryColor: categories.color,
         categoryIsBuiltIn: categories.isBuiltIn,
+        // Do not join payments here: historical data is safest when one
+        // transaction still renders once even if a corrupted database has more
+        // than one payment pointing at it.
+        isDebtPayment: sql<boolean>`EXISTS(
+          SELECT 1
+          FROM "payments"
+          WHERE "payments"."transaction_id" = "transactions"."id"
+        )`.mapWith(Boolean),
       })
       .from(transactions)
       .leftJoin(wallets, eq(transactions.walletId, wallets.id))
@@ -267,6 +276,16 @@ export const transactionRepository = {
 
   async remove(id: number): Promise<void> {
     await db.delete(transactions).where(eq(transactions.id, id));
+  },
+
+  /** Whether a debt payment owns this cash-flow row. */
+  async isDebtPayment(id: number): Promise<boolean> {
+    const rows = await db
+      .select({ id: payments.id })
+      .from(payments)
+      .where(eq(payments.transactionId, id))
+      .limit(1);
+    return rows.length > 0;
   },
 
   /** Synchronous variants for use inside a db.transaction callback. */

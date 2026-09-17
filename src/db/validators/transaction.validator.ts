@@ -65,4 +65,6 @@ export type TransactionWithRelations = Transaction & {
   categoryIcon: string | null;
   categoryColor: string | null;
   categoryIsBuiltIn: boolean | null;
+  /** True when this row is the cash-flow half of a debt repayment. */
+  isDebtPayment: boolean;
 };

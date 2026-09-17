@@ -10,6 +10,9 @@ const TRANSACTION_TABLES = [
   schema.transactions,
   schema.wallets,
   schema.categories,
+  // The list projects whether a row is owned by a debt payment. Watching this
+  // relation keeps the available action correct when that link changes.
+  schema.payments,
 ];
 
 /** How many rows to add each time the list reaches its end. */
