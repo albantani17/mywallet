@@ -1,0 +1,1 @@
+ALTER TABLE `wallets` ADD `is_main_fund` integer DEFAULT true NOT NULL;

@@ -8,12 +8,12 @@ import { formatCurrency } from "@/utils/format-currency";
 type IncomeExpenseBarProps = { insights: Insights };
 
 /**
- * The month in one bar: money in against money out, each taking the share of
- * the bar it takes of the month's movement, so the dominant side is visibly
+ * The period in one bar: money in against money out, each taking the share of
+ * the bar it takes of the period's movement, so the dominant side is visibly
  * the dominant side.
  *
- * First on the screen because it is the one line that says whether the month is
- * going well — everything below it explains why.
+ * First on the screen because it is the one line that says whether the period
+ * is going well — everything below it explains why.
  *
  * Widths are inline styles: Uniwind resolves classes from the literal source
  * text, so a computed `w-[60%]` would resolve to nothing at all.
@@ -22,7 +22,7 @@ export function IncomeExpenseBar({ insights }: IncomeExpenseBarProps) {
   const { t } = useTranslation();
   const { locale } = useActiveLocale();
 
-  const { income, expense } = insights.thisMonth;
+  const { income, expense } = insights.totals;
   const { incomePercent, expensePercent, dominant, isEmpty } = insights.split;
 
   // Nothing in and nothing out: an empty bar would only take up room.

@@ -60,9 +60,9 @@ export function dailyAverage(expense: number, daysElapsed: number): number {
   return Math.round(expense / daysElapsed);
 }
 
-/** Where the month lands if the current rate holds. */
-export function projectMonthEnd(average: number, daysInMonth: number): number {
-  return Math.round(average * daysInMonth);
+/** Where a period lands if the current rate holds to its last day. */
+export function projectPeriodEnd(average: number, periodDays: number): number {
+  return Math.round(average * periodDays);
 }
 
 export type FlowSplit = {
@@ -169,46 +169,293 @@ export function topCategories(
   return { slices, total };
 }
 
-export type MonthlyTotalsRow = PeriodTotals & {
-  /** "YYYY-MM", as grouped in SQL. */
-  month: string;
+// ---------------------------------------------------------------------------
+// Periods
+// ---------------------------------------------------------------------------
+
+export const INSIGHT_PERIODS = [
+  "thisMonth",
+  "lastMonth",
+  "last3Months",
+  "last6Months",
+  "last12Months",
+  "custom",
+] as const;
+
+export type InsightPeriod = (typeof INSIGHT_PERIODS)[number];
+
+/** How finely the trend chart slices a period. */
+export type Granularity = "day" | "week" | "month";
+
+export type DateRange = { from: Date; to: Date };
+
+export type ResolvedPeriod = DateRange & {
+  /** The window this one is compared against. */
+  previous: DateRange;
+  granularity: Granularity;
+  /** Today falls inside the period, so it is still filling up. */
+  isOngoing: boolean;
+  /**
+   * Where a running period naturally ends — the end of this month for the
+   * presets that run to today. Null once there is nothing left to project.
+   */
+  projectTo: Date | null;
 };
 
-export type MonthBucket = PeriodTotals & {
-  month: string;
-  /** First day of the month, for formatting the label in the caller's locale. */
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Local copies of the date helpers in utils/format-date.ts. This module stays
+// free of `@/` imports so `node --test` can load it on its own.
+function startOfDay(date: Date): Date {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+function endOfDay(date: Date): Date {
+  const copy = new Date(date);
+  copy.setHours(23, 59, 59, 999);
+  return copy;
+}
+
+function addDays(date: Date, days: number): Date {
+  const copy = new Date(date);
+  // setDate rolls months and years over, and survives a DST change.
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function startOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date: Date): Date {
+  return endOfDay(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+}
+
+/** Clamps the day: one month before 31 March is 28 February. */
+function addMonths(date: Date, months: number): Date {
+  const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth() + 1,
+    0,
+  ).getDate();
+
+  const copy = new Date(date);
+  copy.setFullYear(
+    target.getFullYear(),
+    target.getMonth(),
+    Math.min(date.getDate(), lastDay),
+  );
+  return copy;
+}
+
+function daysInMonth(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+/** Calendar days from `from` to `to`, both included. */
+export function countDays(from: Date, to: Date): number {
+  // Rounded, not floored: a DST shift makes one day 23 or 25 hours long.
+  return (
+    Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS) +
+    1
+  );
+}
+
+/**
+ * Daily bars up to a month, weekly up to a quarter, monthly beyond. Past those
+ * points the bars get too thin to tap, or too few to show a trend.
+ */
+export function granularityFor(days: number): Granularity {
+  if (days <= 31) return "day";
+  if (days <= 92) return "week";
+  return "month";
+}
+
+/**
+ * Turns the chosen preset into a window and the window it is compared with.
+ *
+ * Running periods compare like with like: the 1st–10th of this month against
+ * the 1st–10th of the last one, the last three months so far against the same
+ * slice of the three before. Comparing a running period with a finished one
+ * reads as a 90% saving on the 3rd of every month.
+ *
+ * A custom range is compared with the stretch of the same length right before
+ * it. Its ends are swapped if picked backwards, and a missing end means today.
+ */
+export function resolvePeriod(
+  period: InsightPeriod,
+  now: Date,
+  custom: { from: Date | null; to: Date | null } = { from: null, to: null },
+): ResolvedPeriod {
+  const { from, to, previous } = windowsFor(period, now, custom);
+  const isOngoing =
+    from.getTime() <= now.getTime() && now.getTime() <= to.getTime();
+
+  // The presets stop at today, but the month they are in carries on; a custom
+  // range ending today has nothing ahead of it.
+  const naturalEnd =
+    period === "custom" || period === "lastMonth" ? to : endOfMonth(now);
+
+  return {
+    from,
+    to,
+    previous,
+    granularity: granularityFor(countDays(from, to)),
+    isOngoing,
+    projectTo:
+      isOngoing && naturalEnd.getTime() > endOfDay(now).getTime()
+        ? naturalEnd
+        : null,
+  };
+}
+
+function windowsFor(
+  period: InsightPeriod,
+  now: Date,
+  custom: { from: Date | null; to: Date | null },
+): DateRange & { previous: DateRange } {
+  switch (period) {
+    case "lastMonth": {
+      const last = addMonths(now, -1);
+      const beforeLast = addMonths(now, -2);
+      return {
+        from: startOfMonth(last),
+        to: endOfMonth(last),
+        previous: { from: startOfMonth(beforeLast), to: endOfMonth(beforeLast) },
+      };
+    }
+    case "last3Months":
+      return runningMonths(now, 3);
+    case "last6Months":
+      return runningMonths(now, 6);
+    case "last12Months":
+      return runningMonths(now, 12);
+    case "custom": {
+      let from = startOfDay(custom.from ?? now);
+      let to = endOfDay(custom.to ?? now);
+      if (from.getTime() > to.getTime()) {
+        [from, to] = [startOfDay(to), endOfDay(from)];
+      }
+      const previousEnd = endOfDay(addDays(from, -1));
+      return {
+        from,
+        to,
+        previous: {
+          from: startOfDay(addDays(previousEnd, -(countDays(from, to) - 1))),
+          to: previousEnd,
+        },
+      };
+    }
+    case "thisMonth":
+    default:
+      return runningMonths(now, 1);
+  }
+}
+
+/** The last `count` calendar months up to today, and the same slice before. */
+function runningMonths(
+  now: Date,
+  count: number,
+): DateRange & { previous: DateRange } {
+  return {
+    from: startOfMonth(addMonths(now, -(count - 1))),
+    to: endOfDay(now),
+    previous: {
+      from: startOfMonth(addMonths(now, -(2 * count - 1))),
+      // Same day number, clamped by addMonths when that month is shorter.
+      to: endOfDay(addMonths(now, -count)),
+    },
+  };
+}
+
+/**
+ * Days that have actually happened inside a period, today included — the
+ * divisor for a daily average. A finished period counts all of its days; one
+ * still running stops at today.
+ */
+export function daysElapsedIn(period: ResolvedPeriod, now: Date): number {
+  const end = period.isOngoing ? now : period.to;
+  return Math.max(countDays(period.from, end), 0);
+}
+
+// ---------------------------------------------------------------------------
+// Trend series
+// ---------------------------------------------------------------------------
+
+export type SeriesTotalsRow = PeriodTotals & {
+  /**
+   * The bucket as grouped in SQL: "YYYY-MM-DD" for a day, the Monday that
+   * starts the week for a week, "YYYY-MM" for a month.
+   */
+  bucket: string;
+};
+
+export type SeriesBucket = PeriodTotals & {
+  key: string;
+  /** First day of the bucket, for formatting the label in the caller's locale. */
   date: Date;
+  /** Last day of the bucket, clamped to the period. */
+  end: Date;
   net: number;
 };
 
-export type MonthlySeries = {
-  buckets: MonthBucket[];
+export type Series = {
+  buckets: SeriesBucket[];
+  granularity: Granularity;
   /** Largest single bar in the series — what every bar is scaled against. */
   max: number;
 };
 
+const pad = (value: number) => String(value).padStart(2, "0");
+
+export function dayKey(date: Date): string {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 function monthKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
+/** The Monday on or before `date` — the same rule as the SQL bucket. */
+function startOfWeek(date: Date): Date {
+  const day = startOfDay(date);
+  // getDay(): Sunday is 0, so Sunday steps back six days rather than forward.
+  return addDays(day, -((day.getDay() + 6) % 7));
 }
 
 /**
- * A fixed-length run of months ending with the current one.
+ * Every bucket of a period, in order.
  *
- * Months with no transactions are filled with zeroes instead of being skipped:
+ * Buckets with no transactions are filled with zeroes instead of being skipped:
  * a chart that silently drops empty months puts March next to June and reads
  * as a steady decline.
  */
-export function monthlySeries(
-  rows: MonthlyTotalsRow[],
-  { now = new Date(), months = 6 }: { now?: Date; months?: number } = {},
-): MonthlySeries {
-  const byMonth = new Map(rows.map((row) => [row.month, row]));
+export function bucketSeries(
+  rows: SeriesTotalsRow[],
+  { from, to, granularity }: DateRange & { granularity: Granularity },
+): Series {
+  const byKey = new Map(rows.map((row) => [row.bucket, row]));
+  const buckets: SeriesBucket[] = [];
 
-  const buckets: MonthBucket[] = [];
-  for (let offset = months - 1; offset >= 0; offset -= 1) {
-    const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
-    const key = monthKey(date);
-    const row = byMonth.get(key);
+  let cursor =
+    granularity === "day"
+      ? startOfDay(from)
+      : granularity === "week"
+        ? startOfWeek(from)
+        : startOfMonth(from);
+
+  while (cursor.getTime() <= to.getTime()) {
+    const next =
+      granularity === "day"
+        ? addDays(cursor, 1)
+        : granularity === "week"
+          ? addDays(cursor, 7)
+          : startOfMonth(addMonths(cursor, 1));
+    const key = granularity === "month" ? monthKey(cursor) : dayKey(cursor);
+    const row = byKey.get(key);
 
     const totals: PeriodTotals = {
       income: row?.income ?? 0,
@@ -217,12 +464,16 @@ export function monthlySeries(
       debtOut: row?.debtOut ?? 0,
     };
 
+    const lastDay = endOfDay(addDays(next, -1));
     buckets.push({
       ...totals,
-      month: key,
-      date,
+      key,
+      date: cursor,
+      end: lastDay.getTime() > to.getTime() ? to : lastDay,
       net: totals.income - totals.expense,
     });
+
+    cursor = next;
   }
 
   const max = buckets.reduce(
@@ -230,5 +481,54 @@ export function monthlySeries(
     0,
   );
 
-  return { buckets, max };
+  return { buckets, granularity, max };
+}
+
+// ---------------------------------------------------------------------------
+// Daily allowance
+// ---------------------------------------------------------------------------
+
+export type DailyAllowance = {
+  /** Days left in the month, today included. */
+  daysLeft: number;
+  /** What can be spent per day from now on without running out. */
+  allowance: number;
+  /** What has actually been spent per day this month. */
+  average: number;
+  /** Main-fund balance at month end if the current pace holds. */
+  projectedBalance: number;
+  status: "onTrack" | "over" | "empty";
+};
+
+/**
+ * How much can be spent per day for the rest of the month.
+ *
+ * The balance is divided over the days left *including today*: today's
+ * spending so far has already left the balance, and what remains of today
+ * still needs a share of it.
+ *
+ * The projection subtracts the current pace for the days after today only —
+ * today is already partly in the balance, and counting it again would make
+ * every projection a day too pessimistic.
+ */
+export function dailyAllowance({
+  balance,
+  spentThisMonth,
+  now,
+}: {
+  balance: number;
+  spentThisMonth: number;
+  now: Date;
+}): DailyAllowance {
+  const daysLeft = daysInMonth(now) - now.getDate() + 1;
+  const average = dailyAverage(spentThisMonth, now.getDate());
+  const allowance = balance > 0 ? Math.floor(balance / daysLeft) : 0;
+
+  return {
+    daysLeft,
+    allowance,
+    average,
+    projectedBalance: balance - average * (daysLeft - 1),
+    status: balance <= 0 ? "empty" : average > allowance ? "over" : "onTrack",
+  };
 }

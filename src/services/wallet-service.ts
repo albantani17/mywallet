@@ -9,6 +9,7 @@ export type CreateWalletInput = {
 
 export type UpdateWalletInput = {
   name: string;
+  isMainFund?: boolean;
   type?: WalletType;
   initialBalance?: number;
 };
@@ -44,7 +45,7 @@ export const walletService = {
   },
 
   /**
-   * Once a wallet has history, only its name may change.
+   * Once a wallet has history, only its name and main-fund flag may change.
    *
    * The edit sheet also disables those fields, but the rule is enforced here:
    * rewriting an opening balance underneath existing transactions would move
@@ -55,12 +56,18 @@ export const walletService = {
     input: UpdateWalletInput,
     { hasUsage }: { hasUsage: boolean },
   ) {
+    // The main-fund flag only decides what insights count, never a balance,
+    // so it stays editable however much history the wallet carries.
     if (hasUsage) {
-      return walletRepository.update(id, { name: input.name.trim() });
+      return walletRepository.update(id, {
+        name: input.name.trim(),
+        isMainFund: input.isMainFund,
+      });
     }
 
     return walletRepository.update(id, {
       name: input.name.trim(),
+      isMainFund: input.isMainFund,
       type: input.type,
       initialBalance: input.initialBalance,
     });
@@ -83,6 +90,10 @@ export const walletService = {
 
     await walletRepository.remove(wallet.id);
     return { action: "deleted" };
+  },
+
+  async setMainFund(id: number, isMainFund: boolean) {
+    return walletRepository.setMainFund(id, isMainFund);
   },
 
   /** Total across active wallets. */

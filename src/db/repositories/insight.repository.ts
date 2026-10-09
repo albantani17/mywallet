@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, isNull, lte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, lte, sql, type SQL } from "drizzle-orm";
 
 import { db } from "../client";
 import { categories } from "../schema/categories";
@@ -15,6 +15,9 @@ import { wallets } from "../schema/wallets";
  *
  * - Transfers never count. Moving money between your own wallets is not income
  *   and not spending — the same rule the wallet balances use.
+ * - Only main funds count. A wallet the user marked as not a main fund —
+ *   savings, investments — is money they do not mean to spend, so neither its
+ *   income nor its spending belongs in "how is the month going".
  * - Debt cash flow is separated out. The debt module records a disbursement as
  *   income (`loan-received`) and a repayment as expense (`debt-repayment`), so
  *   counting them plainly would report a 50m loan as a good month and put the
@@ -24,8 +27,25 @@ import { wallets } from "../schema/wallets";
 
 type Range = { from: Date; to: Date };
 
+/** Mirrors `Granularity` in services/insight.ts; the db layer imports nothing above it. */
+type Granularity = "day" | "week" | "month";
+
+/**
+ * The source wallet is a main fund. Written literally, with its own alias, so
+ * it cannot be confused with the `wallets` joined in largestTransaction.
+ */
+const FROM_MAIN_FUND = sql`"transactions"."wallet_id" IN (
+  SELECT "main_wallets"."id" FROM "wallets" AS "main_wallets"
+  WHERE "main_wallets"."is_main_fund" = 1
+)`;
+
+/** Every insight query starts from here: inside the window, main funds only. */
 const withinRange = ({ from, to }: Range) =>
-  and(gte(transactions.occurredAt, from), lte(transactions.occurredAt, to));
+  and(
+    gte(transactions.occurredAt, from),
+    lte(transactions.occurredAt, to),
+    FROM_MAIN_FUND,
+  );
 
 // Identifiers are written out literally rather than interpolated. Drizzle
 // strips table qualifiers from interpolated columns inside a SELECT list, which
@@ -46,11 +66,19 @@ const DEBT_OUT = sql<number>`COALESCE(SUM(CASE WHEN "transactions"."type" IN ('e
   AND "transactions"."debt_id" IS NOT NULL THEN "transactions"."amount" ELSE 0 END), 0)`;
 
 /**
+ * The trend chart's buckets, keyed exactly as bucketSeries (services/insight.ts)
+ * expects them.
+ *
  * `occurred_at` is stored as unix seconds, and the bucket has to be the user's
- * month: without `localtime` a transaction recorded late on the 31st lands in
- * the next month.
+ * day: without `localtime` a transaction recorded late on the 31st lands in the
+ * next month. A week is keyed by its Monday — stepping back six days and then
+ * forward to the next Monday lands on the Monday on or before the date.
  */
-const MONTH_BUCKET = sql<string>`strftime('%Y-%m', "transactions"."occurred_at", 'unixepoch', 'localtime')`;
+const BUCKETS: Record<Granularity, SQL<string>> = {
+  day: sql<string>`strftime('%Y-%m-%d', "transactions"."occurred_at", 'unixepoch', 'localtime')`,
+  week: sql<string>`date("transactions"."occurred_at", 'unixepoch', 'localtime', '-6 days', 'weekday 1')`,
+  month: sql<string>`strftime('%Y-%m', "transactions"."occurred_at", 'unixepoch', 'localtime')`,
+};
 
 export type PeriodTotalsRow = {
   income: number;
@@ -59,7 +87,7 @@ export type PeriodTotalsRow = {
   debtOut: number;
 };
 
-export type MonthlyTotalsRow = PeriodTotalsRow & { month: string };
+export type SeriesTotalsRow = PeriodTotalsRow & { bucket: string };
 
 export type CategorySpendRow = {
   categoryId: number | null;
@@ -118,11 +146,11 @@ export const insightQueries = {
       .groupBy(transactions.categoryId)
       .orderBy(desc(sql`COALESCE(SUM("transactions"."amount"), 0)`)),
 
-  /** The whole trend in one query rather than one query per month. */
-  monthlyTotals: (range: Range) =>
+  /** The whole trend in one query rather than one query per bucket. */
+  seriesTotals: (range: Range, granularity: Granularity) =>
     db
       .select({
-        month: MONTH_BUCKET,
+        bucket: BUCKETS[granularity],
         income: INCOME,
         expense: EXPENSE,
         debtIn: DEBT_IN,
@@ -130,7 +158,7 @@ export const insightQueries = {
       })
       .from(transactions)
       .where(withinRange(range))
-      .groupBy(MONTH_BUCKET),
+      .groupBy(BUCKETS[granularity]),
 
   /** The single biggest spend of the window, for the "largest" line. */
   largestTransaction: (range: Range) =>

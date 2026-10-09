@@ -73,6 +73,13 @@ export type TransactionListOptions = {
 // alongside its source in one query.
 const targetWallets = alias(wallets, "target_wallets");
 
+/**
+ * The user's calendar day, as "YYYY-MM-DD". `localtime` matters: a transaction
+ * late in the evening would otherwise land on the next day in UTC+7. Matches
+ * `toDayKey` in utils/format-date.ts.
+ */
+const DAY_BUCKET = sql<string>`strftime('%Y-%m-%d', "transactions"."occurred_at", 'unixepoch', 'localtime')`;
+
 function buildFilters(options: TransactionListOptions): SQL | undefined {
   const filters: SQL[] = [];
 
@@ -229,6 +236,31 @@ export const transactionQueries = {
         sql`max(transactions.occurred_at) desc`,
       )
       .limit(limit),
+
+  /**
+   * Income and spending per local day, under the same filters as `list`.
+   *
+   * A query of its own rather than a sum over the loaded rows: the list only
+   * holds the newest pages, so a day cut across a page boundary would show a
+   * total that changes as the user scrolls. Transfers are left out — moving
+   * money between one's own wallets is neither — and a bill counts as spending,
+   * the same calls the insights make.
+   *
+   * `wallets` is joined only because the search filter matches its name.
+   */
+  dailyTotals: (options: Omit<TransactionListOptions, "limit" | "offset"> = {}) =>
+    db
+      .select({
+        day: DAY_BUCKET,
+        income: sql<number>`COALESCE(SUM(CASE WHEN "transactions"."type" = 'income'
+          THEN "transactions"."amount" ELSE 0 END), 0)`,
+        expense: sql<number>`COALESCE(SUM(CASE WHEN "transactions"."type" IN ('expense', 'bill')
+          THEN "transactions"."amount" ELSE 0 END), 0)`,
+      })
+      .from(transactions)
+      .leftJoin(wallets, eq(transactions.walletId, wallets.id))
+      .where(buildFilters(options))
+      .groupBy(DAY_BUCKET),
 
   recentWallets: (limit = 30) =>
     db

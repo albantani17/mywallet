@@ -8,6 +8,8 @@ import type { WalletWithBalance } from "@/db";
 import { useWalletActions } from "@/hooks/features/wallets/use-wallet-actions";
 import { useWalletFilters } from "@/hooks/features/wallets/use-wallet-filters";
 
+import { MainFundSheet } from "./main-fund-sheet";
+import { MainFundSummary } from "./main-fund-summary";
 import { WalletBalanceCard } from "./wallet-balance-card";
 import { WalletCategorySheet } from "./wallet-category-sheet";
 import { WalletCreateSheet } from "./wallet-create-sheet";
@@ -76,6 +78,7 @@ export function WalletGrid() {
     useWalletActions();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isMainFundOpen, setIsMainFundOpen] = useState(false);
 
   if (!isReady) {
     return (
@@ -114,6 +117,9 @@ export function WalletGrid() {
               onAddCategory={() => setIsCategoryOpen(true)}
             />
             <WalletBalanceCard total={total} />
+            {hasWallets ? (
+              <MainFundSummary onPress={() => setIsMainFundOpen(true)} />
+            ) : null}
           </View>
         }
         renderItem={({ item }) => (
@@ -157,6 +163,11 @@ export function WalletGrid() {
       <WalletCategorySheet
         isOpen={isCategoryOpen}
         onClose={() => setIsCategoryOpen(false)}
+      />
+
+      <MainFundSheet
+        isOpen={isMainFundOpen}
+        onClose={() => setIsMainFundOpen(false)}
       />
 
       {/* One sheet at grid level rather than one per card — and keyed by wallet

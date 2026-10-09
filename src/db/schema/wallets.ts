@@ -29,6 +29,15 @@ export const wallets = sqliteTable("wallets", {
   isArchived: integer("is_archived", { mode: "boolean" })
     .notNull()
     .default(false),
+  /**
+   * Whether this wallet is part of the user's everyday money. Insights and the
+   * daily allowance only count main funds, so savings or investments parked
+   * elsewhere do not inflate "how much can I spend". Defaults to true, so every
+   * existing wallet keeps counting until the user opts it out.
+   */
+  isMainFund: integer("is_main_fund", { mode: "boolean" })
+    .notNull()
+    .default(true),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()

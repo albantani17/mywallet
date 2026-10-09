@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 import type { WalletWithBalance } from "@/db";
@@ -21,6 +22,7 @@ export function WalletGridCard({
   onEdit,
   onDelete,
 }: WalletGridCardProps) {
+  const { t } = useTranslation();
   // Tracked locale, not currentLocale() — otherwise the amount freezes when
   // the language changes.
   const { locale } = useActiveLocale();
@@ -70,6 +72,13 @@ export function WalletGridCard({
       <Text className="mt-0.5 text-[11px]" style={{ color: accent }}>
         {category.label}
       </Text>
+
+      {/* Only the exception is labelled: wallets count by default. */}
+      {wallet.isMainFund ? null : (
+        <Text className="mt-0.5 text-[10px] text-fg-muted" numberOfLines={1}>
+          {t("wallets.mainFund.excluded")}
+        </Text>
+      )}
     </View>
   );
 }

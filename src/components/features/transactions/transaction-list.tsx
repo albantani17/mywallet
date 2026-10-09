@@ -6,17 +6,29 @@ import { ActivityIndicator, SectionList, Text, View } from "react-native";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AppRefreshControl } from "@/components/ui/refresh-control";
 import type { TransactionWithRelations } from "@/db";
+import {
+  useDailyTotals,
+  type DayTotals,
+} from "@/hooks/features/transactions/use-daily-totals";
 import type { TransactionFilterValues } from "@/hooks/features/transactions/use-transaction-filters";
 import { useTransactions } from "@/hooks/features/transactions/use-transactions";
 import { useActiveLocale } from "@/hooks/use-active-locale";
 import type { AppLocale } from "@/i18n";
-import { formatDate, isSameDay, isToday, isYesterday } from "@/utils/format-date";
+import { formatCompactCurrency } from "@/utils/format-currency";
+import {
+  formatDate,
+  isSameDay,
+  isToday,
+  isYesterday,
+  toDayKey,
+} from "@/utils/format-date";
 
 import { TransactionRow } from "./transaction-row";
 import { DebtPaymentInfoSheet } from "./debt-payment-info-sheet";
 import { TransactionDeleteSheet } from "./transaction-delete-sheet";
 
 type DaySection = {
+  /** `toDayKey` of the day — also what the day's totals are looked up by. */
   key: string;
   date: Date;
   data: TransactionWithRelations[];
@@ -40,7 +52,7 @@ function toSections(transactions: TransactionWithRelations[]): DaySection[] {
     }
 
     sections.push({
-      key: transaction.occurredAt.toDateString(),
+      key: toDayKey(transaction.occurredAt),
       date: transaction.occurredAt,
       data: [transaction],
     });
@@ -60,6 +72,35 @@ function dayLabel(
   return formatDate(date, locale);
 }
 
+/**
+ * The day's money in and out, beside its label. A side with nothing in it is
+ * left out rather than shown as "+Rp0", which is noise on most days.
+ */
+function DayTotalsLabel({
+  totals,
+  locale,
+}: {
+  totals: DayTotals | undefined;
+  locale: AppLocale;
+}) {
+  if (!totals) return null;
+
+  return (
+    <View className="flex-row items-center gap-2">
+      {totals.income > 0 ? (
+        <Text className="text-xs font-semibold text-primary">
+          +{formatCompactCurrency(totals.income, locale)}
+        </Text>
+      ) : null}
+      {totals.expense > 0 ? (
+        <Text className="text-xs font-semibold text-danger">
+          −{formatCompactCurrency(totals.expense, locale)}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
 type TransactionListProps = {
   filters?: TransactionFilterValues;
   /** Switches the empty state between "none yet" and "nothing matched". */
@@ -75,6 +116,7 @@ export function TransactionList({
   const { locale } = useActiveLocale();
   const { transactions, isReady, hasMore, loadMore, isRefreshing, refresh } =
     useTransactions(filters);
+  const dailyTotals = useDailyTotals(filters);
   const [transactionToDelete, setTransactionToDelete] =
     useState<TransactionWithRelations | null>(null);
   const [debtPayment, setDebtPayment] =
@@ -106,10 +148,14 @@ export function TransactionList({
           />
         )}
         renderSectionHeader={({ section }) => (
-          <View className="bg-canvas py-2">
+          <View className="flex-row items-center justify-between bg-canvas py-2">
             <Text className="text-xs font-semibold uppercase text-fg-muted">
               {dayLabel(section.date, now, locale, t)}
             </Text>
+            <DayTotalsLabel
+              totals={dailyTotals.get(section.key)}
+              locale={locale}
+            />
           </View>
         )}
         stickySectionHeadersEnabled

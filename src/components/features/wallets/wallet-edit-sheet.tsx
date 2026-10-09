@@ -7,6 +7,7 @@ import { TextField } from "@/components/ui/text-field";
 import type { WalletWithBalance } from "@/db";
 import { useEditWallet } from "@/hooks/features/wallets/use-edit-wallet";
 
+import { MainFundToggle } from "./main-fund-toggle";
 import { WalletTypePicker } from "./wallet-type-picker";
 
 type WalletEditSheetProps = {
@@ -24,6 +25,7 @@ export function WalletEditSheet({
   const {
     name,
     type,
+    isMainFund,
     initialBalance,
     errors,
     isSubmitting,
@@ -32,6 +34,7 @@ export function WalletEditSheet({
     changeName,
     changeInitialBalance,
     changeType,
+    changeIsMainFund,
     submit,
   } = useEditWallet(wallet, onClose);
 
@@ -80,6 +83,8 @@ export function WalletEditSheet({
             />
           </>
         )}
+
+        <MainFundToggle value={isMainFund} onChange={changeIsMainFund} />
 
         {errors.form ? (
           <Text className="text-sm text-danger">{errors.form}</Text>
