@@ -45,7 +45,8 @@
       "expo-image",
       "@react-native-google-signin/google-signin",
       "expo-sharing",
-      "./plugins/with-release-signing"
+      "./plugins/with-release-signing",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
