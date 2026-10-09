@@ -1,128 +1,150 @@
 import { useMemo } from "react";
 
-import { insightQueries, schema } from "@/db";
+import { insightQueries, schema, walletQueries } from "@/db";
 import type {
   CategorySpendRow,
   LargestTransactionRow,
-  MonthlyTotalsRow,
   PeriodTotalsRow,
+  SeriesTotalsRow,
 } from "@/db";
 import { useLiveData } from "@/hooks/use-live-data";
 import { useRefresh } from "@/hooks/use-refresh";
 import {
+  bucketSeries,
   compareSpending,
+  countDays,
+  dailyAllowance,
   dailyAverage,
+  daysElapsedIn,
   flowSplit,
-  monthlySeries,
-  projectMonthEnd,
+  projectPeriodEnd,
+  resolvePeriod,
   topCategories,
   EMPTY_TOTALS,
 } from "@/services/insight";
-import {
-  addMonths,
-  daysInMonth,
-  endOfDay,
-  endOfMonth,
-  startOfMonth,
-} from "@/utils/format-date";
+import { endOfDay, startOfMonth } from "@/utils/format-date";
 
-/** How many months the cash-flow chart shows, including the current one. */
-export const TREND_MONTHS = 6;
-
-const INSIGHT_TABLES = [schema.transactions, schema.categories];
+import type { InsightPeriodSelection } from "./use-insight-period";
 
 /**
- * The three insight cards on the home screen.
- *
- * One `now` for the whole section, so the month boundaries, the day count and
- * the chart cannot be measured a render apart.
- *
- * The month-on-month figure compares like with like: the first ten days of this
- * month against the first ten of the last one. Comparing a running month with a
- * finished one reads as a 90% saving on the 3rd of every month, which is the
- * fastest way to make an insight untrustworthy.
+ * Wallets are watched too: flipping a wallet in or out of the main funds
+ * changes every figure here without touching a transaction.
  */
-export function useInsights() {
+const INSIGHT_TABLES = [schema.transactions, schema.categories, schema.wallets];
+
+/**
+ * The insight cards on the home screen, for the period the user picked.
+ *
+ * One `now` for the whole section, so the period bounds, the day counts and the
+ * chart cannot be measured a render apart.
+ *
+ * The daily allowance is always about this month, whatever period is picked —
+ * it answers "how much can I spend today", which no other window can.
+ */
+export function useInsights({
+  period,
+  customFrom,
+  customTo,
+}: InsightPeriodSelection) {
   const { refreshKey, refresh } = useRefresh();
   const now = useMemo(() => new Date(), []);
 
-  const windows = useMemo(() => {
-    const monthStart = startOfMonth(now);
-    const previous = addMonths(now, -1);
+  // Timestamps, not Dates, as dependencies: a Date is a new object each render.
+  const fromTime = customFrom?.getTime() ?? null;
+  const toTime = customTo?.getTime() ?? null;
 
-    return {
-      thisMonth: { from: monthStart, to: endOfDay(now) },
-      // The same slice of last month — same day number, clamped by addMonths
-      // when last month is shorter.
-      samePeriodLastMonth: {
-        from: startOfMonth(previous),
-        to: endOfDay(previous),
-      },
-      previousMonth: {
-        from: startOfMonth(previous),
-        to: endOfMonth(previous),
-      },
-      trend: {
-        from: startOfMonth(addMonths(now, -(TREND_MONTHS - 1))),
-        to: endOfDay(now),
-      },
-    };
-  }, [now]);
+  const resolved = useMemo(
+    () =>
+      resolvePeriod(period, now, {
+        from: fromTime === null ? null : new Date(fromTime),
+        to: toTime === null ? null : new Date(toTime),
+      }),
+    [period, now, fromTime, toTime],
+  );
+
+  const thisMonth = useMemo(
+    () => ({ from: startOfMonth(now), to: endOfDay(now) }),
+    [now],
+  );
+
+  const range = useMemo(
+    () => ({ from: resolved.from, to: resolved.to }),
+    [resolved],
+  );
 
   const current = useLiveData(
-    insightQueries.periodTotals(windows.thisMonth),
+    insightQueries.periodTotals(range),
     INSIGHT_TABLES,
-    [windows, refreshKey],
+    [range, refreshKey],
   );
 
   const baseline = useLiveData(
-    insightQueries.periodTotals(windows.samePeriodLastMonth),
+    insightQueries.periodTotals(resolved.previous),
     INSIGHT_TABLES,
-    [windows, refreshKey],
+    [resolved, refreshKey],
   );
 
   const spending = useLiveData(
-    insightQueries.spendingByCategory(windows.thisMonth),
+    insightQueries.spendingByCategory(range),
     INSIGHT_TABLES,
-    [windows, refreshKey],
+    [range, refreshKey],
   );
 
   const largest = useLiveData(
-    insightQueries.largestTransaction(windows.thisMonth),
+    insightQueries.largestTransaction(range),
     INSIGHT_TABLES,
-    [windows, refreshKey],
+    [range, refreshKey],
   );
 
   const trend = useLiveData(
-    insightQueries.monthlyTotals(windows.trend),
+    insightQueries.seriesTotals(range, resolved.granularity),
     INSIGHT_TABLES,
-    [windows, refreshKey],
+    [resolved, refreshKey],
   );
 
-  const thisMonth = (current.data?.[0] as PeriodTotalsRow) ?? EMPTY_TOTALS;
-  const lastMonth = (baseline.data?.[0] as PeriodTotalsRow) ?? EMPTY_TOTALS;
+  const monthTotals = useLiveData(
+    insightQueries.periodTotals(thisMonth),
+    INSIGHT_TABLES,
+    [thisMonth, refreshKey],
+  );
 
-  const daysElapsed = now.getDate();
-  const average = dailyAverage(thisMonth.expense, daysElapsed);
+  const mainBalance = useLiveData(
+    walletQueries.mainFundBalance(),
+    INSIGHT_TABLES,
+    [refreshKey],
+  );
+
+  const totals = (current.data?.[0] as PeriodTotalsRow) ?? EMPTY_TOTALS;
+  const previousTotals = (baseline.data?.[0] as PeriodTotalsRow) ?? EMPTY_TOTALS;
+  const monthSpent =
+    (monthTotals.data?.[0] as PeriodTotalsRow | undefined)?.expense ?? 0;
+
+  const daysElapsed = daysElapsedIn(resolved, now);
+  const average = dailyAverage(totals.expense, daysElapsed);
 
   return {
-    thisMonth,
-    samePeriodLastMonth: lastMonth,
-    comparison: compareSpending(thisMonth.expense, lastMonth.expense),
-    split: flowSplit(thisMonth.income, thisMonth.expense),
+    period,
+    resolved,
+    totals,
+    previousTotals,
+    comparison: compareSpending(totals.expense, previousTotals.expense),
+    split: flowSplit(totals.income, totals.expense),
     /** True once there is a previous period to compare against at all. */
-    hasBaseline: lastMonth.expense > 0,
+    hasBaseline: previousTotals.expense > 0,
     daysElapsed,
     dailyAverage: average,
-    projected: projectMonthEnd(average, daysInMonth(now)),
+    /** Only a period still running has an end left to project. */
+    projected: resolved.projectTo
+      ? projectPeriodEnd(average, countDays(resolved.from, resolved.projectTo))
+      : null,
     breakdown: topCategories((spending.data ?? []) as CategorySpendRow[]),
     largest: (largest.data?.[0] as LargestTransactionRow | undefined) ?? null,
-    series: monthlySeries((trend.data ?? []) as MonthlyTotalsRow[], {
+    series: bucketSeries((trend.data ?? []) as SeriesTotalsRow[], resolved),
+    allowance: dailyAllowance({
+      balance: Number(mainBalance.data?.[0]?.balance ?? 0),
+      spentThisMonth: monthSpent,
       now,
-      months: TREND_MONTHS,
     }),
-    month: windows.thisMonth,
-    previousMonthDate: addMonths(now, -1),
     now,
     isReady: current.updatedAt !== undefined,
     error: current.error ?? spending.error ?? trend.error,

@@ -6,6 +6,7 @@ import { QuickRepeatStrip } from "@/components/features/transactions/quick-repea
 import { AppRefreshControl } from "@/components/ui/refresh-control";
 import { Screen } from "@/components/ui/screen";
 import { useDashboardSummary } from "@/hooks/features/dashboard/use-dashboard-summary";
+import { useInsightPeriod } from "@/hooks/features/dashboard/use-insight-period";
 import { useInsights } from "@/hooks/features/dashboard/use-insights";
 import { useQuickRepeat } from "@/hooks/features/transactions/use-quick-repeat";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -17,7 +18,8 @@ import { WalletCarousel } from "./wallet-carousel";
 export function Dashboard() {
   const { t } = useTranslation();
   const { user } = useCurrentUser();
-  const insights = useInsights();
+  const insightPeriod = useInsightPeriod();
+  const insights = useInsights(insightPeriod.selection);
   const { topWallets, hasMore, isReady, isRefreshing, refresh } =
     useDashboardSummary(insights.refresh);
   // Owned here rather than inside the strip: the confirm sheet is a Modal and
@@ -71,7 +73,7 @@ export function Dashboard() {
 
         <DashboardActions />
 
-        <InsightSection insights={insights} />
+        <InsightSection insights={insights} periodControls={insightPeriod} />
       </View>
     </Screen>
   );

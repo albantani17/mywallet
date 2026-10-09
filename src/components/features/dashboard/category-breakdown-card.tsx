@@ -20,7 +20,7 @@ type CategoryBreakdownCardProps = { insights: Insights };
 const FALLBACK_COLOR = "#8a978c";
 
 /**
- * Where the month's money went: the five biggest categories, the remainder
+ * Where the period's money went: the five biggest categories, the remainder
  * rolled into one row, and the single largest transaction underneath.
  *
  * Debt repayments are absent by construction — they are principal moving back,
@@ -33,7 +33,7 @@ export function CategoryBreakdownCard({ insights }: CategoryBreakdownCardProps) 
   const colors = useThemeColors();
 
   const money = (value: number) => formatCurrency(value, locale);
-  const { breakdown, largest, month } = insights;
+  const { breakdown, largest, resolved } = insights;
 
   const labelOf = useCallback(
     (slice: CategorySlice) => {
@@ -56,12 +56,12 @@ export function CategoryBreakdownCard({ insights }: CategoryBreakdownCardProps) 
         pathname: "/transactions",
         params: {
           categoryId: String(slice.categoryId),
-          from: String(month.from.getTime()),
-          to: String(month.to.getTime()),
+          from: String(resolved.from.getTime()),
+          to: String(resolved.to.getTime()),
         },
       });
     },
-    [month],
+    [resolved],
   );
 
   const openLargest = useCallback(() => {

@@ -53,9 +53,10 @@ export type Translation = {
   };
   insights: {
     title: string;
-    monthTitle: string;
-    asOf: string;
+    trendTitle: string;
+    spentTitle: string;
     vsMonth: string;
+    vsPrevious: string;
     noComparison: string;
     dailyAverage: string;
     projected: string;
@@ -69,6 +70,24 @@ export type Translation = {
     expense: string;
     net: string;
     debtCashFlow: string;
+    periods: {
+      label: string;
+      thisMonth: string;
+      lastMonth: string;
+      last3Months: string;
+      last6Months: string;
+      last12Months: string;
+      custom: string;
+    };
+    allowance: {
+      title: string;
+      daysLeft: string;
+      perDay: string;
+      onTrack: string;
+      over: string;
+      empty: string;
+      projected: string;
+    };
   };
   wallets: {
     title: string;
@@ -106,6 +125,17 @@ export type Translation = {
       edit: string;
       delete: string;
       cancel: string;
+    };
+    mainFund: {
+      title: string;
+      description: string;
+      count: string;
+      total: string;
+      excluded: string;
+      toggleLabel: string;
+      toggleHint: string;
+      failed: string;
+      done: string;
     };
     edit: {
       title: string;
@@ -675,22 +705,42 @@ export const id: Translation = {
   },
   insights: {
     title: "Insight",
-    monthTitle: "Bulan ini",
-    asOf: "s/d {{date}}",
+    trendTitle: "Tren",
+    spentTitle: "Pengeluaran",
     vsMonth: "vs {{month}}",
+    vsPrevious: "vs periode sebelumnya",
     noComparison: "Belum ada pembanding",
     dailyAverage: "{{amount}}/hari",
     projected: "proyeksi {{amount}}",
     breakdownTitle: "Ke mana perginya",
     otherCategories: "Lainnya",
     uncategorised: "Tanpa kategori",
-    noSpending: "Belum ada pengeluaran bulan ini.",
+    noSpending: "Belum ada pengeluaran di periode ini.",
     largest: "Terbesar",
-    cashFlowTitle: "Arus kas 6 bulan",
+    cashFlowTitle: "Arus kas",
     income: "Masuk",
     expense: "Keluar",
     net: "Net {{amount}}",
     debtCashFlow: "Arus kas hutang {{amount}}",
+    periods: {
+      label: "Periode insight",
+      thisMonth: "Bulan ini",
+      lastMonth: "Bulan lalu",
+      last3Months: "3 bulan",
+      last6Months: "6 bulan",
+      last12Months: "12 bulan",
+      custom: "Pilih tanggal",
+    },
+    allowance: {
+      title: "Jatah aman harian",
+      daysLeft: "{{count}} hari lagi",
+      perDay: "/hari",
+      onTrack:
+        "Rata-rata pengeluaranmu {{amount}}/hari — masih aman sampai akhir bulan.",
+      over: "Rata-rata pengeluaranmu {{amount}}/hari — lebih dari jatah, dana utama bisa habis sebelum akhir bulan.",
+      empty: "Saldo dana utama sudah habis.",
+      projected: "Perkiraan sisa dana utama akhir bulan {{amount}}",
+    },
   },
   wallets: {
     title: "Dompet",
@@ -728,6 +778,18 @@ export const id: Translation = {
       edit: "Edit",
       delete: "Hapus",
       cancel: "Batal",
+    },
+    mainFund: {
+      title: "Dana utama",
+      description:
+        "Hanya dompet yang dicentang yang dihitung di insight dan jatah harian. Hilangkan centang untuk tabungan atau investasi.",
+      count: "{{count}} dari {{total}} dompet",
+      total: "Total dana utama",
+      excluded: "Bukan dana utama",
+      toggleLabel: "Dana utama",
+      toggleHint: "Dihitung di insight dan jatah harian.",
+      failed: "Gagal menyimpan. Coba lagi.",
+      done: "Selesai",
     },
     edit: {
       title: "Edit dompet",

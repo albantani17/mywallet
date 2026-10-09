@@ -21,6 +21,7 @@ export function useEditWallet(wallet: WalletWithBalance, onSaved: () => void) {
 
   const [name, setName] = useState(wallet.name);
   const [type, setType] = useState<WalletType>(wallet.type);
+  const [isMainFund, setIsMainFund] = useState(wallet.isMainFund);
   const [balanceValue, setBalanceValue] = useState<number | null>(
     wallet.initialBalance,
   );
@@ -83,7 +84,7 @@ export function useEditWallet(wallet: WalletWithBalance, onSaved: () => void) {
     try {
       await walletService.updateWallet(
         wallet.id,
-        { name: trimmed, type, initialBalance: balanceValue ?? 0 },
+        { name: trimmed, isMainFund, type, initialBalance: balanceValue ?? 0 },
         { hasUsage },
       );
       setIsSubmitting(false);
@@ -93,11 +94,22 @@ export function useEditWallet(wallet: WalletWithBalance, onSaved: () => void) {
       setErrors({ form: t("wallets.edit.failed") });
       setIsSubmitting(false);
     }
-  }, [balanceValue, hasUsage, isSubmitting, name, onSaved, t, type, wallet.id]);
+  }, [
+    balanceValue,
+    hasUsage,
+    isMainFund,
+    isSubmitting,
+    name,
+    onSaved,
+    t,
+    type,
+    wallet.id,
+  ]);
 
   return {
     name,
     type,
+    isMainFund,
     initialBalance,
     errors,
     isSubmitting,
@@ -106,6 +118,7 @@ export function useEditWallet(wallet: WalletWithBalance, onSaved: () => void) {
     changeName,
     changeInitialBalance,
     changeType: setType,
+    changeIsMainFund: setIsMainFund,
     submit,
   };
 }

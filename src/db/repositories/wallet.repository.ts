@@ -1,4 +1,4 @@
-import { asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "../client";
 import { transactions } from "../schema/transactions";
@@ -73,6 +73,7 @@ const walletWithBalanceColumns = {
   icon: wallets.icon,
   color: wallets.color,
   isArchived: wallets.isArchived,
+  isMainFund: wallets.isMainFund,
   sortOrder: wallets.sortOrder,
   createdAt: wallets.createdAt,
   updatedAt: wallets.updatedAt,
@@ -109,6 +110,19 @@ export const walletQueries = {
       .where(eq(wallets.isArchived, false))
       .orderBy(desc(balanceExpression))
       .limit(limit),
+
+  /**
+   * What the user can actually spend from: the summed balance of the active
+   * wallets marked as main funds. One row, always — SUM over nothing is NULL,
+   * hence the COALESCE.
+   */
+  mainFundBalance: () =>
+    db
+      .select({
+        balance: sql<number>`COALESCE(SUM(${balanceExpression}), 0)`,
+      })
+      .from(wallets)
+      .where(and(eq(wallets.isMainFund, true), eq(wallets.isArchived, false))),
 };
 
 export const walletRepository = {
@@ -174,6 +188,10 @@ export const walletRepository = {
 
   async unarchive(id: number): Promise<Wallet | null> {
     return walletRepository.update(id, { isArchived: false });
+  },
+
+  async setMainFund(id: number, isMainFund: boolean): Promise<Wallet | null> {
+    return walletRepository.update(id, { isMainFund });
   },
 
   /**

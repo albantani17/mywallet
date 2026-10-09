@@ -9,16 +9,16 @@ import {
   formatCompactCurrency,
   formatCurrency,
 } from "@/utils/format-currency";
-import { formatDate, formatMonthShort } from "@/utils/format-date";
+import { formatDateRange, formatMonthShort } from "@/utils/format-date";
 
 type MonthSummaryCardProps = { insights: Insights };
 
 /**
- * What has been spent this month, how fast, and where that lands.
+ * What has been spent in the period, how fast, and where that lands.
  *
- * The comparison is labelled with the day it runs to, because it compares the
- * same slice of both months — without the label a reader assumes it is being
- * measured against last month's full total.
+ * The card is labelled with the dates it covers, because a running period is
+ * compared with the same slice of the one before — without the label a reader
+ * assumes it is being measured against last month's full total.
  */
 export function MonthSummaryCard({ insights }: MonthSummaryCardProps) {
   const { t } = useTranslation();
@@ -26,7 +26,16 @@ export function MonthSummaryCard({ insights }: MonthSummaryCardProps) {
   const colors = useThemeColors();
 
   const money = (value: number) => formatCurrency(value, locale);
-  const { comparison, hasBaseline } = insights;
+  const { comparison, hasBaseline, resolved, period } = insights;
+
+  // A one-month period names the month it is compared with; anything longer
+  // compares with "the period before", which a single month name would misstate.
+  const versus =
+    period === "thisMonth" || period === "lastMonth"
+      ? t("insights.vsMonth", {
+          month: formatMonthShort(resolved.previous.from, locale),
+        })
+      : t("insights.vsPrevious");
 
   const isUp = comparison.direction === "up";
   const percent =
@@ -38,16 +47,16 @@ export function MonthSummaryCard({ insights }: MonthSummaryCardProps) {
     <View className="mx-6 flex-col gap-3 rounded-3xl bg-surface p-5">
       <View className="flex-row items-center justify-between">
         <Text className="text-sm font-bold text-fg">
-          {t("insights.monthTitle")}
+          {t("insights.spentTitle")}
         </Text>
         <Text className="text-[11px] text-fg-muted">
-          {t("insights.asOf", { date: formatDate(insights.now, locale) })}
+          {formatDateRange(resolved.from, resolved.to, locale)}
         </Text>
       </View>
 
       <View className="flex-row items-end justify-between gap-3">
         <Text className="flex-1 text-2xl font-extrabold text-fg" adjustsFontSizeToFit>
-          {money(insights.thisMonth.expense)}
+          {money(insights.totals.expense)}
         </Text>
 
         {/* Hidden rather than shown as "+100%": the first month of use has
@@ -60,10 +69,7 @@ export function MonthSummaryCard({ insights }: MonthSummaryCardProps) {
               color={isUp ? colors.danger : colors.primary}
             />
             <Text className="text-[11px] font-semibold text-fg-muted">
-              {percent}%{" "}
-              {t("insights.vsMonth", {
-                month: formatMonthShort(insights.previousMonthDate, locale),
-              })}
+              {percent}% {versus}
             </Text>
           </View>
         ) : (
@@ -77,10 +83,11 @@ export function MonthSummaryCard({ insights }: MonthSummaryCardProps) {
 
       <Text className="text-xs text-fg-muted">
         {t("insights.dailyAverage", { amount: money(insights.dailyAverage) })}
-        {" · "}
-        {t("insights.projected", {
-          amount: formatCompactCurrency(insights.projected, locale),
-        })}
+        {insights.projected === null
+          ? null
+          : ` · ${t("insights.projected", {
+              amount: formatCompactCurrency(insights.projected, locale),
+            })}`}
       </Text>
     </View>
   );

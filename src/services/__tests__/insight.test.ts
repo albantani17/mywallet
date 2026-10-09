@@ -5,11 +5,15 @@ import {
   compareSpending,
   dailyAverage,
   flowSplit,
-  monthlySeries,
-  projectMonthEnd,
+  bucketSeries,
+  countDays,
+  dailyAllowance,
+  daysElapsedIn,
+  projectPeriodEnd,
+  resolvePeriod,
   topCategories,
   type CategorySpendRow,
-  type MonthlyTotalsRow,
+  type SeriesTotalsRow,
 } from "../insight.ts";
 
 const now = new Date(2026, 7, 10); // 10 August 2026
@@ -53,8 +57,8 @@ describe("daily rate", () => {
     assert.equal(dailyAverage(50_000, 0), 0);
   });
 
-  it("projects the month end from the current rate", () => {
-    assert.equal(projectMonthEnd(300_000, 31), 9_300_000);
+  it("projects the period end from the current rate", () => {
+    assert.equal(projectPeriodEnd(300_000, 31), 9_300_000);
   });
 });
 
@@ -141,54 +145,157 @@ describe("category breakdown", () => {
   });
 });
 
-describe("monthly series", () => {
-  const month = (key: string, income: number, expense: number): MonthlyTotalsRow => ({
-    month: key,
-    income,
-    expense,
-    debtIn: 0,
-    debtOut: 0,
+const totalsRow = (
+  bucket: string,
+  income: number,
+  expense: number,
+): SeriesTotalsRow => ({ bucket, income, expense, debtIn: 0, debtOut: 0 });
+
+const ymd = (date: Date) =>
+  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+describe("periods", () => {
+  it("compares this month so far with the same slice of last month", () => {
+    const period = resolvePeriod("thisMonth", now);
+
+    assert.equal(ymd(period.from), "2026-8-1");
+    assert.equal(ymd(period.to), "2026-8-10");
+    assert.equal(ymd(period.previous.from), "2026-7-1");
+    assert.equal(ymd(period.previous.to), "2026-7-10");
+    assert.equal(period.granularity, "day");
+    assert.equal(period.isOngoing, true);
   });
 
-  it("always returns the requested run of months, ending with the current one", () => {
-    const series = monthlySeries([month("2026-08", 500, 300)], { now });
+  it("takes last month whole and compares it with the month before", () => {
+    const period = resolvePeriod("lastMonth", now);
+
+    assert.equal(ymd(period.from), "2026-7-1");
+    assert.equal(ymd(period.to), "2026-7-31");
+    assert.equal(ymd(period.previous.from), "2026-6-1");
+    assert.equal(ymd(period.previous.to), "2026-6-30");
+    assert.equal(period.isOngoing, false);
+  });
+
+  it("slices three months by week and six by month", () => {
+    const quarter = resolvePeriod("last3Months", now);
+
+    assert.equal(ymd(quarter.from), "2026-6-1");
+    assert.equal(ymd(quarter.previous.from), "2026-3-1");
+    assert.equal(ymd(quarter.previous.to), "2026-5-10");
+    assert.equal(quarter.granularity, "week");
+
+    assert.equal(resolvePeriod("last6Months", now).granularity, "month");
+  });
+
+  it("compares a custom range with the same length right before it", () => {
+    const period = resolvePeriod("custom", now, {
+      from: new Date(2026, 6, 11),
+      to: new Date(2026, 6, 20),
+    });
+
+    assert.equal(countDays(period.from, period.to), 10);
+    assert.equal(ymd(period.previous.from), "2026-7-1");
+    assert.equal(ymd(period.previous.to), "2026-7-10");
+  });
+
+  it("swaps a custom range picked backwards", () => {
+    const period = resolvePeriod("custom", now, {
+      from: new Date(2026, 6, 20),
+      to: new Date(2026, 6, 11),
+    });
+
+    assert.equal(ymd(period.from), "2026-7-11");
+    assert.equal(ymd(period.to), "2026-7-20");
+  });
+
+  it("projects a running preset to the end of the month", () => {
+    assert.equal(ymd(resolvePeriod("thisMonth", now).projectTo!), "2026-8-31");
+    assert.equal(ymd(resolvePeriod("last3Months", now).projectTo!), "2026-8-31");
+    assert.equal(resolvePeriod("lastMonth", now).projectTo, null);
+    assert.equal(
+      resolvePeriod("custom", now, { from: new Date(2026, 7, 1), to: now })
+        .projectTo,
+      null,
+    );
+  });
+
+  it("counts elapsed days only up to today in a running period", () => {
+    assert.equal(daysElapsedIn(resolvePeriod("thisMonth", now), now), 10);
+    assert.equal(daysElapsedIn(resolvePeriod("lastMonth", now), now), 31);
+  });
+});
+
+describe("trend series", () => {
+  it("returns a bar per day, filling quiet days with zeroes", () => {
+    const series = bucketSeries([totalsRow("2026-08-03", 500, 200)], {
+      ...resolvePeriod("thisMonth", now),
+    });
+
+    assert.equal(series.buckets.length, 10);
+    assert.equal(series.buckets[0].key, "2026-08-01");
+    assert.equal(series.buckets[2].income, 500);
+    assert.equal(series.buckets[1].expense, 0);
+    assert.equal(series.max, 500);
+  });
+
+  it("starts weeks on the Monday on or before the first day", () => {
+    const series = bucketSeries([], resolvePeriod("last3Months", now));
+
+    // 1 June 2026 is a Monday; 10 August sits in the week of the 10th.
+    assert.equal(series.buckets[0].key, "2026-06-01");
+    assert.equal(series.buckets.at(-1)?.key, "2026-08-10");
+  });
+
+  it("returns one bucket per month, across a year boundary", () => {
+    const series = bucketSeries([totalsRow("2025-12", 900, 400)], {
+      ...resolvePeriod("last6Months", new Date(2026, 0, 15)),
+    });
 
     assert.equal(series.buckets.length, 6);
-    assert.equal(series.buckets[0].month, "2026-03");
-    assert.equal(series.buckets.at(-1)?.month, "2026-08");
+    assert.equal(series.buckets[0].key, "2025-08");
+    assert.equal(series.buckets.at(-1)?.key, "2026-01");
+    assert.equal(series.buckets.at(-2)?.net, 500);
   });
 
-  it("fills a month with no transactions with zeroes rather than skipping it", () => {
-    const series = monthlySeries(
-      [month("2026-06", 1_000, 800), month("2026-08", 900, 400)],
-      { now },
-    );
+  it("clamps the last bucket to the end of the period", () => {
+    const series = bucketSeries([], resolvePeriod("last6Months", now));
 
-    const july = series.buckets.find((bucket) => bucket.month === "2026-07");
-    assert.equal(july?.income, 0);
-    assert.equal(july?.expense, 0);
-    assert.equal(july?.net, 0);
+    assert.equal(ymd(series.buckets.at(-1)!.end), "2026-8-10");
+  });
+});
+
+describe("daily allowance", () => {
+  it("spreads the balance over the days left, today included", () => {
+    const allowance = dailyAllowance({
+      balance: 2_200_000,
+      spentThisMonth: 1_000_000,
+      now,
+    });
+
+    // August has 31 days: the 10th to the 31st is 22 days.
+    assert.equal(allowance.daysLeft, 22);
+    assert.equal(allowance.allowance, 100_000);
+    assert.equal(allowance.average, 100_000);
+    assert.equal(allowance.status, "onTrack");
   });
 
-  it("scales against the largest bar in the window", () => {
-    const series = monthlySeries(
-      [month("2026-07", 1_000, 2_500), month("2026-08", 900, 400)],
-      { now },
-    );
+  it("flags a pace the balance cannot sustain", () => {
+    const allowance = dailyAllowance({
+      balance: 1_100_000,
+      spentThisMonth: 1_000_000,
+      now,
+    });
 
-    assert.equal(series.max, 2_500);
+    assert.equal(allowance.allowance, 50_000);
+    assert.equal(allowance.status, "over");
+    // 21 more days at 100k from 1.1m.
+    assert.equal(allowance.projectedBalance, -1_000_000);
   });
 
-  it("crosses a year boundary", () => {
-    const series = monthlySeries([], { now: new Date(2026, 0, 15) });
+  it("allows nothing once the main funds are empty", () => {
+    const allowance = dailyAllowance({ balance: -5_000, spentThisMonth: 0, now });
 
-    assert.equal(series.buckets[0].month, "2025-08");
-    assert.equal(series.buckets.at(-1)?.month, "2026-01");
-  });
-
-  it("nets income against expense per month", () => {
-    const series = monthlySeries([month("2026-08", 900, 400)], { now });
-
-    assert.equal(series.buckets.at(-1)?.net, 500);
+    assert.equal(allowance.allowance, 0);
+    assert.equal(allowance.status, "empty");
   });
 });

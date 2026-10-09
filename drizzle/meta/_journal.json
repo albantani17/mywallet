@@ -57,6 +57,13 @@
       "when": 1788719678728,
       "tag": "0007_brief_stephen_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791544271980,
+      "tag": "0008_real_reavers",
+      "breakpoints": true
     }
   ]
 }

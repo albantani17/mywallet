@@ -18,7 +18,7 @@ const TRANSACTION_TABLES = [
 /** How many rows to add each time the list reaches its end. */
 const PAGE_SIZE = 50;
 
-const NO_FILTERS: TransactionFilterValues = {
+export const NO_FILTERS: TransactionFilterValues = {
   search: "",
   walletId: null,
   categoryId: null,
